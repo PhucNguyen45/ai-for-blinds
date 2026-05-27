@@ -1,25 +1,29 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:ai_for_blinds/app.dart';
-import 'package:ai_for_blinds/services/tts_service.dart';
+import 'package:ai_for_blinds/screens/home_screen.dart';
+import 'package:ai_for_blinds/services/audio_service.dart';
 
 void main() {
-  testWidgets('App renders main navigation buttons', (WidgetTester tester) async {
+  testWidgets('Home screen shows app title and 4 feature buttons',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       ChangeNotifierProvider(
-        create: (_) => TtsService(),
-        child: const BlindScholarApp(),
+        create: (_) => AudioService(),
+        child: const MaterialApp(
+          home: HomeScreen(),
+        ),
       ),
     );
 
-    // Verify the app bar title is present
-    expect(find.text('BlindScholar'), findsOneWidget);
+    // Verify the app bar title is SgBe Vision
+    expect(find.text('SgBe Vision'), findsOneWidget);
 
-    // Verify the 4 main feature buttons are present
-    expect(find.text('Book Scanner'), findsOneWidget);
-    expect(find.text('Text Reader'), findsOneWidget);
-    expect(find.text('Voice Notes'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
+    // Verify all 4 feature buttons are present (Vietnamese labels)
+    expect(find.text('Quét tài liệu'), findsOneWidget);
+    expect(find.text('Hỏi đáp kiến thức'), findsOneWidget);
+    expect(find.text('Ôn tập'), findsOneWidget);
+    expect(find.text('Cài đặt'), findsOneWidget);
   });
 }

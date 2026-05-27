@@ -1,12 +1,36 @@
+# ── Web Framework ────────────────────────────────────────────
 fastapi==0.136.1
 uvicorn[standard]==0.47.0
-google-generativeai==0.8.6
-edge-tts==7.2.8
-faster-whisper==1.2.1
-opencv-python-headless==4.13.0.92
-httpx==0.28.1
 python-multipart==0.0.29
-chromadb==0.5.0
+
+# ── Database ─────────────────────────────────────────────────
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.1
+
+# ─── AI — Vision ────────────────────────────────────────────
+google-generativeai==0.8.6
+
+# ─── AI — OCR ───────────────────────────────────────────────
 paddleocr==2.9.1
+opencv-python-headless==4.13.0.92
+
+# ─── AI — TTS ───────────────────────────────────────────────
+edge-tts==7.2.8
+
+# ─── AI — STT ───────────────────────────────────────────────
+faster-whisper==1.2.1
+
+# ─── AI — RAG (Vector Search) ───────────────────────────────
+chromadb==0.5.0
+sentence-transformers>=3.0.0
+
+# ─── AI — Object Detection ─────────────────────────────────
+ultralytics==8.3.0
+
+# ─── Utilities ──────────────────────────────────────────────
+httpx==0.28.1
 torch==2.5.0
 torchvision==0.20.0
+numpy>=1.24.0
+Pillow>=10.0.0

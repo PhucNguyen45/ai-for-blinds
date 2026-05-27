@@ -3,13 +3,17 @@ import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 
 /// A massive, no-frills button designed for blind users.
-/// - Minimum 80px height for easy touch targeting
+/// - Uses ElevatedButton as per design spec
+/// - Icon + Label + optional Subtitle in a Column layout
+/// - Minimum 48dp touch target (≥80dp recommended)
 /// - Clear Semantics label for screen readers
 /// - Haptic feedback on every tap
-/// - No animations, gradients, or shadows
+///
+/// Design spec: Icon(40) + Text(20, bold) + optional subtitle(14)
 class BigButton extends StatelessWidget {
   final IconData icon;
   final String label;
+  final String? subtitle;
   final String? semanticLabel;
   final Color? color;
   final Color iconColor;
@@ -19,6 +23,7 @@ class BigButton extends StatelessWidget {
     super.key,
     required this.icon,
     required this.label,
+    this.subtitle,
     this.semanticLabel,
     this.color,
     this.iconColor = Colors.white,
@@ -31,37 +36,57 @@ class BigButton extends StatelessWidget {
     final bgColor = color ?? (isDark ? AppTheme.darkCard : AppTheme.primaryBlue);
 
     return Semantics(
-      button: true,
       label: semanticLabel ?? label,
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.mediumImpact();
-          onTap();
-        },
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 80),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-              width: 2,
+      hint: 'Nhấn hai lần để kích hoạt',
+      button: true,
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+            HapticFeedback.mediumImpact();
+            onTap();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bgColor,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 80),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+              side: BorderSide(
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                width: 2,
+              ),
             ),
+            elevation: 0,
+            shadowColor: Colors.transparent,
           ),
           child: Row(
             children: [
-              Icon(icon, size: 36, color: iconColor),
+              Icon(icon, size: 40, color: iconColor),
               const SizedBox(width: 16),
               Expanded(
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],

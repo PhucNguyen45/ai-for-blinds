@@ -1,42 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/book_scanner_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/text_reader_screen.dart';
-import 'screens/voice_notes_screen.dart';
+import 'screens/review_screen.dart';
+import 'screens/scanner_screen.dart';
 import 'screens/settings_screen.dart';
-import 'services/tts_service.dart';
+import 'screens/voice_qa_screen.dart';
+import 'services/audio_service.dart';
+import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
 
-/// Root widget for the BlindScholar application.
-/// Configures routing and provides TtsService via Provider.
+/// Root widget for the SgBe Vision application.
+/// Cung cấp AudioService + StorageService qua Provider.
+/// Routes: / (Home), /scanner, /voice-qa, /review, /settings.
 class BlindScholarApp extends StatelessWidget {
   const BlindScholarApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TtsService(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AudioService()),
+        Provider(create: (_) => StorageService()),
+      ],
       child: MaterialApp(
-        title: 'BlindScholar',
+        title: 'SgBe Vision',
         debugShowCheckedModeBanner: false,
 
-        // Use high-contrast themes
+        // High-contrast themes
         theme: AppTheme.lightHighContrast,
         darkTheme: AppTheme.darkHighContrast,
         themeMode: ThemeMode.system,
 
-        // Route configuration
+        // Route configuration — voice-first navigation
         initialRoute: '/',
         routes: {
           '/': (context) => const HomeScreen(),
-          '/book-scanner': (context) => const BookScannerScreen(),
-          '/text-reader': (context) => const TextReaderScreen(),
-          '/voice-notes': (context) => const VoiceNotesScreen(),
+          '/scanner': (context) => const ScannerScreen(),
+          '/voice-qa': (context) => const VoiceQAScreen(),
+          '/review': (context) => const ReviewScreen(),
           '/settings': (context) => const SettingsScreen(),
         },
 
-        // Enable accessibility large text
+        // Accessibility: large text, high contrast, bold text
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(context).copyWith(

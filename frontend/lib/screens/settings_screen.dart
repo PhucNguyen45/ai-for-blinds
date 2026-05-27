@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../services/tts_service.dart';
+import '../services/audio_service.dart';
 import '../theme/app_theme.dart';
 
-/// Settings screen. Simplified: just sliders and a test button, no decorative elements.
+/// Settings screen — điều chỉnh tốc độ, cao độ, âm lượng giọng đọc.
+/// Tuân thủ thiết kế SgBe Vision: slider đơn giản, nút test, không trang trí.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -18,61 +19,64 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Cài đặt'),
         backgroundColor: isDark ? AppTheme.pureBlack : AppTheme.primaryBlue,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 32),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            context.read<AudioService>().stop();
+            Navigator.pop(context);
+          },
         ),
       ),
       body: Container(
         color: bgColor,
-        child: Consumer<TtsService>(
-          builder: (context, tts, _) {
+        child: Consumer<AudioService>(
+          builder: (context, audio, _) {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
                 const SizedBox(height: 8),
 
-                // Speech Speed
+                // Tốc độ giọng đọc
                 _SettingSlider(
-                  label: 'Speech Speed',
-                  value: tts.speechRate,
+                  label: 'Tốc độ giọng đọc',
+                  value: audio.speechRate,
                   min: 0.2,
                   max: 1.0,
                   divisions: 8,
-                  displayValue: tts.speechRate.toStringAsFixed(1),
-                  onChanged: (val) => tts.setSpeechRate(val),
+                  displayValue: audio.speechRate.toStringAsFixed(1),
+                  onChanged: (val) => audio.setSpeechRate(val),
                   cardColor: cardColor,
                   borderColor: borderColor,
                   theme: theme,
                 ),
                 const SizedBox(height: 12),
 
-                // Pitch
+                // Cao độ giọng đọc
                 _SettingSlider(
-                  label: 'Pitch',
-                  value: tts.pitch,
+                  label: 'Cao độ giọng đọc',
+                  value: audio.pitch,
                   min: 0.5,
                   max: 2.0,
                   divisions: 6,
-                  displayValue: tts.pitch.toStringAsFixed(1),
-                  onChanged: (val) => tts.setPitch(val),
+                  displayValue: audio.pitch.toStringAsFixed(1),
+                  onChanged: (val) => audio.setPitch(val),
                   cardColor: cardColor,
                   borderColor: borderColor,
                   theme: theme,
                 ),
                 const SizedBox(height: 12),
 
-                // Volume
+                // Âm lượng
                 _SettingSlider(
-                  label: 'Volume',
-                  value: tts.volume,
+                  label: 'Âm lượng',
+                  value: audio.volume,
                   min: 0.0,
                   max: 1.0,
                   divisions: 5,
-                  displayValue: tts.volume.toStringAsFixed(1),
-                  onChanged: (val) => tts.setVolume(val),
+                  displayValue: audio.volume.toStringAsFixed(1),
+                  onChanged: (val) => audio.setVolume(val),
                   cardColor: cardColor,
                   borderColor: borderColor,
                   theme: theme,
@@ -80,16 +84,16 @@ class SettingsScreen extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Test button
+                // Nút kiểm tra
                 Semantics(
                   button: true,
-                  label: 'Test speech settings.',
+                  label: 'Kiểm tra cài đặt giọng đọc.',
                   child: GestureDetector(
                     onTap: () {
                       HapticFeedback.mediumImpact();
-                      tts.speak(
-                        'Hello! This is a test of your current speech settings. '
-                        'If you can hear this clearly, your settings are good to go.',
+                      audio.speak(
+                        'Đây là giọng đọc hiện tại của bạn. '
+                        'Nếu bạn nghe rõ, cài đặt đã phù hợp.',
                       );
                     },
                     child: Container(
@@ -102,7 +106,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       child: const Center(
                         child: Text(
-                          'Test Settings',
+                          'Kiểm tra giọng đọc',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w600,
@@ -116,7 +120,7 @@ class SettingsScreen extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
-                // About
+                // Thông tin ứng dụng
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -128,12 +132,12 @@ class SettingsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'BlindScholar v1.0.0',
+                        'SgBe Vision v1.0.0',
                         style: theme.textTheme.titleLarge,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Accessible study companion for blind students.',
+                        'Trợ lý học tập AI cho học sinh khiếm thị.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                         ),
@@ -152,7 +156,7 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// A plain slider card with label and value, no decorative icons.
+/// Một slider đơn giản với nhãn và giá trị.
 class _SettingSlider extends StatelessWidget {
   final String label;
   final double value;

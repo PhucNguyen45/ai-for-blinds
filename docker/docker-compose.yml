@@ -1,8 +1,9 @@
 version: '3.8'
 
 services:
+  # ── PostgreSQL + pgvector ──────────────────────────────
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: sgbe_postgres
     environment:
       POSTGRES_USER: sgbe_admin
@@ -12,6 +13,30 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgbe_admin -d sgbe_vision"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── SgBe Vision Backend ───────────────────────────────
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: sgbe_backend
+    ports:
+      - "8000:8000"
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      DATABASE_URL: postgresql+psycopg2://sgbe_admin:sgbe_secret@postgres:5432/sgbe_vision
+      DEBUG: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../data:/app/data
+      - ../models:/app/models
 
 volumes:
   postgres_data:

@@ -1,117 +1,75 @@
-import os
-import tempfile
-import uuid
+"""
+SgBe Vision — Backend API Entry Point.
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+FastAPI application with modular route registration.
+AI services are lazy-initialized in each service module.
+"""
+
+import uvicorn
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-import google.generativeai as genai
-import edge_tts
 
-# Cấu hình Gemini — bắt buộc phải có GOOGLE_API_KEY trong môi trường
-api_key = os.environ.get("GOOGLE_API_KEY")
-if not api_key:
-    raise RuntimeError(
-        "GOOGLE_API_KEY environment variable is required. "
-        "Set it with: export GOOGLE_API_KEY='your-key-here'"
-    )
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-2.5-flash')
+from backend.config import settings
+from backend.database import init_db
 
-# Giới hạn kích thước file upload (10MB)
-MAX_FILE_SIZE = 10 * 1024 * 1024
-ALLOWED_CONTENT_TYPES = {
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "image/bmp",
-}
+# ── Routes ─────────────────────────────────────────────────────
+from backend.api.routes import describe, ocr, tts, stt, rag
 
-app = FastAPI(title="SgBe Vision API")
+# ── App Initialization ──────────────────────────────────────────
+
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.app_version,
+    description="Trợ lý học tập AI đa phương thức cho học sinh khiếm thị Việt Nam",
+)
+
+# ── Middleware ────────────────────────────────────────────────────
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.cors_origins,
+    allow_credentials=settings.cors_credentials,
+    allow_methods=settings.cors_methods,
+    allow_headers=settings.cors_headers,
 )
 
+# ── Route Registration ──────────────────────────────────────────
 
-def _validate_image(file: UploadFile) -> bytes:
-    """Kiểm tra và đọc file ảnh, raise HTTPException nếu không hợp lệ."""
-    if file.content_type not in ALLOWED_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported content type '{file.content_type}'. "
-                   f"Allowed: {', '.join(ALLOWED_CONTENT_TYPES)}",
-        )
-    contents = file.file.read()
-    if len(contents) > MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=413,
-            detail=f"File too large ({len(contents)} bytes). Max: {MAX_FILE_SIZE} bytes",
-        )
-    return contents
+app.include_router(describe.router, tags=["Vision"])
+app.include_router(ocr.router, tags=["OCR"])
+app.include_router(tts.router, tags=["TTS"])
+app.include_router(stt.router, tags=["STT"])
+app.include_router(rag.router, prefix="/rag", tags=["RAG"])
+
+
+# ── Startup / Health ─────────────────────────────────────────────
+
+@app.on_event("startup")
+async def startup():
+    """Initialize database tables on startup."""
+    try:
+        init_db()
+    except Exception as e:
+        print(f"Database initialization skipped: {e}")
+        print("Backend will run without database. Some features may be limited.")
 
 
 @app.get("/")
 def health():
-    return {"status": "ok", "service": "SgBe Vision Backend"}
+    """Health check endpoint."""
+    return {
+        "status": "ok",
+        "service": settings.app_name,
+        "version": settings.app_version,
+    }
 
 
-@app.post("/describe")
-async def describe_image(file: UploadFile = File(...)):
-    """Mô tả ảnh bằng tiếng Việt cho học sinh khiếm thị (dùng Gemini 2.5 Flash)."""
-    contents = _validate_image(file)
-    try:
-        response = model.generate_content([
-            "Bạn là trợ lý cho học sinh khiếm thị Việt Nam. "
-            "Hãy mô tả chi tiết bức ảnh này bằng tiếng Việt một cách tự nhiên, dễ hiểu.",
-            {"mime_type": file.content_type, "data": contents},
-        ])
-        return {"description": response.text}
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Gemini API error: {str(e)}")
-
-
-@app.post("/ocr")
-async def ocr_image(file: UploadFile = File(...)):
-    """Nhận dạng văn bản từ ảnh (OCR)."""
-    _validate_image(file)
-    # TODO: Tích hợp PaddleOCRv5
-    return {"text": "OCR service sẽ được tích hợp sau"}
-
-
-@app.post("/tts")
-async def text_to_speech(text: str):
-    """Chuyển văn bản thành giọng nói tiếng Việt và trả về file audio."""
-    if not text or not text.strip():
-        raise HTTPException(status_code=400, detail="Text is required")
-
-    # Tạo file tạm với tên unique để tránh race condition
-    tmp_dir = tempfile.gettempdir()
-    output_path = os.path.join(tmp_dir, f"sgbe_tts_{uuid.uuid4().hex}.mp3")
-
-    try:
-        communicate = edge_tts.Communicate(text, "vi-VN-HoaiMyNeural")
-        await communicate.save(output_path)
-
-        if not os.path.exists(output_path):
-            raise HTTPException(status_code=500, detail="TTS generation failed")
-
-        return FileResponse(
-            output_path,
-            media_type="audio/mpeg",
-            filename="speech.mp3",
-            headers={
-                "Content-Disposition": 'attachment; filename="speech.mp3"',
-            },
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"TTS error: {str(e)}")
-
+# ── Main ──────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        "backend.main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.debug,
+    )
