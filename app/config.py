@@ -7,8 +7,13 @@ class Settings(BaseSettings):
     gemini_api_key: str
     gemini_model: str = "gemini-3.0-pro"
     max_image_mb: int = 10
+    max_audio_mb: int = 10
     request_timeout_s: int = 60
     allowed_origins: str = "*"
+
+    tts_voice: str = "vi-VN-HoaiMyNeural"
+    tts_rate: str = "+0%"
+    tts_pitch: str = "+0Hz"
 
 
 settings = Settings()
