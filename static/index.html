@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VLM Demo - Hỏi đáp về ảnh</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --error: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 8px 0 16px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    margin-bottom: 16px;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .file-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn-file {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px;
+    background: #f1f5f9;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  .btn-file:hover { border-color: var(--primary); }
+  .btn-file input { display: none; }
+  textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    resize: vertical;
+  }
+  textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+  button.submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+  button.submit:hover { background: var(--primary-dark); }
+  button.submit:disabled { background: #94a3b8; cursor: not-allowed; }
+  .preview {
+    margin-top: 12px;
+    max-width: 100%;
+    border-radius: 8px;
+    display: none;
+  }
+  .preview.shown { display: block; }
+  .answer {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .error { color: var(--error); }
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #cbd5e1;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .filename { font-size: 13px; color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🖼️ Hỏi đáp về ảnh (VLM Demo)</h1>
+
+  <form id="form" class="card">
+    <label>1. Chọn hoặc chụp ảnh</label>
+    <div class="file-row">
+      <label class="btn-file">
+        📷 Chụp ảnh
+        <input type="file" id="camera" accept="image/*" capture="environment" />
+      </label>
+      <label class="btn-file">
+        🖼️ Chọn từ thư viện
+        <input type="file" id="gallery" accept="image/*" />
+      </label>
+    </div>
+    <div class="filename" id="filename"></div>
+    <img id="preview" class="preview" alt="preview" />
+
+    <label style="margin-top: 16px;">2. Câu hỏi về ảnh</label>
+    <textarea id="question" placeholder="Ví dụ: Trong ảnh có gì? Đây là loại cây gì?" required></textarea>
+
+    <button type="submit" class="submit" id="submitBtn">Gửi</button>
+  </form>
+
+  <div id="result" class="card" style="display:none;">
+    <label>Câu trả lời</label>
+    <div class="answer" id="answer"></div>
+    <div class="meta" id="meta"></div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('form');
+  const cameraInput = document.getElementById('camera');
+  const galleryInput = document.getElementById('gallery');
+  const preview = document.getElementById('preview');
+  const filenameEl = document.getElementById('filename');
+  const submitBtn = document.getElementById('submitBtn');
+  const resultCard = document.getElementById('result');
+  const answerEl = document.getElementById('answer');
+  const metaEl = document.getElementById('meta');
+
+  let selectedFile = null;
+
+  function handleFile(file) {
+    if (!file) return;
+    selectedFile = file;
+    filenameEl.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.classList.add('shown');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  cameraInput.addEventListener('change', e => handleFile(e.target.files[0]));
+  galleryInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = document.getElementById('question').value.trim();
+    if (!selectedFile) {
+      alert('Vui lòng chọn hoặc chụp ảnh trước');
+      return;
+    }
+    if (!question) {
+      alert('Vui lòng nhập câu hỏi');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> Đang phân tích...';
+    resultCard.style.display = 'none';
+    answerEl.classList.remove('error');
+
+    const fd = new FormData();
+    fd.append('image', selectedFile);
+    fd.append('question', question);
+
+    try {
+      const res = await fetch('/api/ask', { method: 'POST', body: fd });
+      const data = await res.json();
+      resultCard.style.display = 'block';
+      if (!res.ok) {
+        answerEl.classList.add('error');
+        answerEl.textContent = `Lỗi: ${data.detail || res.statusText}`;
+        metaEl.textContent = '';
+      } else {
+        answerEl.textContent = data.answer;
+        metaEl.textContent = `Model: ${data.model} • Thời gian: ${data.elapsed_ms} ms`;
+      }
+    } catch (err) {
+      resultCard.style.display = 'block';
+      answerEl.classList.add('error');
+      answerEl.textContent = `Lỗi mạng: ${err.message}`;
+      metaEl.textContent = '';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Gửi';
+    }
+  });
+</script>
+</body>
+</html>
