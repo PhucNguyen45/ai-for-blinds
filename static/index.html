@@ -2,231 +2,407 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VLM Demo - Hỏi đáp về ảnh</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#1e3a8a" />
+<title>Trợ lý hình ảnh - VLM</title>
 <style>
-  :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --border: #e2e8f0;
-    --error: #dc2626;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100vh; width: 100vw;
+    overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 16px;
+    user-select: none;
+    background: #0f172a;
+    color: white;
   }
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  h1 {
-    font-size: 22px;
-    margin: 8px 0 16px;
-  }
-  .card {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    margin-bottom: 16px;
-  }
-  label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 8px;
-    font-size: 14px;
-  }
-  .file-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .btn-file {
-    flex: 1;
-    min-width: 140px;
-    padding: 12px;
-    background: #f1f5f9;
-    border: 2px dashed var(--border);
-    border-radius: 8px;
+  #app {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
     text-align: center;
     cursor: pointer;
-    font-size: 14px;
-    transition: border-color 0.2s;
+    transition: background 0.3s;
   }
-  .btn-file:hover { border-color: var(--primary); }
-  .btn-file input { display: none; }
-  textarea {
-    width: 100%;
-    min-height: 80px;
+  #app:focus { outline: 4px solid #fbbf24; outline-offset: -4px; }
+
+  /* States */
+  #app.idle       { background: #1e3a8a; }
+  #app.camera     { background: #0369a1; }
+  #app.listening  { background: #16a34a; }
+  #app.processing { background: #ca8a04; }
+  #app.speaking   { background: #7c3aed; }
+  #app.error      { background: #b91c1c; }
+
+  #icon {
+    font-size: 96px;
+    margin-bottom: 24px;
+    line-height: 1;
+  }
+  #title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  #subtitle {
+    font-size: 18px;
+    opacity: 0.9;
+    line-height: 1.4;
+    max-width: 90%;
+  }
+  #answer {
+    font-size: 20px;
+    line-height: 1.5;
+    margin-top: 16px;
+    max-width: 90%;
+    max-height: 40vh;
+    overflow-y: auto;
     padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 15px;
-    resize: vertical;
+    background: rgba(0,0,0,0.25);
+    border-radius: 12px;
   }
-  textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
-  button.submit {
-    width: 100%;
-    padding: 14px;
-    background: var(--primary);
+  .pulse { animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .hidden { display: none !important; }
+
+  /* Hidden but accessible file input */
+  #fileInput {
+    position: absolute;
+    left: -9999px; width: 1px; height: 1px; opacity: 0;
+  }
+
+  /* Bottom hint bar */
+  #hint {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px;
+    background: rgba(0,0,0,0.4);
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  #hint button {
+    background: transparent;
     color: white;
-    border: none;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 6px 12px;
     border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 13px;
+    margin: 0 4px;
     cursor: pointer;
-    margin-top: 12px;
   }
-  button.submit:hover { background: var(--primary-dark); }
-  button.submit:disabled { background: #94a3b8; cursor: not-allowed; }
-  .preview {
-    margin-top: 12px;
-    max-width: 100%;
-    border-radius: 8px;
-    display: none;
-  }
-  .preview.shown { display: block; }
-  .answer {
-    white-space: pre-wrap;
-    line-height: 1.6;
-    font-size: 15px;
-  }
-  .meta {
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-  }
-  .error { color: var(--error); }
-  .spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #cbd5e1;
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .filename { font-size: 13px; color: var(--muted); margin-top: 8px; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>🖼️ Hỏi đáp về ảnh (VLM Demo)</h1>
 
-  <form id="form" class="card">
-    <label>1. Chọn hoặc chụp ảnh</label>
-    <div class="file-row">
-      <label class="btn-file">
-        📷 Chụp ảnh
-        <input type="file" id="camera" accept="image/*" capture="environment" />
-      </label>
-      <label class="btn-file">
-        🖼️ Chọn từ thư viện
-        <input type="file" id="gallery" accept="image/*" />
-      </label>
-    </div>
-    <div class="filename" id="filename"></div>
-    <img id="preview" class="preview" alt="preview" />
+<main id="app" class="idle" role="button" tabindex="0"
+      aria-label="Chạm vào màn hình để chụp ảnh và đặt câu hỏi bằng giọng nói">
+  <div id="icon" aria-hidden="true">👆</div>
+  <div id="title">Chạm để bắt đầu</div>
+  <div id="subtitle">Chụp ảnh, đặt câu hỏi bằng giọng nói, nghe câu trả lời</div>
+  <div id="answer" class="hidden" aria-live="polite"></div>
+</main>
 
-    <label style="margin-top: 16px;">2. Câu hỏi về ảnh</label>
-    <textarea id="question" placeholder="Ví dụ: Trong ảnh có gì? Đây là loại cây gì?" required></textarea>
+<input type="file" id="fileInput" accept="image/*" capture="environment" aria-hidden="true" />
 
-    <button type="submit" class="submit" id="submitBtn">Gửi</button>
-  </form>
-
-  <div id="result" class="card" style="display:none;">
-    <label>Câu trả lời</label>
-    <div class="answer" id="answer"></div>
-    <div class="meta" id="meta"></div>
-  </div>
+<div id="hint">
+  <button id="repeatBtn" aria-label="Nghe lại câu trả lời cuối">🔁 Nghe lại</button>
+  <button id="resetBtn" aria-label="Bắt đầu lại">↺ Bắt đầu lại</button>
 </div>
 
 <script>
-  const form = document.getElementById('form');
-  const cameraInput = document.getElementById('camera');
-  const galleryInput = document.getElementById('gallery');
-  const preview = document.getElementById('preview');
-  const filenameEl = document.getElementById('filename');
-  const submitBtn = document.getElementById('submitBtn');
-  const resultCard = document.getElementById('result');
-  const answerEl = document.getElementById('answer');
-  const metaEl = document.getElementById('meta');
+(() => {
+  'use strict';
 
-  let selectedFile = null;
+  const app       = document.getElementById('app');
+  const icon      = document.getElementById('icon');
+  const titleEl   = document.getElementById('title');
+  const subtitle  = document.getElementById('subtitle');
+  const answerEl  = document.getElementById('answer');
+  const fileInput = document.getElementById('fileInput');
+  const repeatBtn = document.getElementById('repeatBtn');
+  const resetBtn  = document.getElementById('resetBtn');
 
-  function handleFile(file) {
-    if (!file) return;
-    selectedFile = file;
-    filenameEl.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.src = e.target.result;
-      preview.classList.add('shown');
-    };
-    reader.readAsDataURL(file);
+  // State
+  let state = 'idle';
+  let currentImage = null;
+  let lastAnswer = '';
+  let recognition = null;
+
+  // ---- TTS (Text-to-Speech) ----
+  function speak(text, opts = {}) {
+    return new Promise((resolve) => {
+      if (!('speechSynthesis' in window)) {
+        console.warn('TTS không hỗ trợ');
+        resolve();
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'vi-VN';
+      u.rate = opts.rate || 1.0;
+      u.pitch = opts.pitch || 1.0;
+      u.volume = 1.0;
+      // Pick a Vietnamese voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi'));
+      if (viVoice) u.voice = viVoice;
+      u.onend = resolve;
+      u.onerror = resolve;
+      window.speechSynthesis.speak(u);
+    });
   }
 
-  cameraInput.addEventListener('change', e => handleFile(e.target.files[0]));
-  galleryInput.addEventListener('change', e => handleFile(e.target.files[0]));
+  // ---- Haptic feedback ----
+  function vibrate(pattern) {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const question = document.getElementById('question').value.trim();
-    if (!selectedFile) {
-      alert('Vui lòng chọn hoặc chụp ảnh trước');
+  // ---- State transitions ----
+  function setState(newState, opts = {}) {
+    state = newState;
+    app.className = newState;
+
+    const ui = {
+      idle:       { icon: '👆', title: 'Chạm để bắt đầu', sub: 'Chụp ảnh và đặt câu hỏi bằng giọng nói' },
+      camera:     { icon: '📷', title: 'Đang mở camera', sub: 'Hướng máy ảnh vào vật cần xem và chụp' },
+      listening:  { icon: '🎙️', title: 'Hãy nói câu hỏi', sub: 'Đang ghi âm... Im lặng khi nói xong' },
+      processing: { icon: '⏳', title: 'Đang xử lý', sub: 'Vui lòng chờ' },
+      speaking:   { icon: '🔊', title: 'Trả lời', sub: '' },
+      error:      { icon: '⚠️', title: 'Có lỗi', sub: opts.msg || 'Chạm để thử lại' },
+    }[newState];
+
+    icon.textContent = ui.icon;
+    titleEl.textContent = ui.title;
+    subtitle.textContent = ui.sub;
+    subtitle.classList.toggle('hidden', !ui.sub);
+
+    if (newState === 'listening' || newState === 'processing') {
+      icon.classList.add('pulse');
+    } else {
+      icon.classList.remove('pulse');
+    }
+
+    if (newState !== 'speaking') {
+      answerEl.classList.add('hidden');
+    }
+
+    // Update ARIA
+    app.setAttribute('aria-label', `${ui.title}. ${ui.sub}`);
+  }
+
+  // ---- Main flow ----
+  async function startFlow() {
+    if (state !== 'idle' && state !== 'error') return;
+
+    vibrate(50);
+    await speak('Đang mở camera');
+    setState('camera');
+    fileInput.value = '';
+    fileInput.click();
+  }
+
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      // User cancelled camera
+      setState('idle');
+      await speak('Đã hủy. Chạm để thử lại');
       return;
     }
-    if (!question) {
-      alert('Vui lòng nhập câu hỏi');
+    currentImage = file;
+    vibrate([50, 50, 50]);
+    await speak('Đã chụp ảnh. Hãy nói câu hỏi của bạn');
+    startListening();
+  });
+
+  // ---- STT (Speech-to-Text) ----
+  function startListening() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      handleError('Trình duyệt không hỗ trợ ghi âm giọng nói. Hãy dùng Chrome trên Android.');
       return;
     }
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span> Đang phân tích...';
-    resultCard.style.display = 'none';
-    answerEl.classList.remove('error');
+    recognition = new SR();
+    recognition.lang = 'vi-VN';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    setState('listening');
+    vibrate(80);
+
+    recognition.onresult = (event) => {
+      const question = event.results[0][0].transcript.trim();
+      if (!question) {
+        handleError('Không nghe được câu hỏi. Chạm để thử lại');
+        return;
+      }
+      sendToServer(currentImage, question);
+    };
+
+    recognition.onerror = (event) => {
+      let msg = 'Không thể ghi âm';
+      if (event.error === 'no-speech') msg = 'Không nghe thấy gì. Chạm để thử lại';
+      else if (event.error === 'not-allowed') msg = 'Vui lòng cho phép truy cập micro';
+      else if (event.error === 'network') msg = 'Mất kết nối mạng';
+      handleError(msg);
+    };
+
+    recognition.onend = () => {
+      // If we got here without a result and not processing, treat as no-speech
+      if (state === 'listening') {
+        handleError('Không nghe thấy câu hỏi. Chạm để thử lại');
+      }
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      handleError('Lỗi khởi động ghi âm: ' + e.message);
+    }
+  }
+
+  // ---- Send to server ----
+  async function sendToServer(image, question) {
+    setState('processing');
+    await speak('Đang xử lý câu hỏi: ' + question);
 
     const fd = new FormData();
-    fd.append('image', selectedFile);
+    fd.append('image', image);
     fd.append('question', question);
 
     try {
       const res = await fetch('/api/ask', { method: 'POST', body: fd });
       const data = await res.json();
-      resultCard.style.display = 'block';
       if (!res.ok) {
-        answerEl.classList.add('error');
-        answerEl.textContent = `Lỗi: ${data.detail || res.statusText}`;
-        metaEl.textContent = '';
-      } else {
-        answerEl.textContent = data.answer;
-        metaEl.textContent = `Model: ${data.model} • Thời gian: ${data.elapsed_ms} ms`;
+        handleError('Lỗi máy chủ: ' + (data.detail || res.statusText));
+        return;
       }
+      await showAnswer(data.answer);
     } catch (err) {
-      resultCard.style.display = 'block';
-      answerEl.classList.add('error');
-      answerEl.textContent = `Lỗi mạng: ${err.message}`;
-      metaEl.textContent = '';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Gửi';
+      handleError('Lỗi mạng: ' + err.message);
+    }
+  }
+
+  // ---- Show + speak answer ----
+  async function showAnswer(text) {
+    lastAnswer = text;
+    setState('speaking');
+    answerEl.textContent = text;
+    answerEl.classList.remove('hidden');
+    vibrate([100, 50, 100]);
+
+    await speak(text);
+
+    setState('idle');
+    titleEl.textContent = 'Chạm để hỏi tiếp';
+    subtitle.textContent = 'Nhấn nút "Nghe lại" để nghe lại câu trả lời';
+    subtitle.classList.remove('hidden');
+    answerEl.classList.remove('hidden'); // keep answer visible
+  }
+
+  function handleError(msg) {
+    setState('error', { msg });
+    vibrate([200, 100, 200]);
+    speak(msg);
+    // Auto-reset to idle after 3s so they can tap again
+    setTimeout(() => {
+      if (state === 'error') setState('idle');
+    }, 3000);
+  }
+
+  // ---- Event handlers ----
+  app.addEventListener('click', (e) => {
+    // Ignore clicks on buttons in hint bar
+    if (e.target.closest('#hint')) return;
+    startFlow();
+  });
+  app.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      startFlow();
     }
   });
+
+  repeatBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (lastAnswer) {
+      setState('speaking');
+      answerEl.textContent = lastAnswer;
+      answerEl.classList.remove('hidden');
+      speak(lastAnswer).then(() => {
+        setState('idle');
+        titleEl.textContent = 'Chạm để hỏi tiếp';
+      });
+    } else {
+      speak('Chưa có câu trả lời nào để nghe lại');
+    }
+  });
+
+  resetBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.speechSynthesis.cancel();
+    if (recognition) try { recognition.abort(); } catch (_) {}
+    lastAnswer = '';
+    currentImage = null;
+    answerEl.textContent = '';
+    answerEl.classList.add('hidden');
+    setState('idle');
+    speak('Đã đặt lại. Chạm để bắt đầu');
+  });
+
+  // ---- Shake to reset (DeviceMotion) ----
+  let lastShakeTime = 0;
+  let lastX = null, lastY = null, lastZ = null;
+  function onMotion(e) {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc) return;
+    const { x, y, z } = acc;
+    if (lastX !== null) {
+      const delta = Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
+      if (delta > 30 && Date.now() - lastShakeTime > 2000) {
+        lastShakeTime = Date.now();
+        resetBtn.click();
+      }
+    }
+    lastX = x; lastY = y; lastZ = z;
+  }
+  if (window.DeviceMotionEvent) {
+    // iOS 13+ requires explicit permission; we don't bother for now
+    if (typeof DeviceMotionEvent.requestPermission !== 'function') {
+      window.addEventListener('devicemotion', onMotion);
+    }
+  }
+
+  // ---- Initial greeting (deferred until user interacts due to autoplay policy) ----
+  let greeted = false;
+  function greet() {
+    if (greeted) return;
+    greeted = true;
+    // Load voices first
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        speak('Trợ lý hình ảnh đã sẵn sàng. Chạm vào màn hình để chụp ảnh và đặt câu hỏi');
+      };
+    } else {
+      speak('Trợ lý hình ảnh đã sẵn sàng. Chạm vào màn hình để chụp ảnh và đặt câu hỏi');
+    }
+  }
+  // First user interaction triggers greeting
+  document.addEventListener('touchstart', greet, { once: true });
+  document.addEventListener('click', greet, { once: true });
+  document.addEventListener('keydown', greet, { once: true });
+
+  // ---- Init ----
+  setState('idle');
+  app.focus();
+})();
 </script>
 </body>
 </html>
