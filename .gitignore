@@ -3,7 +3,10 @@ __pycache__/
 *.py[cod]
 *.so
 .venv/
+venv/
 .env
+*.log
+.pytest_cache/
 
 # Flutter frontend
 /frontend/.dart_tool/
@@ -34,6 +37,7 @@ docker/volumes/
 # IDE
 .idea/
 *.iml
+.vscode/
 
 # OS
 .DS_Store

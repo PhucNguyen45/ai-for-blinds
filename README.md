@@ -2,6 +2,10 @@
 
 **SgBe Vision** là ứng dụng di động giúp học sinh khiếm thị Việt Nam học tập độc lập thông qua AI: quét sách, mô tả hình ảnh, đọc văn bản thành giọng nói, nhận dạng giọng nói, và truy hồi kiến thức. Thiết kế **voice-first**, **accessibility-first**, hoạt động được offline.
 
+Dự án bao gồm 2 server backend:
+- **`backend/`** — FastAPI AI Gateway với nhiều service (OCR, TTS, STT, VLM, RAG, Object Detection)
+- **`app/`** — VLM Server nhẹ, tích hợp Gemini Vision + Edge TTS, phục vụ mobile app (ảnh + giọng nói → câu trả lời)
+
 ---
 
 ## 📋 Mục lục
@@ -10,13 +14,15 @@
 - [📁 Cấu trúc dự án](#-cấu-trúc-dự-án)
 - [🏗️ Kiến trúc hệ thống](#️-kiến-trúc-hệ-thống)
 - [🖥️ Frontend (Flutter)](#️-frontend-flutter)
-- [⚙️ Backend (FastAPI)](#️-backend-fastapi)
+- [⚙️ Backend (FastAPI - backend/)](#️-backend-fastapi---backend)
+- [🖥️ VLM Server (app/)](#️-vlm-server-app)
 - [📡 API Reference](#-api-reference)
 - [🐳 Docker Setup](#-docker-setup)
 - [🚀 Hướng dẫn chạy](#-hướng-dẫn-chạy)
 - [🧪 Testing](#-testing)
 - [📦 Key Dependencies](#-key-dependencies)
 - [🗺️ Lộ trình phát triển](#️-lộ-trình-phát-triển)
+- [♿ Accessibility Patterns](#-accessibility-patterns)
 - [🧠 Notes for AI Agents](#-notes-for-ai-agents)
 
 ---
@@ -44,6 +50,18 @@
 ai-for-blinds/
 ├── README.md                             # Bạn đang ở đây
 ├── .gitignore
+├── .env.example                          # Mẫu cấu hình môi trường cho VLM Server
+├── requirements.txt                      # Python dependencies cho VLM Server
+│
+├── app/                                  # VLM Server (FastAPI nhẹ)
+│   ├── __init__.py
+│   ├── main.py                           # FastAPI app: /api/ask, /api/ask-voice, /api/tts
+│   ├── config.py                         # Pydantic settings từ .env
+│   ├── vlm.py                            # Gemini Vision integration (VLM)
+│   └── tts.py                            # Edge TTS (Text-to-Speech)
+│
+├── static/                               # Static files (web demo)
+│   └── index.html                        # Demo camera + voice cho VLM Server
 │
 ├── backend/                              # FastAPI — AI Gateway & Services
 │   ├── main.py                           # Entry point, route registration
@@ -163,24 +181,26 @@ ai-for-blinds/
 │   Mobile App     │ ←──HTTP── │   FastAPI Gateway    │ ←─────── │    Database      │
 │   (Flutter)      │    :8000  │   (backend/main.py)  │           │    Layer         │
 │                  │           │                      │           │                  │
-│  Voice-first     │  /describe│  Route → Service     │           │  PostgreSQL 16   │
-│  Accessibility   │  /ocr     │  architecture:       │           │  + pgvector      │
-│  Offline mode    │  /tts     │                      │           │                  │
-│                  │  /stt     │  routes/              │           │  6 tables:       │
-│                  │  /rag     │    describe.py        │           │  users           │
-│                  │  /sonify  │    ocr.py             │           │  learning_       │
-│                  │           │    tts.py             │           │  sessions        │
-│                  │           │    stt.py             │           │  learning_       │
-│                  │           │    rag.py             │           │  moments         │
-│                  │           │    sonify.py          │           │  voice_notes     │
-│                  │           │                      │           │  textbook_       │
-│                  │           │  services/            │           │  contents        │
-│                  │           │    vlm_service.py     │           │  feedbacks       │
-│                  │           │    ocr_service.py     │           │                  │
-│                  │           │    tts_service.py     │           │  ChromaDB        │
-│                  │           │    stt_service.py     │           │  (vector search) │
-│                  │           │    rag_service.py     │           │                  │
-│                  │           │    object_detection.py│           └──────────────────┘
+│  Voice-first     │           │  Or: VLM Server      │           │  PostgreSQL 16   │
+│  Accessibility   │           │  (app/main.py) :8000 │           │  + pgvector      │
+│  Offline mode    │           │                      │           │                  │
+│                  │  /api/ask │  routes/              │           │  6 tables:       │
+│                  │  /api/tts │    /api/ask           │           │  users           │
+│                  │  /api/ask-│    /api/ask-voice     │           │  learning_       │
+│                  │  -voice   │    /api/tts           │           │  sessions        │
+│                  │           │    /api/voices        │           │  learning_       │
+│                  │           │                      │           │  moments         │
+│                  │           │  services/            │           │  voice_notes     │
+│                  │           │    vlm.py (Gemini)    │           │  textbook_       │
+│                  │           │    tts.py (Edge TTS)  │           │  contents        │
+│                  │           │                      │           │  feedbacks       │
+│                  │  /describe│  backend/services/    │           │                  │
+│                  │  /ocr     │    vlm_service.py     │           │  ChromaDB        │
+│                  │  /tts     │    ocr_service.py     │           │  (vector search) │
+│                  │  /stt     │    tts_service.py     │           └──────────────────┘
+│                  │  /rag     │    stt_service.py     │
+│                  │  /sonify  │    rag_service.py     │
+│                  │           │    object_detection.py│
 │                  │           │    sonification.py    │
 └──────────────────┘           └──────────────────────┘
          │                              │
@@ -280,7 +300,7 @@ Tất cả đều có: `Semantics` label, `HapticFeedback`, solid colors, không
 
 ---
 
-## ⚙️ Backend (FastAPI)
+## ⚙️ Backend (FastAPI — `backend/`)
 
 ### Kiến trúc Modular
 
@@ -319,7 +339,7 @@ Mọi service đều dùng **singleton pattern** với lazy initialization — k
 | `TextbookContent` | `textbook_contents` | ✅ pgvector | `grade`, `subject`, `chapter`, `page_number`, `content_hash`, `embedding` |
 | `Feedback` | `feedbacks` | — | `rating`, `helpful`, `comment`, `feedback_type` |
 
-### Configuration
+### Configuration (backend/)
 
 Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settings`):
 
@@ -337,15 +357,103 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 
 ---
 
+## 🖥️ VLM Server (`app/`)
+
+Server FastAPI nhẹ, tích hợp Gemini Vision để app mobile gửi **ảnh + câu hỏi** → server trả về câu trả lời do VLM phân tích ảnh.
+
+### Tính năng
+
+| Tính năng | Endpoint | Input | Output |
+|-----------|----------|-------|--------|
+| **Hỏi đáp hình ảnh** | `POST /api/ask` | Ảnh + câu hỏi (text) | Câu trả lời (JSON) |
+| **Hỏi đáp bằng giọng nói** | `POST /api/ask-voice` | Ảnh + audio câu hỏi | Audio MP3 câu trả lời + headers |
+| **Text-to-Speech** | `POST /api/tts` | Văn bản | Stream MP3 audio |
+| **Danh sách giọng đọc** | `GET /api/voices` | — | Danh sách giọng tiếng Việt |
+| **Health check** | `GET /health` | — | Trạng thái server |
+
+### Cấu trúc
+
+```
+app/
+├── __init__.py
+├── main.py        # FastAPI app, tất cả endpoints
+├── vlm.py         # Gemini VLM integration (ask_vlm, ask_vlm_voice)
+├── tts.py         # Edge TTS (stream_tts, list_voices)
+└── config.py      # Pydantic settings từ .env
+```
+
+### Configuration (app/)
+
+Cấu hình qua file **`.env`** ở thư mục gốc:
+
+```env
+# Lấy API key tại https://aistudio.google.com/apikey
+GEMINI_API_KEY=your_api_key_here
+
+# Tên model. Nếu "gemini-3.0-pro" chưa available với key của bạn,
+# thử: gemini-2.5-pro, gemini-2.5-flash, gemini-2.0-flash
+GEMINI_MODEL=gemini-3.0-pro
+
+# Giới hạn upload (MB)
+MAX_IMAGE_MB=10
+MAX_AUDIO_MB=10
+
+# Timeout gọi Gemini (giây)
+REQUEST_TIMEOUT_S=60
+
+# CORS - đặt domain app mobile nếu cần, mặc định "*" cho dev
+ALLOWED_ORIGINS=*
+
+# Giọng đọc edge-tts (tiếng Việt)
+TTS_VOICE=vi-VN-HoaiMyNeural
+TTS_RATE=+0%
+TTS_PITCH=+0Hz
+```
+
+### Web Demo
+
+Server phục vụ file `static/index.html` tại `http://localhost:8000/` — trang demo có camera + ghi âm giọng nói, hỗ trợ người khiếm thị (voice-first, haptic feedback, beep cues, shake-to-reset).
+
+### Mobile Integration Examples
+
+**Android (Kotlin + OkHttp)**:
+```kotlin
+val client = OkHttpClient()
+val body = MultipartBody.Builder()
+    .setType(MultipartBody.FORM)
+    .addFormDataPart("image", "photo.jpg",
+        imageFile.asRequestBody("image/jpeg".toMediaType()))
+    .addFormDataPart("question", question)
+    .build()
+val req = Request.Builder()
+    .url("http://<server>:8000/api/ask")
+    .post(body).build()
+client.newCall(req).execute().use { /* parse JSON */ }
+```
+
+**iOS (Swift + URLSession)**:
+Dùng `URLSession.upload(for:from:)` với multipart body — tương tự pattern trên.
+
+### Production Notes (VLM Server)
+
+- Đặt `ALLOWED_ORIGINS` cụ thể (không để `*`).
+- Chạy sau reverse proxy (nginx/Caddy) với HTTPS.
+- Đặt rate limit (vd. `slowapi`).
+- Cân nhắc lưu lịch sử hỏi đáp vào DB nếu cần.
+
+---
+
 ## 📡 API Reference
 
-### `GET /` — Health Check
+### `backend/` API
+
+#### `GET /` — Health Check
 
 ```json
 { "status": "ok", "service": "SgBe Vision API", "version": "1.0.0" }
 ```
 
-### `POST /describe` — Image Description (VLM)
+#### `POST /describe` — Image Description (VLM)
 
 | Param | Type | Description |
 |-------|------|-------------|
@@ -353,7 +461,7 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 
 **Response:** `{ "success": true, "data": { "description": "..." } }`
 
-### `POST /ocr` — Optical Character Recognition
+#### `POST /ocr` — Optical Character Recognition
 
 | Param | Type | Description |
 |-------|------|-------------|
@@ -361,7 +469,7 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 
 **Response:** `{ "success": true, "data": { "text": "..." } }`
 
-### `POST /tts` — Text-to-Speech
+#### `POST /tts` — Text-to-Speech
 
 | Param | Type | Description |
 |-------|------|-------------|
@@ -370,7 +478,7 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 
 **Response:** MP3 file download (`audio/mpeg`)
 
-### `POST /stt` — Speech-to-Text
+#### `POST /stt` — Speech-to-Text
 
 | Param | Type | Description |
 |-------|------|-------------|
@@ -379,7 +487,7 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 
 **Response:** `{ "success": true, "data": { "text": "...", "segments": [...], "language": "vi" } }`
 
-### `POST /rag/search` — Textbook Q&A
+#### `POST /rag/search` — Textbook Q&A
 
 ```json
 {
@@ -392,7 +500,7 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 
 **Response:** `{ "success": true, "data": { "results": [...], "total": 5, "collection_size": 150 } }`
 
-### `POST /rag/add` — Index Textbook Content
+#### `POST /rag/add` — Index Textbook Content
 
 ```json
 {
@@ -405,11 +513,11 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 }
 ```
 
-### `GET /rag/stats` — Collection Stats
+#### `GET /rag/stats` — Collection Stats
 
 **Response:** `{ "success": true, "data": { "collection": "sgbe_textbook", "total_chunks": 150, "available": true } }`
 
-### `POST /sonify` — Data Sonification
+#### `POST /sonify` — Data Sonification
 
 ```json
 {
@@ -427,6 +535,76 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 | `timeseries` | Dữ liệu chuỗi thời gian | Frequency mapping (C4–C6) |
 | `categories` | Dữ liệu phân loại | Scale ascending |
 | `simple` | Dãy số đơn giản | Melody mapping |
+
+---
+
+### `app/` VLM Server API
+
+#### `GET /health` — Health Check
+
+```json
+{ "status": "ok", "model": "gemini-3.0-pro", "voice": "vi-VN-HoaiMyNeural" }
+```
+
+#### `GET /api/voices` — Danh sách giọng đọc tiếng Việt
+
+```json
+{
+  "voices": [
+    { "name": "vi-VN-HoaiMyNeural", "gender": "Female", "locale": "vi-VN" },
+    { "name": "vi-VN-NamMinhNeural", "gender": "Male", "locale": "vi-VN" }
+  ]
+}
+```
+
+#### `POST /api/ask` — Hỏi đáp về ảnh (text)
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `image` | File (Multipart) | JPEG/PNG/WebP/HEIC, max 10MB |
+| `question` | Form (string) | Câu hỏi về ảnh |
+
+**Response 200:**
+```json
+{
+  "answer": "Trong ảnh có một con mèo đang ngồi trên ghế sofa...",
+  "model": "gemini-3.0-pro",
+  "elapsed_ms": 1432
+}
+```
+
+**Lỗi:**
+- `400` ảnh rỗng / câu hỏi rỗng
+- `413` ảnh quá lớn
+- `429` rate limit (Retry-After header)
+- `422` ảnh không hợp lệ / VLM từ chối trả lời
+
+**Test bằng cURL:**
+```bash
+curl -X POST http://localhost:8000/api/ask \
+  -F "image=@cat.jpg" \
+  -F "question=Trong ảnh có gì?"
+```
+
+#### `POST /api/ask-voice` — Hỏi đáp về ảnh (giọng nói)
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `image` | File (Multipart) | JPEG/PNG/WebP/HEIC, max 10MB |
+| `audio` | File (Multipart) | WebM/OGG/MP3/WAV, max 10MB |
+
+**Response:** Audio MP3 stream với headers `X-Question`, `X-Answer`, `X-Elapsed-Ms`.
+
+Luồng xử lý: Gemini nghe audio (STT) + nhìn ảnh (VLM) → trả lời → Edge TTS → stream MP3 về client.
+
+#### `POST /api/tts` — Text-to-Speech (standalone)
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `text` | Form (string) | Văn bản cần đọc |
+| `voice` | Form (string, optional) | Giọng đọc, mặc định `vi-VN-HoaiMyNeural` |
+
+**Response:** Stream MP3 audio (`audio/mpeg`).
 
 ---
 
@@ -461,7 +639,25 @@ cd frontend
 flutter run
 ```
 
-### Backend (Development)
+### VLM Server (app/) — Development
+
+```bash
+# 1. Tạo .env từ template
+cp .env.example .env
+# Sửa GEMINI_API_KEY trong .env
+
+# 2. Cài dependencies
+pip install -r requirements.txt
+
+# 3. Chạy server
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+- Web demo: http://localhost:8000/
+- API docs (Swagger): http://localhost:8000/docs
+- Health check: http://localhost:8000/health
+
+### Backend (backend/) — Development
 
 ```bash
 cd backend
@@ -490,13 +686,16 @@ docker compose up -d
 ### Full Stack
 
 ```bash
-# Terminal 1: Backend
-cd backend
-export GOOGLE_API_KEY='your-gemini-api-key'
+# Terminal 1: VLM Server
 pip install -r requirements.txt
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# Terminal 2: Frontend
+# Terminal 2: Backend AI Gateway
+cd backend
+pip install -r requirements.txt
+uvicorn backend.main:app --reload --host 0.0.0.0 --port 8001
+
+# Terminal 3: Frontend
 cd frontend
 flutter run
 ```
@@ -516,7 +715,9 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
-### Testing
+---
+
+## 🧪 Testing
 
 ```bash
 # Frontend tests
@@ -524,11 +725,10 @@ cd frontend && flutter test
 
 # Backend (syntax check)
 cd backend && python -m py_compile main.py
+
+# VLM Server (syntax check)
+python -m py_compile app/main.py app/vlm.py app/tts.py app/config.py
 ```
-
----
-
-## 🧪 Testing
 
 **Frontend:** `frontend/test/widget_test.dart` — Smoke test: HomeScreen renders with title + 5 feature buttons.
 
@@ -553,7 +753,20 @@ cd backend && python -m py_compile main.py
 | `google_mlkit_text_recognition` | ^0.14.0 | On-device OCR |
 | `http` | ^1.2.0 | Backend API communication |
 
-### Python (`backend/requirements.txt`)
+### Python — VLM Server (`requirements.txt`)
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `fastapi` | ≥0.115 | Web framework |
+| `uvicorn[standard]` | ≥0.32 | ASGI server |
+| `google-generativeai` | ≥0.8.3 | Gemini AI |
+| `python-multipart` | ≥0.0.12 | File upload parsing |
+| `python-dotenv` | ≥1.0.1 | .env loading |
+| `pydantic-settings` | ≥2.6 | Settings management |
+| `Pillow` | ≥11.0 | Image validation |
+| `edge-tts` | ≥7.0 | Vietnamese TTS |
+
+### Python — Backend AI Gateway (`backend/requirements.txt`)
 
 | Package | Version | Layer | Purpose |
 |---------|---------|-------|---------|
@@ -585,6 +798,7 @@ cd backend && python -m py_compile main.py
 | Scene Description | ✅ | `services/vlm_service.py` (Gemini) | `BookScannerScreen` (try 1) |
 | Voice Recording | ✅ | Database model `VoiceNote` | `VoiceNotesScreen` |
 | My Library | ✅ | — (Local JSON storage) | `LibraryScreen` + `LibraryService` |
+| VLM Server | 🆕 | `app/main.py` (Gemini + Edge TTS) | Web demo + mobile API |
 | Speech-to-Text | 🆕 | `services/stt_service.py` (PhoWhisper) | Cần tích hợp frontend |
 | RAG Textbook Q&A | 🆕 | `services/rag_service.py` (ChromaDB) | Cần màn hình Q&A |
 

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#1e3a8a" />
+<title>Trợ lý hình ảnh - VLM</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100vh; width: 100vw;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    user-select: none;
+    background: #0f172a;
+    color: white;
+  }
+  #app {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  #app:focus { outline: 4px solid #fbbf24; outline-offset: -4px; }
+
+  #app.idle       { background: #1e3a8a; }
+  #app.camera     { background: #0369a1; }
+  #app.recording  { background: #16a34a; }
+  #app.processing { background: #ca8a04; }
+  #app.speaking   { background: #7c3aed; }
+  #app.error      { background: #b91c1c; }
+
+  #icon  { font-size: 96px; margin-bottom: 24px; line-height: 1; }
+  #title { font-size: 32px; font-weight: 700; margin-bottom: 12px; line-height: 1.2; }
+  #subtitle { font-size: 18px; opacity: 0.9; line-height: 1.4; max-width: 90%; }
+  #answer {
+    font-size: 20px; line-height: 1.5; margin-top: 16px;
+    max-width: 90%; max-height: 35vh; overflow-y: auto;
+    padding: 12px; background: rgba(0,0,0,0.25); border-radius: 12px;
+  }
+  #question {
+    font-size: 16px; opacity: 0.85; margin-top: 12px;
+    max-width: 90%; padding: 8px 12px;
+    background: rgba(0,0,0,0.2); border-radius: 8px; font-style: italic;
+  }
+  .pulse { animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1);} 50%{transform:scale(1.1);} }
+  .hidden { display: none !important; }
+
+  #fileInput { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  #hint {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding: 12px; background: rgba(0,0,0,0.4);
+    font-size: 13px; opacity: 0.7;
+  }
+  #hint button {
+    background: transparent; color: white;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 6px 12px; border-radius: 8px;
+    font-size: 13px; margin: 0 4px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<main id="app" class="idle" role="button" tabindex="0"
+      aria-label="Chạm vào màn hình để chụp ảnh và đặt câu hỏi bằng giọng nói">
+  <div id="icon" aria-hidden="true">👆</div>
+  <div id="title">Chạm để bắt đầu</div>
+  <div id="subtitle">Chụp ảnh, đặt câu hỏi bằng giọng nói, nghe câu trả lời</div>
+  <div id="question" class="hidden" aria-live="polite"></div>
+  <div id="answer" class="hidden" aria-live="polite"></div>
+</main>
+
+<input type="file" id="fileInput" accept="image/*" capture="environment" aria-hidden="true" />
+<audio id="player" preload="auto"></audio>
+
+<div id="hint">
+  <button id="repeatBtn" aria-label="Nghe lại câu trả lời cuối">🔁 Nghe lại</button>
+  <button id="resetBtn" aria-label="Bắt đầu lại">↺ Bắt đầu lại</button>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const app       = document.getElementById('app');
+  const icon      = document.getElementById('icon');
+  const titleEl   = document.getElementById('title');
+  const subtitle  = document.getElementById('subtitle');
+  const answerEl  = document.getElementById('answer');
+  const questionEl= document.getElementById('question');
+  const fileInput = document.getElementById('fileInput');
+  const player    = document.getElementById('player');
+  const repeatBtn = document.getElementById('repeatBtn');
+  const resetBtn  = document.getElementById('resetBtn');
+
+  // State
+  let state = 'idle';
+  let currentImage = null;
+  let lastAudioUrl = null;
+  let lastQuestion = '';
+  let lastAnswer   = '';
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let micStream = null;
+  let beepCtx = null;
+
+  // ---- Short beep cue (used since TTS now happens server-side) ----
+  function beep(freq = 880, duration = 120) {
+    try {
+      beepCtx = beepCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const osc = beepCtx.createOscillator();
+      const gain = beepCtx.createGain();
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.value = 0.15;
+      osc.connect(gain).connect(beepCtx.destination);
+      osc.start();
+      setTimeout(() => { osc.stop(); }, duration);
+    } catch (_) {}
+  }
+
+  function vibrate(pattern) {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  }
+
+  // ---- State transitions ----
+  function setState(newState, opts = {}) {
+    state = newState;
+    app.className = newState;
+    const ui = {
+      idle:       { icon: '👆', title: 'Chạm để bắt đầu', sub: 'Chụp ảnh và đặt câu hỏi bằng giọng nói' },
+      camera:     { icon: '📷', title: 'Đang mở camera', sub: 'Hướng máy ảnh vào vật cần xem và chụp' },
+      recording:  { icon: '🎙️', title: 'Đang ghi âm', sub: 'Chạm lại để dừng và gửi câu hỏi' },
+      processing: { icon: '⏳', title: 'Đang xử lý', sub: 'Đang gửi tới máy chủ, vui lòng chờ' },
+      speaking:   { icon: '🔊', title: 'Trả lời', sub: '' },
+      error:      { icon: '⚠️', title: 'Có lỗi', sub: opts.msg || 'Chạm để thử lại' },
+    }[newState];
+
+    icon.textContent = ui.icon;
+    titleEl.textContent = ui.title;
+    subtitle.textContent = ui.sub;
+    subtitle.classList.toggle('hidden', !ui.sub);
+
+    if (newState === 'recording' || newState === 'processing') {
+      icon.classList.add('pulse');
+    } else {
+      icon.classList.remove('pulse');
+    }
+
+    if (newState !== 'speaking') {
+      answerEl.classList.add('hidden');
+      questionEl.classList.add('hidden');
+    }
+
+    app.setAttribute('aria-label', `${ui.title}. ${ui.sub}`);
+  }
+
+  // ---- Main flow ----
+  async function startFlow() {
+    if (state === 'recording') {
+      stopRecording();
+      return;
+    }
+    if (state !== 'idle' && state !== 'error') return;
+
+    vibrate(50);
+    setState('camera');
+    fileInput.value = '';
+    fileInput.click();
+  }
+
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setState('idle');
+      return;
+    }
+    currentImage = file;
+    vibrate([50, 50, 50]);
+    await startRecording();
+  });
+
+  // ---- Audio recording (MediaRecorder) ----
+  async function startRecording() {
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      handleError('Không truy cập được micro: ' + err.message);
+      return;
+    }
+
+    // Pick best supported mime type
+    const mimeCandidates = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/ogg',
+      'audio/mp4',
+    ];
+    let mimeType = '';
+    for (const m of mimeCandidates) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported(m)) {
+        mimeType = m;
+        break;
+      }
+    }
+
+    try {
+      mediaRecorder = mimeType
+        ? new MediaRecorder(micStream, { mimeType })
+        : new MediaRecorder(micStream);
+    } catch (err) {
+      handleError('Không khởi tạo được ghi âm: ' + err.message);
+      cleanupMic();
+      return;
+    }
+
+    audioChunks = [];
+    mediaRecorder.ondataavailable = (ev) => {
+      if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
+    };
+    mediaRecorder.onerror = (ev) => {
+      handleError('Lỗi ghi âm: ' + (ev.error && ev.error.message));
+      cleanupMic();
+    };
+    mediaRecorder.onstop = async () => {
+      cleanupMic();
+      const mt = mediaRecorder.mimeType || mimeType || 'audio/webm';
+      const blob = new Blob(audioChunks, { type: mt });
+      audioChunks = [];
+      if (blob.size < 1000) {
+        handleError('Không nghe thấy gì. Chạm để thử lại');
+        return;
+      }
+      await sendToServer(currentImage, blob);
+    };
+
+    mediaRecorder.start();
+    setState('recording');
+    beep(880, 120);
+    vibrate(80);
+  }
+
+  function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      try { mediaRecorder.stop(); } catch (_) {}
+    }
+    beep(440, 100);
+  }
+
+  function cleanupMic() {
+    if (micStream) {
+      micStream.getTracks().forEach(t => t.stop());
+      micStream = null;
+    }
+  }
+
+  // ---- Send to server, play streamed audio ----
+  async function sendToServer(image, audioBlob) {
+    setState('processing');
+    beep(660, 80);
+
+    const fd = new FormData();
+    fd.append('image', image, 'photo.jpg');
+    fd.append('audio', audioBlob, 'question.' + (audioBlob.type.includes('ogg') ? 'ogg' : 'webm'));
+
+    try {
+      const res = await fetch('/api/ask-voice', { method: 'POST', body: fd });
+      if (!res.ok) {
+        let detail = res.statusText;
+        try {
+          const j = await res.json();
+          if (j.detail) detail = j.detail;
+        } catch (_) {}
+        handleError('Lỗi máy chủ: ' + detail);
+        return;
+      }
+
+      lastQuestion = decodeURIComponent(res.headers.get('X-Question') || '');
+      lastAnswer   = decodeURIComponent(res.headers.get('X-Answer') || '');
+
+      const blob = await res.blob();
+      if (lastAudioUrl) URL.revokeObjectURL(lastAudioUrl);
+      lastAudioUrl = URL.createObjectURL(blob);
+
+      await playAnswer();
+    } catch (err) {
+      handleError('Lỗi mạng: ' + err.message);
+    }
+  }
+
+  async function playAnswer() {
+    setState('speaking');
+    questionEl.textContent = lastQuestion ? '"' + lastQuestion + '"' : '';
+    questionEl.classList.toggle('hidden', !lastQuestion);
+    answerEl.textContent = lastAnswer;
+    answerEl.classList.remove('hidden');
+    vibrate([100, 50, 100]);
+
+    player.src = lastAudioUrl;
+    try {
+      await player.play();
+    } catch (err) {
+      handleError('Không phát được âm thanh: ' + err.message);
+      return;
+    }
+    player.onended = () => {
+      setState('idle');
+      titleEl.textContent = 'Chạm để hỏi tiếp';
+      subtitle.textContent = 'Nhấn "Nghe lại" để nghe lại câu trả lời';
+      subtitle.classList.remove('hidden');
+      questionEl.classList.remove('hidden');
+      answerEl.classList.remove('hidden');
+    };
+  }
+
+  function handleError(msg) {
+    setState('error', { msg });
+    vibrate([200, 100, 200]);
+    beep(220, 300);
+    cleanupMic();
+    setTimeout(() => { if (state === 'error') setState('idle'); }, 3500);
+  }
+
+  // ---- Event handlers ----
+  app.addEventListener('click', (e) => {
+    if (e.target.closest('#hint')) return;
+    startFlow();
+  });
+  app.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      startFlow();
+    }
+  });
+
+  repeatBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!lastAudioUrl) {
+      beep(220, 200);
+      return;
+    }
+    setState('speaking');
+    questionEl.textContent = lastQuestion ? '"' + lastQuestion + '"' : '';
+    questionEl.classList.toggle('hidden', !lastQuestion);
+    answerEl.textContent = lastAnswer;
+    answerEl.classList.remove('hidden');
+    player.src = lastAudioUrl;
+    player.play().catch(() => {});
+    player.onended = () => {
+      setState('idle');
+      titleEl.textContent = 'Chạm để hỏi tiếp';
+    };
+  });
+
+  resetBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      try { mediaRecorder.stop(); } catch (_) {}
+    }
+    cleanupMic();
+    try { player.pause(); player.currentTime = 0; } catch (_) {}
+    if (lastAudioUrl) { URL.revokeObjectURL(lastAudioUrl); lastAudioUrl = null; }
+    lastQuestion = ''; lastAnswer = '';
+    currentImage = null;
+    questionEl.textContent = ''; questionEl.classList.add('hidden');
+    answerEl.textContent  = ''; answerEl.classList.add('hidden');
+    setState('idle');
+    beep(550, 100);
+  });
+
+  // ---- Shake to reset ----
+  let lastShakeTime = 0;
+  let lastX = null, lastY = null, lastZ = null;
+  function onMotion(e) {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc) return;
+    const { x, y, z } = acc;
+    if (lastX !== null) {
+      const delta = Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
+      if (delta > 30 && Date.now() - lastShakeTime > 2000) {
+        lastShakeTime = Date.now();
+        resetBtn.click();
+      }
+    }
+    lastX = x; lastY = y; lastZ = z;
+  }
+  if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission !== 'function') {
+    window.addEventListener('devicemotion', onMotion);
+  }
+
+  // ---- Init ----
+  setState('idle');
+  app.focus();
+})();
+</script>
+</body>
+</html>
