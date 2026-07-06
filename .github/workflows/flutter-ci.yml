@@ -1,0 +1,39 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [main, dev, phuc]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/flutter-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.x'
+          channel: 'stable'
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            frontend/.dart_tool
+            frontend/build
+          key: ${{ runner.os }}-flutter-${{ hashFiles('frontend/pubspec.yaml') }}
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: frontend
+      - name: Analyze
+        run: flutter analyze
+        working-directory: frontend
+      - name: Run tests
+        run: flutter test
+        working-directory: frontend

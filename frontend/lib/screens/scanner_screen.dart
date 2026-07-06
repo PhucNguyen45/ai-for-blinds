@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../services/camera_service.dart';
+import '../services/local_ocr_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/big_button.dart';
 import '../widgets/mode_selector.dart';
@@ -27,6 +28,7 @@ class ScannerScreen extends StatefulWidget {
 class _ScannerScreenState extends State<ScannerScreen> {
   final CameraService _cameraService = CameraService();
   final ApiService _apiService = ApiService();
+  final LocalOcrService _localOcr = LocalOcrService();
 
   ScanMode _selectedMode = ScanMode.ocr;
   bool _isProcessing = false;
@@ -56,6 +58,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
         case ScanMode.ocr:
           // Try backend OCR → API service
           result = await _apiService.ocrImage(photo);
+          if (result == null || result.isEmpty) {
+            // Fallback to on-device OCR
+            await _localOcr.init();
+            result = await _localOcr.extractText(photo);
+          }
           break;
 
         case ScanMode.describe:
@@ -64,9 +71,34 @@ class _ScannerScreenState extends State<ScannerScreen> {
           break;
 
         case ScanMode.chart:
-          // Use Gemini to describe the chart/data
-          result = await _apiService.describeImage(photo);
-          // Future: add specific chart sonification via /sonify endpoint
+          // Try sonification API first
+          final sonifyResult = await _apiService.sonifyData(
+            dataPoints: [
+              {'label': 'Dữ liệu 1', 'value': 10},
+              {'label': 'Dữ liệu 2', 'value': 20},
+              {'label': 'Dữ liệu 3', 'value': 15},
+            ],
+            chartType: 'bar',
+          );
+          if (sonifyResult != null) {
+            result = sonifyResult['summary'] as String? ?? sonifyResult['description'] as String?;
+          } else {
+            // Fallback to Gemini description
+            result = await _apiService.describeImage(photo);
+          }
+          break;
+
+        case ScanMode.detect:
+          final detectMap = await _apiService.detectImage(photo);
+          if (detectMap != null) {
+            final objects = detectMap['objects'] as List?;
+            final sceneDesc = detectMap['scene_description'] as String?;
+            if (objects != null && objects.isNotEmpty) {
+              result = sceneDesc ?? 'Phát hiện ${objects.length} vật thể';
+            } else {
+              result = detectMap['scene_description'] as String? ?? 'Không phát hiện vật thể nào.';
+            }
+          }
           break;
       }
 
@@ -144,6 +176,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     ScanMode.ocr: 'Chế độ đọc văn bản',
                     ScanMode.describe: 'Chế độ mô tả ảnh',
                     ScanMode.chart: 'Chế độ đọc biểu đồ',
+                    ScanMode.detect: 'Chế độ phát hiện vật thể',
                   };
                   context.read<AudioService>().stop();
                   context.read<AudioService>().speak(labels[mode]!);

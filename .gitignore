@@ -2,45 +2,62 @@
 __pycache__/
 *.py[cod]
 *.so
+*.egg-info/
+*.egg
 .venv/
 venv/
 .env
 *.log
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+instance/
 
 # Flutter frontend
-/frontend/.dart_tool/
-/frontend/.packages/
-/frontend/build/
-/frontend/.flutter-plugins
-/frontend/.flutter-plugins-dependencies
-/frontend/coverage/
-/frontend/.idea/
-/frontend/*.iml
-/frontend/*.lock
-/frontend/.metadata
-/frontend/android/.gradle/
-/frontend/android/local.properties
-/frontend/ios/Pods/
-/frontend/ios/.symlinks/
-/frontend/macos/Pods/
-/frontend/web/.dart_tool/
+/.dart_tool/
+/.packages/
+/build/
+.flutter-plugins
+.flutter-plugins-dependencies
+/coverage/
+.idea/
+*.iml
+*.lock
+.metadata
+android/.gradle/
+android/local.properties
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+macos/Pods/
+macos/Flutter/Flutter.framework
+macos/Flutter/Flutter.podspec
+web/.dart_tool/
 
 # Models & data (quá lớn để track)
 models/*.pth
 models/*.onnx
+models/*.pt
 data/chromadb/
+data/embeddings/
+data/audio_samples/
+data/sgk/
 
 # Docker
 docker/volumes/
+docker/data/
 
 # IDE
 .idea/
 *.iml
 .vscode/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
-*.swp
-*.swo
+Desktop.ini

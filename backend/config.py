@@ -75,6 +75,7 @@ class Settings:
         "YOLO_MODEL_PATH", "./models/yolo/yolov8n.pt"
     )
     yolo_confidence: float = 0.5
+    yolo_device: str = os.environ.get("YOLO_DEVICE", "cpu")
 
     # ── Validate required settings ──────────────────────────────
     def validate(self) -> None:

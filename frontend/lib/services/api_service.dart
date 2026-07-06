@@ -8,10 +8,14 @@ import 'package:http/http.dart' as http;
 /// Handles OCR, image description, TTS, STT, and RAG query via API calls.
 class ApiService {
   static const _defaultBaseUrl = 'http://192.168.1.100:8000';
+  static const _defaultApiKey = 'sgbe_dev_key_2024';
 
   /// Base URL of the backend server.
   /// Defaults to a sensible LAN address for real-world use.
   String baseUrl;
+
+  /// API key for backend authentication.
+  String _apiKey = _defaultApiKey;
 
   ApiService({String? baseUrl}) : baseUrl = baseUrl ?? _defaultBaseUrl;
 
@@ -20,11 +24,17 @@ class ApiService {
     baseUrl = url.endsWith('/') ? url.substring(0, url.length - 1) : url;
   }
 
+  /// Set a custom API key (e.g., from settings).
+  void setApiKey(String key) {
+    _apiKey = key;
+  }
+
   /// Send an image to the backend for AI-powered description in Vietnamese.
   Future<String?> describeImage(File imageFile) async {
     try {
       final uri = Uri.parse('$baseUrl/describe');
       final request = http.MultipartRequest('POST', uri);
+      request.headers['X-API-Key'] = _apiKey;
       request.files.add(
         await http.MultipartFile.fromPath('file', imageFile.path),
       );
@@ -52,6 +62,7 @@ class ApiService {
     try {
       final uri = Uri.parse('$baseUrl/ocr');
       final request = http.MultipartRequest('POST', uri);
+      request.headers['X-API-Key'] = _apiKey;
       request.files.add(
         await http.MultipartFile.fromPath('file', imageFile.path),
       );
@@ -80,6 +91,7 @@ class ApiService {
     try {
       final uri = Uri.parse('$baseUrl/stt');
       final request = http.MultipartRequest('POST', uri);
+      request.headers['X-API-Key'] = _apiKey;
       request.files.add(
         await http.MultipartFile.fromPath('file', audioFile.path),
       );
@@ -124,7 +136,14 @@ class ApiService {
       if (subject != null) body['subject'] = subject;
 
       final response = await http
-          .post(uri, headers: {'Content-Type': 'application/json'}, body: jsonEncode(body))
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-Key': _apiKey,
+            },
+            body: jsonEncode(body),
+          )
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
@@ -139,6 +158,76 @@ class ApiService {
       }
     } catch (e) {
       debugPrint('API rag query exception: $e');
+      return null;
+    }
+  }
+
+  /// Send an image to the backend for object detection (YOLOv8).
+  /// Returns detection result map, or null on failure.
+  Future<Map<String, dynamic>?> detectImage(File imageFile) async {
+    try {
+      final uri = Uri.parse('$baseUrl/detect');
+      final request = http.MultipartRequest('POST', uri);
+      request.headers['X-API-Key'] = _apiKey;
+      request.files.add(
+        await http.MultipartFile.fromPath('file', imageFile.path),
+      );
+
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 30),
+      );
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is Map && data.containsKey('data')) {
+          return data['data'] as Map<String, dynamic>;
+        }
+        return data as Map<String, dynamic>?;
+      } else {
+        debugPrint('API detect error: ${response.statusCode} ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('API detect exception: $e');
+      return null;
+    }
+  }
+
+  /// Send data points to the backend for sonification.
+  /// Returns sonification data (tones, description, summary), or null on failure.
+  Future<Map<String, dynamic>?> sonifyData({
+    required List<Map<String, dynamic>> dataPoints,
+    String chartType = 'bar',
+  }) async {
+    try {
+      final uri = Uri.parse('$baseUrl/sonify');
+      final response = await http
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-Key': _apiKey,
+            },
+            body: jsonEncode({
+              'data_points': dataPoints,
+              'chart_type': chartType,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is Map && data.containsKey('data')) {
+          return data['data'] as Map<String, dynamic>;
+        }
+        return data as Map<String, dynamic>?;
+      } else {
+        debugPrint('API sonify error: ${response.statusCode} ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('API sonify exception: $e');
       return null;
     }
   }

@@ -20,7 +20,7 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 # ── Routes ─────────────────────────────────────────────────────
-from backend.api.routes import describe, ocr, tts, stt, rag
+from backend.api.routes import describe, ocr, tts, stt, rag, detect, sonify
 
 # ── App Initialization ──────────────────────────────────────────
 
@@ -53,6 +53,8 @@ app.include_router(ocr.router, tags=["OCR"])
 app.include_router(tts.router, tags=["TTS"])
 app.include_router(stt.router, tags=["STT"])
 app.include_router(rag.router, prefix="/rag", tags=["RAG"])
+app.include_router(detect.router, tags=["Detection"])
+app.include_router(sonify.router, tags=["Sonification"])
 
 
 # ── Startup / Health ─────────────────────────────────────────────
