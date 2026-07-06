@@ -69,10 +69,14 @@ class AudioService extends ChangeNotifier {
   }
 
   Future<void> _initTts() async {
-    await _tts.setLanguage(_selectedLanguage);
-    await _tts.setSpeechRate(_speechRate);
-    await _tts.setPitch(_pitch);
-    await _tts.setVolume(_volume);
+    try {
+      await _tts.setLanguage(_selectedLanguage);
+      await _tts.setSpeechRate(_speechRate);
+      await _tts.setPitch(_pitch);
+      await _tts.setVolume(_volume);
+    } catch (e) {
+      debugPrint('TTS init (platform may not support TTS): $e');
+    }
 
     _tts.setStartHandler(() {
       _isSpeaking = true;
@@ -105,10 +109,13 @@ class AudioService extends ChangeNotifier {
   /// Initialize with persisted settings. Call after construction.
   Future<void> init() async {
     await _loadSettings();
-    // Re-apply loaded settings to TTS engine
-    await _tts.setSpeechRate(_speechRate);
-    await _tts.setPitch(_pitch);
-    await _tts.setVolume(_volume);
+    try {
+      await _tts.setSpeechRate(_speechRate);
+      await _tts.setPitch(_pitch);
+      await _tts.setVolume(_volume);
+    } catch (e) {
+      debugPrint('TTS apply settings (platform may not support): $e');
+    }
     await cleanupOldRecordings();
   }
 
@@ -145,16 +152,24 @@ class AudioService extends ChangeNotifier {
   Future<void> speak(String text) async {
     if (text.trim().isEmpty) return;
     _lastSpokenText = text;
-    await _tts.stop();
-    await _tts.speak(text);
+    try {
+      await _tts.stop();
+      await _tts.speak(text);
+    } catch (e) {
+      debugPrint('TTS speak (platform may not support): $e');
+    }
   }
 
   /// Pause current speech.
   Future<void> pause() async {
-    final paused = await _tts.pause();
-    if (paused == 1) {
-      _isPaused = true;
-      notifyListeners();
+    try {
+      final paused = await _tts.pause();
+      if (paused == 1) {
+        _isPaused = true;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('TTS pause: $e');
     }
   }
 
@@ -169,7 +184,11 @@ class AudioService extends ChangeNotifier {
 
   /// Stop speech entirely.
   Future<void> stop() async {
-    await _tts.stop();
+    try {
+      await _tts.stop();
+    } catch (e) {
+      debugPrint('TTS stop: $e');
+    }
     _isSpeaking = false;
     _isPaused = false;
     notifyListeners();
@@ -178,7 +197,11 @@ class AudioService extends ChangeNotifier {
   /// Set speech rate (0.0 - 1.0, default 0.5).
   Future<void> setSpeechRate(double rate) async {
     _speechRate = rate;
-    await _tts.setSpeechRate(rate);
+    try {
+      await _tts.setSpeechRate(rate);
+    } catch (e) {
+      debugPrint('TTS setSpeechRate: $e');
+    }
     notifyListeners();
     _saveSettings(); // fire and forget
   }
@@ -186,7 +209,11 @@ class AudioService extends ChangeNotifier {
   /// Set pitch (0.5 - 2.0, default 1.0).
   Future<void> setPitch(double p) async {
     _pitch = p;
-    await _tts.setPitch(p);
+    try {
+      await _tts.setPitch(p);
+    } catch (e) {
+      debugPrint('TTS setPitch: $e');
+    }
     notifyListeners();
     _saveSettings(); // fire and forget
   }
@@ -194,7 +221,11 @@ class AudioService extends ChangeNotifier {
   /// Set volume (0.0 - 1.0, default 1.0).
   Future<void> setVolume(double vol) async {
     _volume = vol;
-    await _tts.setVolume(vol);
+    try {
+      await _tts.setVolume(vol);
+    } catch (e) {
+      debugPrint('TTS setVolume: $e');
+    }
     notifyListeners();
     _saveSettings(); // fire and forget
   }
@@ -202,12 +233,21 @@ class AudioService extends ChangeNotifier {
   /// Set language (e.g., 'en-US', 'vi-VN').
   Future<void> setLanguage(String lang) async {
     _selectedLanguage = lang;
-    await _tts.setLanguage(lang);
+    try {
+      await _tts.setLanguage(lang);
+    } catch (e) {
+      debugPrint('TTS setLanguage: $e');
+    }
     notifyListeners();
   }
 
   Future<Set<String>> getLanguages() async {
-    return await _tts.getLanguages;
+    try {
+      return await _tts.getLanguages;
+    } catch (e) {
+      debugPrint('TTS getLanguages: $e');
+      return {'vi-VN', 'en-US'};
+    }
   }
 
   bool get isVietnamese => _selectedLanguage.startsWith('vi');
@@ -216,7 +256,12 @@ class AudioService extends ChangeNotifier {
 
   /// Request microphone permission.
   Future<bool> requestMicPermission() async {
-    return await _recorder.hasPermission();
+    try {
+      return await _recorder.hasPermission();
+    } catch (e) {
+      debugPrint('Mic permission (platform may not support): $e');
+      return false;
+    }
   }
 
   /// Start recording audio. Returns the file path, or null on failure.
@@ -338,7 +383,7 @@ class AudioService extends ChangeNotifier {
 
   @override
   void dispose() {
-    _tts.stop();
+    try { _tts.stop(); } catch (_) {}
     _recorder.dispose();
     _player.dispose();
     _sttResultController.close();
