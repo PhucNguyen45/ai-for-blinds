@@ -9,8 +9,12 @@ Uses ChromaDB + CLIP/sentence embeddings to:
 Supports multiple embedding models with Vietnamese text support.
 """
 
+import logging
 import os
 from typing import Optional
+
+
+logger = logging.getLogger(__name__)
 
 from backend.config import settings
 
@@ -46,9 +50,9 @@ class RagService:
                 name=settings.chroma_collection,
                 metadata={"hnsw:space": "cosine"},
             )
-            print(f"ChromaDB ready: '{settings.chroma_collection}' collection")
+            logger.info(f"ChromaDB ready: '{settings.chroma_collection}' collection")
         except Exception as e:
-            print(f"Warning: ChromaDB not available: {e}")
+            logger.warning(f"ChromaDB not available: {e}")
 
     @property
     def available(self) -> bool:
@@ -84,7 +88,7 @@ class RagService:
             )
             return True
         except Exception as e:
-            print(f"ChromaDB add error: {e}")
+            logger.error(f"ChromaDB add error: {e}")
             return False
 
     def search(
@@ -125,7 +129,7 @@ class RagService:
                 })
             return hits
         except Exception as e:
-            print(f"ChromaDB search error: {e}")
+            logger.error(f"ChromaDB search error: {e}")
             return []
 
     def count_chunks(self) -> int:

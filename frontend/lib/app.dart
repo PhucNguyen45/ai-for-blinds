@@ -6,11 +6,10 @@ import 'screens/scanner_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/voice_qa_screen.dart';
 import 'services/audio_service.dart';
-import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
 
 /// Root widget for the SgBe Vision application.
-/// Cung cấp AudioService + StorageService qua Provider.
+/// Cung cấp AudioService qua Provider (StorageService được tạo trực tiếp trong các screen).
 /// Routes: / (Home), /scanner, /voice-qa, /review, /settings.
 class BlindScholarApp extends StatelessWidget {
   const BlindScholarApp({super.key});
@@ -19,8 +18,11 @@ class BlindScholarApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AudioService()),
-        Provider(create: (_) => StorageService()),
+        ChangeNotifierProvider(create: (_) {
+          final service = AudioService();
+          service.init(); // fire and forget
+          return service;
+        }),
       ],
       child: MaterialApp(
         title: 'SgBe Vision',

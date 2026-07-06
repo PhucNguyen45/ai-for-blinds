@@ -77,24 +77,28 @@ class ModeSelector extends StatelessWidget {
             ),
           ),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            children: ScanMode.values.map((mode) {
-              final isSelected = mode == selectedMode;
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: _ModeButton(
-                  mode: mode,
-                  isSelected: isSelected,
-                  isDark: isDark,
-                  onTap: () => onModeChanged(mode),
-                ),
-              );
-            }).toList(),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Semantics(
+            label: 'Chọn chế độ quét.',
+            child: Text(
+              'Chọn chế độ quét:',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
+        ...ScanMode.values.map((mode) {
+          final isSelected = mode == selectedMode;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: _ModeButton(
+              mode: mode,
+              isSelected: isSelected,
+              isDark: isDark,
+              onTap: () => onModeChanged(mode),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -129,7 +133,7 @@ class _ModeButton extends StatelessWidget {
           onTap();
         },
         child: Container(
-          width: 160,
+          width: double.infinity,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: bgColor,

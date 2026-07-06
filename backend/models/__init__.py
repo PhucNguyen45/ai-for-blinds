@@ -16,6 +16,7 @@ from .learning_session import LearningSession
 from .learning_moment import LearningMoment
 from .voice_note import VoiceNote
 from .textbook_content import TextbookContent
+from .feedback import Feedback
 __all__ = [
     "Base",
     "User",
@@ -23,4 +24,5 @@ __all__ = [
     "LearningMoment",
     "VoiceNote",
     "TextbookContent",
+    "Feedback",
 ]

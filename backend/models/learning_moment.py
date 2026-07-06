@@ -11,12 +11,15 @@ Each moment stores:
 
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import String, Text, Float, DateTime, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import Base
+
+if TYPE_CHECKING:
+    from .feedback import Feedback
 
 
 class LearningMoment(Base):
@@ -58,6 +61,7 @@ class LearningMoment(Base):
     # Relationships
     user = relationship("User", back_populates="learning_moments")
     textbook = relationship("TextbookContent", back_populates="learning_moments")
+    feedbacks: Mapped[list["Feedback"]] = relationship(back_populates="learning_moment")
 
     __table_args__ = (
         Index("idx_learning_moments_user_created", "user_id", "created_at"),

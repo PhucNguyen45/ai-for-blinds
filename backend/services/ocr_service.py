@@ -5,10 +5,14 @@ Uses PaddleOCRv5 with Vietnamese language support.
 Lazy-initialized singleton pattern for efficient resource usage.
 """
 
+import logging
 import os
 import tempfile
 import uuid
 from typing import Optional
+
+
+logger = logging.getLogger(__name__)
 
 from backend.config import settings
 
@@ -32,7 +36,7 @@ class OcrService:
                 show_log=settings.ocr_show_log,
             )
         except Exception as e:
-            print(f"Warning: PaddleOCR not available: {e}")
+            logger.warning(f"PaddleOCR not available: {e}")
             self._ocr = None
 
     @property
@@ -74,7 +78,7 @@ class OcrService:
             return "\n".join(lines)
 
         except Exception as e:
-            print(f"OCR extraction error: {e}")
+            logger.error(f"OCR extraction error: {e}")
             return None
         finally:
             if tmp_path and os.path.exists(tmp_path):

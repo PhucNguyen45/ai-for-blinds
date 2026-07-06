@@ -24,16 +24,16 @@ class LearningMoment {
     this.embedding,
   }) : createdAt = createdAt ?? DateTime.now();
 
-  /// Format date as a readable relative string.
+  /// Format date as a readable relative string (Vietnamese).
   String get formattedDate {
     final now = DateTime.now();
     final diff = now.difference(createdAt);
 
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-    if (diff.inDays < 1) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
-    return '${createdAt.month}/${createdAt.day}/${createdAt.year}';
+    if (diff.inSeconds < 60) return 'Vừa xong';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} phút trước';
+    if (diff.inHours < 24) return '${diff.inHours} giờ trước';
+    if (diff.inDays < 7) return '${diff.inDays} ngày trước';
+    return '${createdAt.day}/${createdAt.month}/${createdAt.year}';
   }
 
   /// Preview text (first 100 chars).

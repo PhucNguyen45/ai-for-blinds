@@ -1,47 +1,51 @@
 """
 Database connection and session management.
 
-Uses SQLAlchemy 2.0 with PostgreSQL and pgvector extension.
-Supports both sync and async sessions.
+Uses SQLAlchemy 2.0 async with asyncpg for PostgreSQL.
 """
 
-from typing import AsyncGenerator, Generator
+import logging
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+
+
+logger = logging.getLogger(__name__)
 
 from backend.config import settings
 
-# Synchronous engine
-engine = create_engine(
-    settings.database_url,
+# Convert sync URL to async URL
+_database_url = settings.database_url.replace("postgresql+psycopg2://", "postgresql+asyncpg://")
+
+# Async engine
+engine = create_async_engine(
+    _database_url,
     echo=settings.debug,
-    pool_pre_ping=True,
     pool_size=5,
     max_overflow=10,
+    pool_pre_ping=True,
 )
 
-# Session factory
-SessionLocal = sessionmaker(
-    bind=engine,
-    class_=Session,
-    autocommit=False,
-    autoflush=False,
+# Async session factory
+SessionLocal = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
 )
 
 
-def get_db() -> Generator[Session, None, None]:
-    """Dependency: get a database session (sync)."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db():
+    """Dependency: get a database session (async)."""
+    async with SessionLocal() as session:
+        yield session
 
 
-def init_db() -> None:
+async def init_db():
     """Create all tables. Call on startup."""
     from backend.models import Base
 
-    Base.metadata.create_all(bind=engine)
-    print("Database tables created / verified.")
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database tables created / verified.")
+    except Exception as e:
+        logger.warning(f"Database initialization failed: {e}")

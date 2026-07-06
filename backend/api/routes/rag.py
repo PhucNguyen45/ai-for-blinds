@@ -5,17 +5,25 @@ Answers student questions grounded in Vietnamese textbook (SGK) content.
 Returns answer with source citations for trustworthiness.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from backend.api.auth import verify_api_key
+from backend.main import limiter
 from backend.schemas.rag import RagQueryRequest, RagQueryResponse, SourceCitation
 from backend.services.rag_service import rag_service
-from backend.utils.response_builder import success_response, error_response
+from backend.services.vlm_service import vlm_service
+from backend.utils.response_builder import success_response
 
 router = APIRouter()
 
 
 @router.post("/query")
-async def rag_query(query: RagQueryRequest):
+@limiter.limit("20/minute")
+async def rag_query(
+    request: Request,
+    query: RagQueryRequest,
+    api_key: str = Depends(verify_api_key),
+):
     """
     Hỏi đáp kiến thức dựa trên nội dung sách giáo khoa (SGK).
 
@@ -27,16 +35,19 @@ async def rag_query(query: RagQueryRequest):
     - source: Trích dẫn nguồn đáng tin cậy nhất
     """
     if not rag_service.available:
-        return error_response(
-            message="RAG không khả dụng. Vui lòng kiểm tra ChromaDB.",
+        raise HTTPException(
             status_code=503,
+            detail="RAG không khả dụng. Vui lòng kiểm tra ChromaDB.",
         )
 
-    metadata_filter = {}
+    # Build metadata filter for ChromaDB with sanitization
+    ALLOWED_FILTER_KEYS = {"grade", "subject", "chapter"}
+    raw_filter = {}
     if query.grade is not None:
-        metadata_filter["grade"] = query.grade
+        raw_filter["grade"] = query.grade
     if query.subject is not None:
-        metadata_filter["subject"] = query.subject
+        raw_filter["subject"] = query.subject
+    metadata_filter = {k: v for k, v in raw_filter.items() if k in ALLOWED_FILTER_KEYS}
 
     # Retrieve relevant chunks from ChromaDB
     results = rag_service.search(
@@ -67,9 +78,11 @@ async def rag_query(query: RagQueryRequest):
     # Use the top result as the primary source
     primary = sources[0]
 
-    # TODO: Generate answer using Gemini LLM with context from retrieved chunks
-    # For now, use the top chunk text as the answer
-    answer = primary.text
+    # Generate answer using Gemini with context from retrieved chunks
+    if sources:
+        answer = vlm_service.generate_answer(question=query.question, context_chunks=sources)
+    else:
+        answer = "Không tìm thấy thông tin liên quan trong sách giáo khoa."
 
     return success_response(data=RagQueryResponse(
         answer=answer,

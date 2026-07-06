@@ -47,6 +47,10 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Ứng dụng cần microphone để nhận dạng giọng nói khi bạn hỏi bài</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Ứng dụng cần camera để quét tài liệu học tập</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

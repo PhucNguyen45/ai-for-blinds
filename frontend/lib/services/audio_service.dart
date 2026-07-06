@@ -7,6 +7,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import 'storage_service.dart';
+
 /// Service that manages ALL audio operations in the app.
 /// Combines TTS (flutter_tts), STT (speech_to_text), and recording (record package).
 /// Exposed as a ChangeNotifier via Provider for reactive UI.
@@ -36,6 +38,8 @@ class AudioService extends ChangeNotifier {
 
   /// Stream of ASR (speech-to-text) results from the backend.
   Stream<String> get sttResults => _sttResultController.stream;
+
+  static const _settingsKey = 'tts_settings';
 
   // ========== Getters ==========
 
@@ -96,6 +100,45 @@ class AudioService extends ChangeNotifier {
     });
   }
 
+  // ========== Settings Persistence ==========
+
+  /// Initialize with persisted settings. Call after construction.
+  Future<void> init() async {
+    await _loadSettings();
+    // Re-apply loaded settings to TTS engine
+    await _tts.setSpeechRate(_speechRate);
+    await _tts.setPitch(_pitch);
+    await _tts.setVolume(_volume);
+    await cleanupOldRecordings();
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      final storage = StorageService();
+      final settings = await storage.readJson(_settingsKey);
+      if (settings != null) {
+        _speechRate = (settings['speechRate'] as num?)?.toDouble() ?? 0.5;
+        _pitch = (settings['pitch'] as num?)?.toDouble() ?? 1.0;
+        _volume = (settings['volume'] as num?)?.toDouble() ?? 1.0;
+      }
+    } catch (e) {
+      debugPrint('Error loading TTS settings: $e');
+    }
+  }
+
+  Future<void> _saveSettings() async {
+    try {
+      final storage = StorageService();
+      await storage.writeJson(_settingsKey, {
+        'speechRate': _speechRate,
+        'pitch': _pitch,
+        'volume': _volume,
+      });
+    } catch (e) {
+      debugPrint('Error saving TTS settings: $e');
+    }
+  }
+
   // ========== TTS Methods ==========
 
   /// Speak the given text aloud. Stops any current speech first.
@@ -137,6 +180,7 @@ class AudioService extends ChangeNotifier {
     _speechRate = rate;
     await _tts.setSpeechRate(rate);
     notifyListeners();
+    _saveSettings(); // fire and forget
   }
 
   /// Set pitch (0.5 - 2.0, default 1.0).
@@ -144,6 +188,7 @@ class AudioService extends ChangeNotifier {
     _pitch = p;
     await _tts.setPitch(p);
     notifyListeners();
+    _saveSettings(); // fire and forget
   }
 
   /// Set volume (0.0 - 1.0, default 1.0).
@@ -151,6 +196,7 @@ class AudioService extends ChangeNotifier {
     _volume = vol;
     await _tts.setVolume(vol);
     notifyListeners();
+    _saveSettings(); // fire and forget
   }
 
   /// Set language (e.g., 'en-US', 'vi-VN').
@@ -260,6 +306,35 @@ class AudioService extends ChangeNotifier {
   }
 
   // ========== Cleanup ==========
+
+  /// Delete recordings older than 7 days to prevent storage buildup.
+  Future<void> cleanupOldRecordings() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/voice_notes');
+      if (!await dir.exists()) return;
+
+      final cutoff = DateTime.now().subtract(const Duration(days: 7));
+      final files = dir.listSync();
+      int deleted = 0;
+
+      for (final file in files) {
+        if (file is File) {
+          final stat = file.statSync();
+          if (stat.modified.isBefore(cutoff)) {
+            await file.delete();
+            deleted++;
+          }
+        }
+      }
+
+      if (deleted > 0) {
+        debugPrint('Cleaned up $deleted old recording(s)');
+      }
+    } catch (e) {
+      debugPrint('Error cleaning up recordings: $e');
+    }
+  }
 
   @override
   void dispose() {

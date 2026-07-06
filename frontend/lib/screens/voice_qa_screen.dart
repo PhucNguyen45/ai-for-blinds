@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/big_button.dart';
@@ -21,6 +25,7 @@ class VoiceQAScreen extends StatefulWidget {
 }
 
 class _VoiceQAScreenState extends State<VoiceQAScreen> {
+  final _apiService = ApiService();
   bool _isRecording = false;
   bool _isProcessing = false;
   String? _question;
@@ -55,23 +60,79 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
     });
 
     if (path != null) {
-      // TODO: Send audio to backend /stt → /rag when STT endpoint is ready
-      // For now, simulate a response
-      await Future.delayed(const Duration(milliseconds: 1500));
+      try {
+        // Step 1: STT — transcribe audio to text via backend
+        final audioFile = File(path);
+        final sttResult = await _apiService.sttAudio(audioFile);
 
-      if (!mounted) return;
-      setState(() {
-        _question = 'Nguyên phân là gì?';
-        _answer = 'Nguyên phân là quá trình phân chia tế bào, trong đó một tế bào mẹ '
-            'tạo ra hai tế bào con có bộ nhiễm sắc thể giống hệt tế bào mẹ. '
-            'Quá trình này gồm 4 kỳ: kỳ đầu, kỳ giữa, kỳ sau và kỳ cuối.';
-        _source = 'SGK Sinh học 10, trang 45-47';
-        _isProcessing = false;
-      });
+        if (!mounted) return;
 
-      HapticFeedback.heavyImpact();
-      audio.stop();
-      audio.speak('$_answer. Nguồn: $_source');
+        if (sttResult == null || sttResult.trim().isEmpty) {
+          setState(() => _isProcessing = false);
+          audio.stop();
+          audio.speak('Không nhận dạng được giọng nói, vui lòng thử lại.');
+          return;
+        }
+
+        final questionText = sttResult.trim();
+
+        // Step 2: RAG — query knowledge base with transcribed text
+        final ragResult = await _apiService.ragQuery(question: questionText);
+
+        if (!mounted) return;
+
+        if (ragResult != null) {
+          final answerText = ragResult['answer'] as String? ?? '';
+          final sourceMap = ragResult['source'] as Map<String, dynamic>?;
+
+          String? sourceText;
+          if (sourceMap != null) {
+            final parts = <String>[];
+            final subject = sourceMap['subject'] as String?;
+            final grade = sourceMap['grade'];
+            final chapter = sourceMap['chapter'] as String?;
+            final page = sourceMap['page_number'];
+
+            if (subject != null && grade != null) {
+              parts.add('SGK $subject $grade');
+            } else if (subject != null) {
+              parts.add('SGK $subject');
+            }
+            if (chapter != null) parts.add(chapter);
+            if (page != null) parts.add('trang $page');
+            if (parts.isNotEmpty) sourceText = parts.join(', ');
+          }
+
+          setState(() {
+            _question = questionText;
+            _answer = answerText;
+            _source = sourceText;
+            _isProcessing = false;
+          });
+
+          HapticFeedback.heavyImpact();
+          audio.stop();
+          if (sourceText != null) {
+            audio.speak('$answerText. Nguồn: $sourceText');
+          } else {
+            audio.speak(answerText);
+          }
+        } else {
+          setState(() => _isProcessing = false);
+          audio.stop();
+          audio.speak(
+            'Không tìm thấy câu trả lời trong sách giáo khoa, vui lòng thử lại.',
+          );
+        }
+      } catch (e) {
+        debugPrint('Voice QA error: $e');
+        if (!mounted) return;
+        setState(() => _isProcessing = false);
+        audio.stop();
+        audio.speak(
+          'Có lỗi xảy ra khi xử lý câu hỏi, vui lòng thử lại.',
+        );
+      }
     } else {
       if (mounted) {
         setState(() => _isProcessing = false);

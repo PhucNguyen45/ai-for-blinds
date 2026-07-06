@@ -5,12 +5,19 @@ FastAPI application with modular route registration.
 AI services are lazy-initialized in each service module.
 """
 
+import logging
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
-from backend.config import settings
+from backend.config import configure_logging, settings
 from backend.database import init_db
+
+configure_logging()
+logger = logging.getLogger(__name__)
 
 # ── Routes ─────────────────────────────────────────────────────
 from backend.api.routes import describe, ocr, tts, stt, rag
@@ -22,6 +29,12 @@ app = FastAPI(
     version=settings.app_version,
     description="Trợ lý học tập AI đa phương thức cho học sinh khiếm thị Việt Nam",
 )
+
+# ── Rate Limiting ─────────────────────────────────────────────────
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ── Middleware ────────────────────────────────────────────────────
 
@@ -48,10 +61,10 @@ app.include_router(rag.router, prefix="/rag", tags=["RAG"])
 async def startup():
     """Initialize database tables on startup."""
     try:
-        init_db()
+        await init_db()
     except Exception as e:
-        print(f"Database initialization skipped: {e}")
-        print("Backend will run without database. Some features may be limited.")
+        logger.warning(f"Database initialization skipped: {e}")
+        logger.warning("Backend will run without database. Some features may be limited.")
 
 
 @app.get("/")

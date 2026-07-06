@@ -5,7 +5,9 @@ Centralized settings loaded from environment variables.
 All AI services, database, and app settings are configured here.
 """
 
+import logging
 import os
+import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -18,6 +20,9 @@ class Settings:
     debug: bool = os.environ.get("DEBUG", "false").lower() == "true"
     host: str = os.environ.get("HOST", "0.0.0.0")
     port: int = int(os.environ.get("PORT", "8000"))
+
+    # ── API Key Auth ─────────────────────────────────────────────
+    api_key: str = field(default_factory=lambda: os.getenv("API_KEY", "sgbe_dev_key_2024"))
 
     # ── CORS ─────────────────────────────────────────────────────
     cors_origins: list[str] = field(default_factory=lambda: ["*"])
@@ -78,6 +83,17 @@ class Settings:
                 "GOOGLE_API_KEY environment variable is required.\n"
                 "Set it with: export GOOGLE_API_KEY='your-key-here'"
             )
+
+
+def configure_logging() -> None:
+    """Configure logging for the application."""
+    level = logging.DEBUG if os.getenv("DEBUG", "").lower() in ("true", "1", "yes") else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        stream=sys.stdout,
+    )
 
 
 # Singleton settings instance

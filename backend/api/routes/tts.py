@@ -5,18 +5,24 @@ Converts text to MP3 audio binary (not JSON).
 Frontend plays the audio file directly.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
 
+from backend.api.auth import verify_api_key
+from backend.main import limiter
 from backend.schemas.tts import TtsRequest
 from backend.services.tts_service import tts_service
-from backend.utils.response_builder import error_response
 
 router = APIRouter()
 
 
 @router.post("/tts")
-async def text_to_speech(request: TtsRequest):
+@limiter.limit("30/minute")
+async def text_to_speech(
+    request: Request,
+    tts_request: TtsRequest,
+    api_key: str = Depends(verify_api_key),
+):
     """
     Chuyển văn bản thành giọng nói tiếng Việt.
 
@@ -24,20 +30,20 @@ async def text_to_speech(request: TtsRequest):
     Sử dụng Edge TTS với giọng Hoài My (vi-VN-HoaiMyNeural).
     Hỗ trợ đọc với cảm xúc cho văn học (phân vai, cảm xúc).
     """
-    if not request.text.strip():
+    if not tts_request.text.strip():
         raise HTTPException(status_code=400, detail="Văn bản không được để trống.")
 
-    if request.emotion != "neutral":
+    if tts_request.emotion != "neutral":
         output_path = await tts_service.synthesize_with_emotion(
-            request.text, request.emotion, voice=request.voice
+            tts_request.text, tts_request.emotion, voice=tts_request.voice
         )
     else:
-        output_path = await tts_service.synthesize(request.text, voice=request.voice)
+        output_path = await tts_service.synthesize(tts_request.text, voice=tts_request.voice)
 
     if output_path is None:
-        return error_response(
-            message="Không thể tạo giọng nói. Vui lòng thử lại sau.",
+        raise HTTPException(
             status_code=500,
+            detail="Không thể tạo giọng nói. Vui lòng thử lại sau.",
         )
 
     return FileResponse(

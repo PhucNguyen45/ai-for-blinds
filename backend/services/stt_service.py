@@ -5,10 +5,14 @@ Uses faster-whisper with the phoWhisper model for Vietnamese,
 falling back to the standard base model if phoWhisper is unavailable.
 """
 
+import logging
 import os
 import tempfile
 import uuid
 from typing import Optional
+
+
+logger = logging.getLogger(__name__)
 
 from backend.config import settings
 
@@ -36,7 +40,7 @@ class SttService:
                     compute_type=settings.whisper_compute_type,
                 )
                 self._model_size = "PhoWhisper/base"
-                print("Using PhoWhisper (Vietnamese-optimized model)")
+                logger.info("Using PhoWhisper (Vietnamese-optimized model)")
             except Exception:
                 # Fallback to standard Whisper
                 self._model = WhisperModel(
@@ -44,9 +48,9 @@ class SttService:
                     device=settings.whisper_device,
                     compute_type=settings.whisper_compute_type,
                 )
-                print(f"Using standard Whisper ({self._model_size})")
+                logger.info(f"Using standard Whisper ({self._model_size})")
         except Exception as e:
-            print(f"Warning: Whisper not available: {e}")
+            logger.warning(f"Whisper not available: {e}")
             self._model = None
 
     @property
@@ -107,7 +111,7 @@ class SttService:
             }
 
         except Exception as e:
-            print(f"STT transcription error: {e}")
+            logger.error(f"STT transcription error: {e}")
             return None
         finally:
             if tmp_path and os.path.exists(tmp_path):

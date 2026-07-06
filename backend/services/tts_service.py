@@ -5,10 +5,14 @@ Uses Edge TTS for high-quality Vietnamese speech synthesis.
 Supports the Microsoft Hoai My neural voice (vi-VN-HoaiMyNeural).
 """
 
+import logging
 import os
 import tempfile
 import uuid
 from typing import Optional
+
+
+logger = logging.getLogger(__name__)
 
 import edge_tts
 
@@ -54,7 +58,7 @@ class TtsService:
 
             return output_path
         except Exception as e:
-            print(f"TTS synthesis error: {e}")
+            logger.error(f"TTS synthesis error: {e}")
             return None
 
     async def synthesize_with_emotion(
@@ -122,7 +126,7 @@ class TtsService:
 
             return output_path
         except Exception as e:
-            print(f"TTS emotional synthesis error: {e}")
+            logger.error(f"TTS emotional synthesis error: {e}")
             # Fallback to plain synthesis
             return await self.synthesize(text, voice)
 

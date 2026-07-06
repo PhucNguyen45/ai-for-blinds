@@ -4,8 +4,10 @@ POST /stt — Speech-to-Text with Whisper/phoWhisper.
 Transcribes Vietnamese speech to text.
 """
 
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 
+from backend.api.auth import verify_api_key
+from backend.main import limiter
 from backend.services.stt_service import stt_service
 from backend.utils.file_handler import validate_audio
 from backend.utils.response_builder import success_response, error_response
@@ -14,9 +16,12 @@ router = APIRouter()
 
 
 @router.post("/stt")
+@limiter.limit("10/minute")
 async def speech_to_text(
+    request: Request,
     file: UploadFile = File(...),
     language: str = Form("vi"),
+    api_key: str = Depends(verify_api_key),
 ):
     """
     Nhận dạng giọng nói tiếng Việt thành văn bản.
@@ -34,9 +39,9 @@ async def speech_to_text(
 
     result = stt_service.transcribe(audio_bytes, language=language)
     if result is None:
-        return error_response(
-            message="Không thể nhận dạng giọng nói.",
+        raise HTTPException(
             status_code=500,
+            detail="Không thể nhận dạng giọng nói.",
         )
 
     return success_response(data=result)

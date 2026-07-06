@@ -7,11 +7,6 @@ Handles:
 - Temporary file management
 """
 
-import os
-import tempfile
-import uuid
-from typing import Optional
-
 from fastapi import HTTPException, UploadFile
 
 from backend.config import settings
@@ -88,31 +83,3 @@ def validate_audio(file: UploadFile) -> bytes:
         )
     return contents
 
-
-def save_temp_file(contents: bytes, suffix: str = ".tmp") -> str:
-    """
-    Save bytes to a temporary file.
-
-    Args:
-        contents: File contents to write.
-        suffix: File extension (e.g., '.png', '.wav').
-
-    Returns:
-        Path to the temporary file.
-    """
-    tmp_path = os.path.join(
-        tempfile.gettempdir(),
-        f"sgbe_{uuid.uuid4().hex}{suffix}",
-    )
-    with open(tmp_path, "wb") as f:
-        f.write(contents)
-    return tmp_path
-
-
-def cleanup_temp_file(path: str) -> None:
-    """Safely delete a temporary file."""
-    try:
-        if path and os.path.exists(path):
-            os.remove(path)
-    except OSError:
-        pass

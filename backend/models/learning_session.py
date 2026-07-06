@@ -7,12 +7,15 @@ and tracks duration, items processed, and outcome.
 
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import Base
+
+if TYPE_CHECKING:
+    from .feedback import Feedback
 
 
 class LearningSession(Base):
@@ -43,6 +46,7 @@ class LearningSession(Base):
 
     # Relationships
     user = relationship("User", back_populates="learning_sessions")
+    feedbacks: Mapped[list["Feedback"]] = relationship(back_populates="session")
 
     def __repr__(self) -> str:
         return f"<LearningSession(id={self.id}, type={self.session_type})>"

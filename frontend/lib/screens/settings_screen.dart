@@ -1,13 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/big_button.dart';
 
 /// Settings screen — điều chỉnh tốc độ, cao độ, âm lượng giọng đọc.
 /// Tuân thủ thiết kế SgBe Vision: slider đơn giản, nút test, không trang trí.
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final _serverUrlController = TextEditingController(text: 'http://192.168.1.100:8000');
+  final _apiService = ApiService();
+
+  @override
+  void dispose() {
+    _serverUrlController.dispose();
+    super.dispose();
+  }
+
+  String _getSpeedLabel(double speed) {
+    if (speed < 0.4) return 'Chậm (${speed.toStringAsFixed(1)})';
+    if (speed <= 0.7) return 'Bình thường (${speed.toStringAsFixed(1)})';
+    return 'Nhanh (${speed.toStringAsFixed(1)})';
+  }
+
+  String _getPitchLabel(double pitch) {
+    if (pitch < 0.8) return 'Trầm (${pitch.toStringAsFixed(1)})';
+    if (pitch <= 1.5) return 'Bình thường (${pitch.toStringAsFixed(1)})';
+    return 'Cao (${pitch.toStringAsFixed(1)})';
+  }
+
+  String _getVolumeLabel(double volume) {
+    if (volume < 0.3) return 'Nhỏ (${volume.toStringAsFixed(1)})';
+    if (volume <= 0.7) return 'Vừa (${volume.toStringAsFixed(1)})';
+    return 'Lớn (${volume.toStringAsFixed(1)})';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +79,8 @@ class SettingsScreen extends StatelessWidget {
                   min: 0.2,
                   max: 1.0,
                   divisions: 8,
-                  displayValue: audio.speechRate.toStringAsFixed(1),
+                  displayValue: _getSpeedLabel(audio.speechRate),
+                  sliderSemanticLabel: 'Tốc độ: ${_getSpeedLabel(audio.speechRate)}',
                   onChanged: (val) => audio.setSpeechRate(val),
                   cardColor: cardColor,
                   borderColor: borderColor,
@@ -60,7 +95,8 @@ class SettingsScreen extends StatelessWidget {
                   min: 0.5,
                   max: 2.0,
                   divisions: 6,
-                  displayValue: audio.pitch.toStringAsFixed(1),
+                  displayValue: _getPitchLabel(audio.pitch),
+                  sliderSemanticLabel: 'Cao độ: ${_getPitchLabel(audio.pitch)}',
                   onChanged: (val) => audio.setPitch(val),
                   cardColor: cardColor,
                   borderColor: borderColor,
@@ -75,7 +111,8 @@ class SettingsScreen extends StatelessWidget {
                   min: 0.0,
                   max: 1.0,
                   divisions: 5,
-                  displayValue: audio.volume.toStringAsFixed(1),
+                  displayValue: _getVolumeLabel(audio.volume),
+                  sliderSemanticLabel: 'Âm lượng: ${_getVolumeLabel(audio.volume)}',
                   onChanged: (val) => audio.setVolume(val),
                   cardColor: cardColor,
                   borderColor: borderColor,
@@ -116,6 +153,41 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Cấu hình máy chủ
+                const SizedBox(height: 16),
+                Text(
+                  'Cấu hình máy chủ',
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Semantics(
+                  textField: true,
+                  label: 'Địa chỉ máy chủ',
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Địa chỉ máy chủ API',
+                      hintText: 'http://192.168.1.100:8000',
+                      border: OutlineInputBorder(),
+                    ),
+                    controller: _serverUrlController,
+                    keyboardType: TextInputType.url,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                BigButton(
+                  icon: Icons.save,
+                  label: 'Lưu địa chỉ máy chủ',
+                  onTap: () {
+                    final url = _serverUrlController.text.trim();
+                    if (url.isNotEmpty) {
+                      _apiService.setBaseUrl(url);
+                      audio.speak('Đã lưu địa chỉ máy chủ');
+                    }
+                  },
                 ),
 
                 const SizedBox(height: 32),
@@ -164,6 +236,7 @@ class _SettingSlider extends StatelessWidget {
   final double max;
   final int divisions;
   final String displayValue;
+  final String sliderSemanticLabel;
   final ValueChanged<double> onChanged;
   final Color cardColor;
   final Color borderColor;
@@ -176,6 +249,7 @@ class _SettingSlider extends StatelessWidget {
     required this.max,
     required this.divisions,
     required this.displayValue,
+    required this.sliderSemanticLabel,
     required this.onChanged,
     required this.cardColor,
     required this.borderColor,
@@ -211,13 +285,18 @@ class _SettingSlider extends StatelessWidget {
                 ),
               ],
             ),
-            Slider(
-              value: value,
-              min: min,
-              max: max,
-              divisions: divisions,
-              label: '$label: $displayValue',
-              onChanged: onChanged,
+            Semantics(
+              slider: true,
+              value: value.toStringAsFixed(1),
+              label: sliderSemanticLabel,
+              child: Slider(
+                value: value,
+                min: min,
+                max: max,
+                divisions: divisions,
+                label: sliderSemanticLabel,
+                onChanged: onChanged,
+              ),
             ),
           ],
         ),

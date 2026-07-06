@@ -7,11 +7,13 @@ import 'package:http/http.dart' as http;
 /// Service for communicating with the FastAPI backend.
 /// Handles OCR, image description, TTS, STT, and RAG query via API calls.
 class ApiService {
+  static const _defaultBaseUrl = 'http://192.168.1.100:8000';
+
   /// Base URL of the backend server.
-  /// Defaults to localhost:8000 for development.
+  /// Defaults to a sensible LAN address for real-world use.
   String baseUrl;
 
-  ApiService({this.baseUrl = 'http://localhost:8000'});
+  ApiService({String? baseUrl}) : baseUrl = baseUrl ?? _defaultBaseUrl;
 
   /// Set a custom backend URL (e.g., from settings).
   void setBaseUrl(String url) {
