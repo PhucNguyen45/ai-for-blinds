@@ -6,21 +6,22 @@ AI services are lazy-initialized in each service module.
 """
 
 import logging
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from backend.config import configure_logging, settings
 from backend.database import init_db
+from backend.deps import limiter
 
 configure_logging()
 logger = logging.getLogger(__name__)
 
 # ── Routes ─────────────────────────────────────────────────────
-from backend.api.routes import describe, ocr, tts, stt, rag, detect, sonify
+from backend.api.routes import describe, detect, ocr, rag, sonify, stt, tts
 
 # ── App Initialization ──────────────────────────────────────────
 
@@ -32,7 +33,6 @@ app = FastAPI(
 
 # ── Rate Limiting ─────────────────────────────────────────────────
 
-limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -58,6 +58,7 @@ app.include_router(sonify.router, tags=["Sonification"])
 
 
 # ── Startup / Health ─────────────────────────────────────────────
+
 
 @app.on_event("startup")
 async def startup():

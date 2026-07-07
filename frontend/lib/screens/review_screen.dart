@@ -5,14 +5,19 @@ import 'package:provider/provider.dart';
 import '../models/learning_moment.dart';
 import '../services/audio_service.dart';
 import '../services/storage_service.dart';
-import '../theme/app_theme.dart';
-import '../widgets/big_button.dart';
+import '../widgets/swipeable_carousel.dart';
+import '../widgets/neon_button.dart';
+import '../widgets/gradient_background.dart';
 
-/// Review screen showing saved LearningMoments for revision.
-/// Follows the SgBe Vision design spec:
-/// - ListView of learning moments with image, question, answer summary
-/// - Tap an item to hear the answer again via TTS
-/// - Voice-first: select an item to listen
+/// Neon Pulse review screen showing saved LearningMoments in a
+/// vertical swipeable carousel (TikTok-style).
+///
+/// Features:
+/// - Full-screen animated gradient background with ambient glow.
+/// - Vertical swipe navigation through learning moments.
+/// - Auto-speak moment title on page change.
+/// - Listen, Delete controls per moment.
+/// - Empty state with scan CTA.
 class ReviewScreen extends StatefulWidget {
   const ReviewScreen({super.key});
 
@@ -24,6 +29,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
   final StorageService _storage = StorageService();
   List<LearningMoment> _moments = [];
   bool _isLoading = true;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -37,14 +43,36 @@ class _ReviewScreenState extends State<ReviewScreen> {
       final moments = await _storage.loadLearningMoments();
       if (mounted) {
         setState(() {
-          _moments = moments..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          _moments = moments
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          _currentIndex = 0;
           _isLoading = false;
         });
+        // Auto-speak the first moment after loading.
+        if (_moments.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            final audio = context.read<AudioService>();
+            audio.stop();
+            audio.speak(_moments[0].title);
+          });
+        }
       }
     } catch (e) {
       debugPrint('ReviewScreen._loadMoments error: $e');
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _onPageChanged(int index) {
+    setState(() => _currentIndex = index);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || index >= _moments.length) return;
+      final moment = _moments[index];
+      final audio = context.read<AudioService>();
+      audio.stop();
+      audio.speak(moment.title);
+    });
   }
 
   void _speakMoment(LearningMoment moment) {
@@ -55,67 +83,144 @@ class _ReviewScreenState extends State<ReviewScreen> {
     audio.speak(text);
   }
 
+  Future<void> _deleteMoment(int index) async {
+    HapticFeedback.mediumImpact();
+    if (index >= _moments.length) return;
+
+    setState(() {
+      _moments.removeAt(index);
+      if (_currentIndex >= _moments.length && _currentIndex > 0) {
+        _currentIndex = _moments.length - 1;
+      }
+    });
+
+    // Persist the updated list.
+    final encoded = _moments.map((m) => m.toJson()).toList();
+    await _storage.writeJson('learning_moments.json', encoded);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bgColor = isDark ? AppTheme.pureBlack : AppTheme.pureWhite;
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ôn tập'),
-        backgroundColor: isDark ? AppTheme.pureBlack : AppTheme.primaryBlue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 32),
-          onPressed: () {
-            context.read<AudioService>().stop();
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: Container(
-        color: bgColor,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _moments.isEmpty
-                ? _buildEmptyState(theme)
-                : _buildMomentList(theme, isDark),
+      body: Stack(
+        children: [
+          const GradientBackground(showGlow: true),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildTopBar(),
+                Expanded(
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _moments.isEmpty
+                          ? _buildEmptyState()
+                          : _buildCarouselView(),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildEmptyState(ThemeData theme) {
+  Widget _buildTopBar() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () {
+              context.read<AudioService>().stop();
+              Navigator.pop(context);
+            },
+            child: Semantics(
+              button: true,
+              label: 'Quay lại',
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                size: 32,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const Spacer(),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Ôn tập',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                'Vuốt lên/xuống để duyệt',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF8892B0),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.history_rounded,
-              size: 80,
-              color: Colors.grey.shade400,
+            // Glowing icon container
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF8892B0).withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.history,
+                size: 80,
+                color: Color(0xFF8892B0),
+              ),
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               'Chưa có khoảnh khắc học tập nào.',
-              style: theme.textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Quét tài liệu hoặc đặt câu hỏi để lưu lại kiến thức.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade500,
-                height: 1.4,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8892B0),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            BigButton(
-              icon: Icons.camera_alt_rounded,
-              label: 'Bắt đầu quét tài liệu',
-              color: AppTheme.primaryBlue,
+            const SizedBox(height: 12),
+            const Text(
+              'Quét tài liệu hoặc đặt câu hỏi để bắt đầu.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF4A5580),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            NeonButton(
+              icon: Icons.camera_alt,
+              label: 'Bắt đầu quét',
+              color: const Color(0xFF00F0FF),
               onTap: () => Navigator.pushNamed(context, '/scanner'),
             ),
           ],
@@ -124,165 +229,115 @@ class _ReviewScreenState extends State<ReviewScreen> {
     );
   }
 
-  Widget _buildMomentList(ThemeData theme, bool isDark) {
-    return Semantics(
-      label: 'Danh sách khoảnh khắc học tập. ${_moments.length} mục.',
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _moments.length,
-        itemBuilder: (context, index) {
-          final moment = _moments[index];
-          return _MomentCard(
-            moment: moment,
-            isDark: isDark,
-            theme: theme,
-            onTap: () => _speakMoment(moment),
-          );
-        },
-      ),
+  Widget _buildCarouselView() {
+    return Stack(
+      children: [
+        SwipeableCarousel(
+          itemCount: _moments.length,
+          itemBuilder: (context, index) =>
+              _buildMomentPage(_moments[index], index),
+          onPageChanged: _onPageChanged,
+          initialIndex: _currentIndex,
+        ),
+        // Vertical page indicator on the right edge.
+        Positioned(
+          right: 8,
+          top: 0,
+          bottom: 0,
+          child: Center(
+            child: CarouselPageIndicator(
+              itemCount: _moments.length,
+              currentIndex: _currentIndex,
+            ),
+          ),
+        ),
+      ],
     );
   }
-}
 
-class _MomentCard extends StatelessWidget {
-  final LearningMoment moment;
-  final bool isDark;
-  final ThemeData theme;
-  final VoidCallback onTap;
-
-  const _MomentCard({
-    required this.moment,
-    required this.isDark,
-    required this.theme,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
-    final cardColor = isDark ? AppTheme.darkCard : AppTheme.pureWhite;
-
-    return Semantics(
-      button: true,
-      label: '${moment.title}. ${moment.preview}. Lưu lúc ${moment.formattedDate}.',
-      hint: 'Nhấn để nghe lại.',
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: GestureDetector(
-          onTap: () {
-            HapticFeedback.mediumImpact();
-            onTap();
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: borderColor, width: 2),
+  Widget _buildMomentPage(LearningMoment moment, int index) {
+    final bool hasImage = moment.imagePath != null;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Column(
+        children: [
+          const Spacer(flex: 2),
+          // Type indicator icon
+          Icon(
+            hasImage ? Icons.image_rounded : Icons.text_snippet,
+            size: 80,
+            color: const Color(0xFF00F0FF),
+          ),
+          const SizedBox(height: 24),
+          // Title
+          Text(
+            moment.title,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          // Description
+          Text(
+            moment.description,
+            style: const TextStyle(
+              fontSize: 20,
+              color: Color(0xFF8892B0),
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 16),
+          // Date
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.access_time, size: 16, color: Color(0xFF4A5580)),
+              const SizedBox(width: 4),
+              Text(
+                moment.formattedDate,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF4A5580),
+                ),
+              ),
+            ],
+          ),
+          // Source text (only if available)
+          if (moment.sourceTextbook != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Image thumbnail or placeholder
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(14),
-                      bottomLeft: Radius.circular(14),
+                const Icon(Icons.menu_book, size: 16, color: Color(0xFF4A5580)),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    moment.sourceTextbook!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF4A5580),
+                      fontStyle: FontStyle.italic,
                     ),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      moment.imagePath != null
-                          ? Icons.image_rounded
-                          : Icons.text_snippet_rounded,
-                      size: 40,
-                      color: AppTheme.primaryBlue,
-                    ),
-                  ),
-                ),
-                // Content
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          moment.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          moment.preview,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.access_time_rounded,
-                              size: 16,
-                              color: Colors.grey.shade500,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              moment.formattedDate,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
-                            if (moment.sourceTextbook != null) ...[
-                              const SizedBox(width: 12),
-                              Icon(
-                                Icons.menu_book_rounded,
-                                size: 16,
-                                color: Colors.grey.shade500,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  moment.sourceTextbook!,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade500,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Play button
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.volume_up_rounded,
-                    size: 32,
-                    color: AppTheme.accentGreen,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
+          ],
+          const Spacer(flex: 3),
+          // Bottom action controls
+          CarouselControls(
+            onListen: () => _speakMoment(moment),
+            onDelete: () => _deleteMoment(index),
+            onShare: null,
           ),
-        ),
+        ],
       ),
     );
   }

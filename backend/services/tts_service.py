@@ -7,10 +7,7 @@ Supports the Microsoft Hoai My neural voice (vi-VN-HoaiMyNeural).
 
 import logging
 import os
-import tempfile
 import uuid
-from typing import Optional
-
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +25,8 @@ class TtsService:
     async def synthesize(
         self,
         text: str,
-        voice: Optional[str] = None,
-    ) -> Optional[str]:
+        voice: str | None = None,
+    ) -> str | None:
         """
         Synthesize Vietnamese speech from text.
 
@@ -65,8 +62,8 @@ class TtsService:
         self,
         text: str,
         emotion: str = "neutral",
-        voice: Optional[str] = None,
-    ) -> Optional[str]:
+        voice: str | None = None,
+    ) -> str | None:
         """
         Synthesize speech with emotional tone (for literature reading).
 
@@ -112,10 +109,10 @@ class TtsService:
                 f'xml:lang="vi-VN">'
                 f'<voice name="{voice}">'
                 f'<prosody rate="{rate}" pitch="{pitch}">'
-                f'{text}'
-                f'</prosody>'
-                f'</voice>'
-                f'</speak>'
+                f"{text}"
+                f"</prosody>"
+                f"</voice>"
+                f"</speak>"
             )
 
             communicate = edge_tts.Communicate(ssml, voice)

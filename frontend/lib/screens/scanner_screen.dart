@@ -8,15 +8,19 @@ import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../services/camera_service.dart';
 import '../services/local_ocr_service.dart';
-import '../theme/app_theme.dart';
-import '../widgets/big_button.dart';
+import '../widgets/neon_button.dart';
+import '../widgets/glow_chip.dart';
+import '../widgets/waveform_bar.dart';
+import '../widgets/glass_bottom_sheet.dart';
 import '../widgets/mode_selector.dart';
 
 /// Scanner screen where students capture book pages, documents, or diagrams.
-/// Features:
-/// - ModeSelector: chọn OCR / Mô tả ảnh / Đọc biểu đồ
-/// - BigButton "CHỤP ẢNH" ở giữa
-/// - LinearProgressIndicator khi đang xử lý
+///
+/// Neon Pulse design featuring:
+/// - GlowChipBar mode selection (OCR / Describe / Chart / Detect)
+/// - NeonCircleButton camera trigger
+/// - WaveformBar processing animation
+/// - GlassBottomSheetContainer for results
 /// - TTS tự động đọc kết quả sau khi xử lý
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -33,6 +37,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
   ScanMode _selectedMode = ScanMode.ocr;
   bool _isProcessing = false;
   String? _resultText;
+
+  static const List<Color> _modeColors = [
+    Color(0xFF00F0FF), // OCR – cyan
+    Color(0xFF9D4EDD), // Describe – purple
+    Color(0xFFFFB300), // Chart – amber
+    Color(0xFF39FF14), // Detect – lime
+  ];
 
   @override
   void dispose() {
@@ -81,7 +92,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
             chartType: 'bar',
           );
           if (sonifyResult != null) {
-            result = sonifyResult['summary'] as String? ?? sonifyResult['description'] as String?;
+            result = sonifyResult['summary'] as String? ??
+                sonifyResult['description'] as String?;
           } else {
             // Fallback to Gemini description
             result = await _apiService.describeImage(photo);
@@ -94,9 +106,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
             final objects = detectMap['objects'] as List?;
             final sceneDesc = detectMap['scene_description'] as String?;
             if (objects != null && objects.isNotEmpty) {
-              result = sceneDesc ?? 'Phát hiện ${objects.length} vật thể';
+              result =
+                  sceneDesc ?? 'Phát hiện ${objects.length} vật thể';
             } else {
-              result = detectMap['scene_description'] as String? ?? 'Không phát hiện vật thể nào.';
+              result = detectMap['scene_description'] as String? ??
+                  'Không phát hiện vật thể nào.';
             }
           }
           break;
@@ -123,7 +137,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
         final audio = context.read<AudioService>();
         await audio.stop();
-        await audio.speak('Không tìm thấy nội dung. Hãy thử chụp lại với ánh sáng tốt hơn.');
+        await audio.speak(
+            'Không tìm thấy nội dung. Hãy thử chụp lại với ánh sáng tốt hơn.');
       }
     } catch (e) {
       debugPrint('Scanner error: $e');
@@ -145,157 +160,186 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bgColor = isDark ? AppTheme.pureBlack : AppTheme.pureWhite;
+    final modeItems = ScanMode.values.asMap().entries.map((entry) {
+      final idx = entry.key;
+      final mode = entry.value;
+      return GlowChipData(
+        label: mode.label,
+        icon: mode.icon,
+        color: _modeColors[idx],
+      );
+    }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Quét tài liệu'),
-        backgroundColor: isDark ? AppTheme.pureBlack : AppTheme.primaryBlue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 32),
-          onPressed: () {
-            context.read<AudioService>().stop();
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: Container(
-        color: bgColor,
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Mode selector
-              ModeSelector(
-                selectedMode: _selectedMode,
-                onModeChanged: (mode) {
-                  setState(() => _selectedMode = mode);
-                  HapticFeedback.lightImpact();
-                  final labels = {
-                    ScanMode.ocr: 'Chế độ đọc văn bản',
-                    ScanMode.describe: 'Chế độ mô tả ảnh',
-                    ScanMode.chart: 'Chế độ đọc biểu đồ',
-                    ScanMode.detect: 'Chế độ phát hiện vật thể',
-                  };
-                  context.read<AudioService>().stop();
-                  context.read<AudioService>().speak(labels[mode]!);
-                },
-              ),
+      backgroundColor: const Color(0xFF0A0E1A),
+      body: Stack(
+        children: [
+          // Dark background
+          Container(color: const Color(0xFF0A0E1A)),
 
-              const SizedBox(height: 12),
-
-              // Processing indicator
-              if (_isProcessing)
+          // Main content area
+          SafeArea(
+            child: Column(
+              children: [
+                // ── Top section ───────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Semantics(
-                    label: 'Đang xử lý.',
-                    child: Column(
-                      children: [
-                        const LinearProgressIndicator(minHeight: 6),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Đang xử lý...',
-                          style: theme.textTheme.titleMedium,
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          context.read<AudioService>().stop();
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const Spacer(),
+                      const Text(
+                        'Quét tài liệu',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
+                      ),
+                      // Balance the row so title is roughly centered
+                      const SizedBox(width: 48),
+                    ],
+                  ),
+                ),
+
+                // ── Mode selector (GlowChipBar) ───────────────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: GlowChipBar(
+                    items: modeItems,
+                    selectedIndex: ScanMode.values.indexOf(_selectedMode),
+                    onIndexChanged: (index) {
+                      final mode = ScanMode.values[index];
+                      setState(() => _selectedMode = mode);
+                      HapticFeedback.lightImpact();
+                      const labels = {
+                        ScanMode.ocr: 'Chế độ đọc văn bản',
+                        ScanMode.describe: 'Chế độ mô tả ảnh',
+                        ScanMode.chart: 'Chế độ đọc biểu đồ',
+                        ScanMode.detect: 'Chế độ phát hiện vật thể',
+                      };
+                      context.read<AudioService>().stop();
+                      context.read<AudioService>().speak(labels[mode]!);
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // ── Center camera / processing area ───────────────────
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (!_isProcessing) ...[
+                          NeonCircleButton(
+                            icon: Icons.camera_alt,
+                            label: 'CHỤP ẢNH',
+                            size: 160,
+                            color: const Color(0xFF00F0FF),
+                            onTap: _takePhoto,
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Chụp ảnh tài liệu',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color(0xFF8892B0),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Đưa camera vào tài liệu để quét',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF4A5580),
+                            ),
+                          ),
+                        ] else ...[
+                          WaveformBar(
+                            state: WaveformState.processing,
+                            height: 60,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Đang xử lý...',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFFFB300),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
                 ),
 
-              // Camera button area
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (!_isProcessing) ...[
-                        BigCircleButton(
-                          icon: Icons.camera_alt_rounded,
-                          label: 'CHỤP ẢNH',
-                          color: AppTheme.primaryBlue,
-                          onTap: _takePhoto,
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'CHỤP ẢNH',
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Đưa camera vào tài liệu\nvà nhấn nút để chụp',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey.shade500,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-
-              // Result / controls area
-              if (_resultText != null && _resultText!.isNotEmpty)
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                  color: isDark ? AppTheme.darkCard : Colors.grey.shade50,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Semantics(
-                        label: 'Kết quả. $_resultText',
-                        child: Container(
-                          width: double.infinity,
-                          constraints: const BoxConstraints(maxHeight: 120),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isDark ? AppTheme.pureBlack : AppTheme.pureWhite,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-                            ),
-                          ),
-                          child: SingleChildScrollView(
-                            child: Text(
-                              _resultText!,
-                              style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                // ── Result area (glass bottom sheet style) ────────────
+                if (_resultText != null && _resultText!.isNotEmpty)
+                  SizedBox(
+                    height: 300,
+                    child: GlassBottomSheetContainer(
+                      title: 'Kết quả',
+                      icon: Icons.check_circle,
+                      color: const Color(0xFF39FF14),
+                      child: Column(
                         children: [
-                          BigMediaButton(
-                            icon: Icons.volume_up_rounded,
-                            label: 'Nghe lại',
-                            color: AppTheme.accentGreen,
-                            onTap: _speakResult,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Text(
+                                _resultText!,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFFFFFFFF),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
                           ),
-                          BigMediaButton(
-                            icon: Icons.camera_alt_rounded,
-                            label: 'Chụp lại',
-                            color: AppTheme.primaryBlue,
-                            onTap: () {
-                              setState(() => _resultText = null);
-                              _takePhoto();
-                            },
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: NeonIconButton(
+                                  icon: Icons.volume_up,
+                                  label: 'Nghe lại',
+                                  color: const Color(0xFF00F0FF),
+                                  onTap: _speakResult,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: NeonIconButton(
+                                  icon: Icons.camera_alt,
+                                  label: 'Chụp lại',
+                                  color: const Color(0xFF9D4EDD),
+                                  onTap: () {
+                                    setState(() => _resultText = null);
+                                    _takePhoto();
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-            ],
+
+                // ── Bottom safe-area padding ───────────────────────────
+                SizedBox(height: MediaQuery.of(context).padding.bottom),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

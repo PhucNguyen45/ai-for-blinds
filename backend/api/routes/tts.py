@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
 
 from backend.api.auth import verify_api_key
-from backend.main import limiter
+from backend.deps import limiter
 from backend.schemas.tts import TtsRequest
 from backend.services.tts_service import tts_service
 

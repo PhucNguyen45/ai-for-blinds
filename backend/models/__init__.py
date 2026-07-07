@@ -11,12 +11,13 @@ class Base(DeclarativeBase):
     pass
 
 
-from .user import User
-from .learning_session import LearningSession
-from .learning_moment import LearningMoment
-from .voice_note import VoiceNote
-from .textbook_content import TextbookContent
 from .feedback import Feedback
+from .learning_moment import LearningMoment
+from .learning_session import LearningSession
+from .textbook_content import TextbookContent
+from .user import User
+from .voice_note import VoiceNote
+
 __all__ = [
     "Base",
     "User",

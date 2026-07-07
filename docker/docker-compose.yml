@@ -2,41 +2,41 @@ version: '3.8'
 
 services:
   # ── PostgreSQL + pgvector ──────────────────────────────
-  postgres:
+  aifb-db:
     image: pgvector/pgvector:pg16
-    container_name: sgbe_postgres
+    container_name: aifb_postgres
     environment:
-      POSTGRES_USER: sgbe_admin
-      POSTGRES_PASSWORD: sgbe_secret
-      POSTGRES_DB: sgbe_vision
+      POSTGRES_USER: aifb_admin
+      POSTGRES_PASSWORD: aifb_secret
+      POSTGRES_DB: aifb_vision
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - aifb_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sgbe_admin -d sgbe_vision"]
+      test: ["CMD-SHELL", "pg_isready -U aifb_admin -d aifb_vision"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  # ── SgBe Vision Backend ───────────────────────────────
-  backend:
+  # ── AI for Blinds Backend ─────────────────────────────
+  aifb-api:
     build:
       context: ..
       dockerfile: docker/Dockerfile.backend
-    container_name: sgbe_backend
+    container_name: aifb_backend
     ports:
       - "8000:8000"
     environment:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      DATABASE_URL: postgresql+psycopg2://sgbe_admin:sgbe_secret@postgres:5432/sgbe_vision
+      DATABASE_URL: postgresql+psycopg2://aifb_admin:aifb_secret@aifb-db:5432/aifb_vision
       DEBUG: "false"
     depends_on:
-      postgres:
+      aifb-db:
         condition: service_healthy
     volumes:
       - ../data:/app/data
       - ../models:/app/models
 
 volumes:
-  postgres_data:
+  aifb_pgdata:

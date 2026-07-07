@@ -7,10 +7,10 @@ Transcribes Vietnamese speech to text.
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 
 from backend.api.auth import verify_api_key
-from backend.main import limiter
+from backend.deps import limiter
 from backend.services.stt_service import stt_service
 from backend.utils.file_handler import validate_audio
-from backend.utils.response_builder import success_response, error_response
+from backend.utils.response_builder import error_response, success_response
 
 router = APIRouter()
 

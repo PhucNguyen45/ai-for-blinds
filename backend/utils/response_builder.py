@@ -4,7 +4,7 @@ Standardized API response helpers.
 Ensures consistent JSON response format across all endpoints.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from fastapi.responses import JSONResponse
 
@@ -38,7 +38,7 @@ def success_response(
 def error_response(
     message: str = "Đã xảy ra lỗi",
     status_code: int = 500,
-    detail: Optional[str] = None,
+    detail: str | None = None,
 ) -> JSONResponse:
     """
     Return a standardized error response.

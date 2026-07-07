@@ -11,8 +11,6 @@ Supports multiple embedding models with Vietnamese text support.
 
 import logging
 import os
-from typing import Optional
-
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +61,7 @@ class RagService:
         self,
         chunk_id: str,
         text: str,
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ) -> bool:
         """
         Index a single chunk of textbook content.
@@ -95,7 +93,7 @@ class RagService:
         self,
         query: str,
         n_results: int = 5,
-        filter_metadata: Optional[dict] = None,
+        filter_metadata: dict | None = None,
     ) -> list[dict]:
         """
         Search textbook content for relevant passages.
@@ -121,12 +119,14 @@ class RagService:
 
             hits = []
             for i in range(len(results["ids"][0])):
-                hits.append({
-                    "id": results["ids"][0][i],
-                    "text": results["documents"][0][i],
-                    "metadata": results["metadatas"][0][i],
-                    "distance": results["distances"][0][i] if results["distances"] else 0,
-                })
+                hits.append(
+                    {
+                        "id": results["ids"][0][i],
+                        "text": results["documents"][0][i],
+                        "metadata": results["metadatas"][0][i],
+                        "distance": results["distances"][0][i] if results["distances"] else 0,
+                    }
+                )
             return hits
         except Exception as e:
             logger.error(f"ChromaDB search error: {e}")

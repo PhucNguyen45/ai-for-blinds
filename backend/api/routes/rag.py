@@ -8,7 +8,7 @@ Returns answer with source citations for trustworthiness.
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from backend.api.auth import verify_api_key
-from backend.main import limiter
+from backend.deps import limiter
 from backend.schemas.rag import RagQueryRequest, RagQueryResponse, SourceCitation
 from backend.services.rag_service import rag_service
 from backend.services.vlm_service import vlm_service
@@ -41,13 +41,13 @@ async def rag_query(
         )
 
     # Build metadata filter for ChromaDB with sanitization
-    ALLOWED_FILTER_KEYS = {"grade", "subject", "chapter"}
+    allowed_filter_keys = {"grade", "subject", "chapter"}
     raw_filter = {}
     if query.grade is not None:
         raw_filter["grade"] = query.grade
     if query.subject is not None:
         raw_filter["subject"] = query.subject
-    metadata_filter = {k: v for k, v in raw_filter.items() if k in ALLOWED_FILTER_KEYS}
+    metadata_filter = {k: v for k, v in raw_filter.items() if k in allowed_filter_keys}
 
     # Retrieve relevant chunks from ChromaDB
     results = rag_service.search(
@@ -57,12 +57,14 @@ async def rag_query(
     )
 
     if not results:
-        return success_response(data={
-            "answer": "Không tìm thấy thông tin liên quan trong sách giáo khoa. "
-                      "Vui lòng đặt câu hỏi khác hoặc kiểm tra lại từ khóa.",
-            "source": None,
-            "sources": [],
-        })
+        return success_response(
+            data={
+                "answer": "Không tìm thấy thông tin liên quan trong sách giáo khoa. "
+                "Vui lòng đặt câu hỏi khác hoặc kiểm tra lại từ khóa.",
+                "source": None,
+                "sources": [],
+            }
+        )
 
     # Build source citations
     sources = [
@@ -84,8 +86,10 @@ async def rag_query(
     else:
         answer = "Không tìm thấy thông tin liên quan trong sách giáo khoa."
 
-    return success_response(data=RagQueryResponse(
-        answer=answer,
-        source=primary,
-        sources=sources,
-    ).model_dump())
+    return success_response(
+        data=RagQueryResponse(
+            answer=answer,
+            source=primary,
+            sources=sources,
+        ).model_dump()
+    )

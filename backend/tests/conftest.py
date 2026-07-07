@@ -3,12 +3,13 @@
 import os
 import sys
 import types
-from unittest.mock import AsyncMock, MagicMock, patch
 from pathlib import Path
+from unittest.mock import MagicMock
 
 # ── Set required env vars BEFORE any backend imports ──
 os.environ.setdefault("GOOGLE_API_KEY", "test-fake-api-key")
 os.environ.setdefault("YOLO_DEVICE", "cpu")
+
 
 # ── Helper: create a mock module with named exports ──
 def _mock_module(name: str, **attrs) -> types.ModuleType:
@@ -16,6 +17,7 @@ def _mock_module(name: str, **attrs) -> types.ModuleType:
     for k, v in attrs.items():
         setattr(mod, k, v)
     return mod
+
 
 # ── Mock sqlalchemy.ext.asyncio before database.py imports it ──
 sys.modules["sqlalchemy.ext.asyncio"] = _mock_module(
@@ -80,13 +82,12 @@ def app():
     """
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
-    from slowapi import Limiter, _rate_limit_exceeded_handler
+    from slowapi import _rate_limit_exceeded_handler
     from slowapi.errors import RateLimitExceeded
-    from slowapi.util import get_remote_address
-    from backend.config import settings
 
     # Import routers (they use limiter from the mocked backend.main)
-    from backend.api.routes import describe, ocr, tts, stt, rag, detect, sonify
+    from backend.api.routes import describe, detect, ocr, rag, sonify, stt, tts
+    from backend.config import settings
 
     _app = FastAPI(title=settings.app_name, version=settings.app_version)
 
@@ -141,17 +142,19 @@ def sample_image_bytes():
 
     def _create_png():
         width, height = 1, 1
-        ihdr_data = struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0)
-        ihdr_crc = zlib.crc32(b'IHDR' + ihdr_data) & 0xffffffff
-        raw_data = b'\x00\xff\x00\x00'
+        ihdr_data = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+        ihdr_crc = zlib.crc32(b"IHDR" + ihdr_data) & 0xFFFFFFFF
+        raw_data = b"\x00\xff\x00\x00"
         compressed = zlib.compress(raw_data)
-        idat_crc = zlib.crc32(b'IDAT' + compressed) & 0xffffffff
-        iend_crc = zlib.crc32(b'IEND') & 0xffffffff
+        idat_crc = zlib.crc32(b"IDAT" + compressed) & 0xFFFFFFFF
+        iend_crc = zlib.crc32(b"IEND") & 0xFFFFFFFF
 
-        png = b'\x89PNG\r\n\x1a\n'
-        png += struct.pack('>I', 13) + b'IHDR' + ihdr_data + struct.pack('>I', ihdr_crc)
-        png += struct.pack('>I', len(compressed)) + b'IDAT' + compressed + struct.pack('>I', idat_crc)
-        png += struct.pack('>I', 0) + b'IEND' + struct.pack('>I', iend_crc)
+        png = b"\x89PNG\r\n\x1a\n"
+        png += struct.pack(">I", 13) + b"IHDR" + ihdr_data + struct.pack(">I", ihdr_crc)
+        png += (
+            struct.pack(">I", len(compressed)) + b"IDAT" + compressed + struct.pack(">I", idat_crc)
+        )
+        png += struct.pack(">I", 0) + b"IEND" + struct.pack(">I", iend_crc)
         return png
 
     return _create_png
@@ -160,8 +163,8 @@ def sample_image_bytes():
 @pytest.fixture
 def sample_audio_bytes():
     """Return a factory that creates minimal WAV bytes for testing STT endpoints."""
-    import struct
     import math
+    import struct
 
     def _create_wav():
         sample_rate = 16000
@@ -170,18 +173,18 @@ def sample_audio_bytes():
         samples = []
         for i in range(num_samples):
             sample = int(16000 * math.sin(2 * math.pi * 440 * i / sample_rate))
-            samples.append(sample & 0xffff)
+            samples.append(sample & 0xFFFF)
 
         data_size = num_samples * 2
-        wav = b'RIFF'
-        wav += struct.pack('<I', 36 + data_size)
-        wav += b'WAVE'
-        wav += b'fmt '
-        wav += struct.pack('<IHHIIHH', 16, 1, 1, sample_rate, sample_rate * 2, 2, 16)
-        wav += b'data'
-        wav += struct.pack('<I', data_size)
+        wav = b"RIFF"
+        wav += struct.pack("<I", 36 + data_size)
+        wav += b"WAVE"
+        wav += b"fmt "
+        wav += struct.pack("<IHHIIHH", 16, 1, 1, sample_rate, sample_rate * 2, 2, 16)
+        wav += b"data"
+        wav += struct.pack("<I", data_size)
         for s in samples:
-            wav += struct.pack('<H', s)
+            wav += struct.pack("<H", s)
         return wav
 
     return _create_wav

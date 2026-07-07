@@ -7,10 +7,10 @@ Extracts Vietnamese text from images.
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
 from backend.api.auth import verify_api_key
-from backend.main import limiter
+from backend.deps import limiter
 from backend.services.ocr_service import ocr_service
 from backend.utils.file_handler import validate_image
-from backend.utils.response_builder import success_response, error_response
+from backend.utils.response_builder import error_response, success_response
 
 router = APIRouter()
 

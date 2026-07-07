@@ -1,7 +1,6 @@
 """Sonification schemas."""
 
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class DataPoint(BaseModel):
@@ -24,4 +23,4 @@ class ToneInfo(BaseModel):
 class SonifyResponse(BaseModel):
     success: bool = True
     message: str = "Sonification thành công"
-    data: Optional[dict] = None
+    data: dict | None = None

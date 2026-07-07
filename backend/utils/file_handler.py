@@ -38,10 +38,7 @@ def validate_image(file: UploadFile) -> bytes:
     if len(contents) > settings.max_file_size:
         raise HTTPException(
             status_code=413,
-            detail=(
-                f"File too large ({len(contents)} bytes). "
-                f"Max: {settings.max_file_size} bytes"
-            ),
+            detail=(f"File too large ({len(contents)} bytes). Max: {settings.max_file_size} bytes"),
         )
     return contents
 
@@ -82,4 +79,3 @@ def validate_audio(file: UploadFile) -> bytes:
             detail=f"File too large ({len(contents)} bytes). Max: {settings.max_file_size} bytes",
         )
     return contents
-

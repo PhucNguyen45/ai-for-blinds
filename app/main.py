@@ -88,7 +88,10 @@ async def ask(
     elapsed_ms = int((time.time() - started) * 1000)
     logger.info(
         "ask ok: image=%s size=%dB q_len=%d elapsed=%dms",
-        image.filename, len(image_bytes), len(question), elapsed_ms,
+        image.filename,
+        len(image_bytes),
+        len(question),
+        elapsed_ms,
     )
 
     return {"answer": answer, "model": settings.gemini_model, "elapsed_ms": elapsed_ms}
@@ -98,9 +101,11 @@ async def ask(
 async def tts(text: str = Form(...), voice: str = Form(None)):
     """Standalone TTS endpoint - stream MP3 audio for given text."""
     try:
+
         async def gen():
             async for chunk in stream_tts(text, voice=voice):
                 yield chunk
+
         return StreamingResponse(gen(), media_type="audio/mpeg")
     except TTSError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
@@ -144,7 +149,10 @@ async def ask_voice(
     elapsed_ms = int((time.time() - started) * 1000)
     logger.info(
         "ask-voice ok: image=%dB audio=%dB q=%r elapsed=%dms",
-        len(image_bytes), len(audio_bytes), question[:80], elapsed_ms,
+        len(image_bytes),
+        len(audio_bytes),
+        question[:80],
+        elapsed_ms,
     )
 
     headers = {

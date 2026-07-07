@@ -8,10 +8,9 @@ Each row represents a chunk of textbook content with:
 """
 
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
-from sqlalchemy import String, Integer, Text, DateTime, Index
+from sqlalchemy import DateTime, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import Base
@@ -20,16 +19,14 @@ from . import Base
 class TextbookContent(Base):
     __tablename__ = "textbook_contents"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
 
     # Source metadata
-    grade: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
-    subject: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
-    chapter: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
-    chapter_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    page_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    grade: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    subject: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    chapter: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    chapter_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    page_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     # Content
     title: Mapped[str] = mapped_column(String(256), default="Untitled")
@@ -39,11 +36,11 @@ class TextbookContent(Base):
     )  # SHA-256 for dedup
 
     # Vector embedding (pgvector) — text representation for portability
-    embedding: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    embedding: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Metadata
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
 
     # Relationships

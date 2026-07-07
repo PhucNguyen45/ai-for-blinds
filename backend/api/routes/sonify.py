@@ -10,7 +10,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from backend.api.auth import verify_api_key
-from backend.main import limiter
+from backend.deps import limiter
 from backend.schemas.sonify import SonifyRequest
 from backend.services.sonification import sonify_data
 from backend.utils.response_builder import success_response

@@ -9,8 +9,6 @@ import logging
 import os
 import tempfile
 import uuid
-from typing import Optional
-
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +42,7 @@ class OcrService:
         self._initialize()
         return self._ocr is not None
 
-    def extract_text(self, image_bytes: bytes) -> Optional[str]:
+    def extract_text(self, image_bytes: bytes) -> str | None:
         """
         Extract text from image bytes.
 

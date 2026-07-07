@@ -3,7 +3,6 @@ import io
 import json
 import logging
 import re
-from typing import Optional, Tuple
 
 import google.generativeai as genai
 from google.api_core import exceptions as google_exceptions
@@ -17,8 +16,16 @@ genai.configure(api_key=settings.gemini_api_key)
 
 _SUPPORTED_IMAGE_MIME = {"image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"}
 _SUPPORTED_AUDIO_MIME = {
-    "audio/wav", "audio/mp3", "audio/mpeg", "audio/mp4", "audio/m4a",
-    "audio/aac", "audio/ogg", "audio/opus", "audio/flac", "audio/webm",
+    "audio/wav",
+    "audio/mp3",
+    "audio/mpeg",
+    "audio/mp4",
+    "audio/m4a",
+    "audio/aac",
+    "audio/ogg",
+    "audio/opus",
+    "audio/flac",
+    "audio/webm",
 }
 
 _VOICE_SYSTEM_PROMPT = (
@@ -26,7 +33,7 @@ _VOICE_SYSTEM_PROMPT = (
     "File audio chứa câu hỏi bằng tiếng Việt của người dùng về bức ảnh đính kèm. "
     "Hãy: (1) chép lại chính xác câu hỏi từ audio, (2) trả lời câu hỏi đó dựa vào ảnh, ngắn gọn, "
     "rõ ràng, bằng tiếng Việt tự nhiên dễ nghe (1-3 câu, tránh ký hiệu/markdown). "
-    "Trả về DUY NHẤT một JSON object có 2 khóa: \"question\" (chuỗi) và \"answer\" (chuỗi). "
+    'Trả về DUY NHẤT một JSON object có 2 khóa: "question" (chuỗi) và "answer" (chuỗi). '
     "Không thêm ```json hay giải thích nào khác."
 )
 
@@ -37,7 +44,8 @@ class VLMError(Exception):
 
 class VLMRateLimitError(VLMError):
     """Vượt quota Gemini (free tier 5 RPM với 2.5-flash)."""
-    def __init__(self, retry_after: Optional[int] = None):
+
+    def __init__(self, retry_after: int | None = None):
         self.retry_after = retry_after
         msg = "Đã hết lượt gọi miễn phí. "
         if retry_after:
@@ -47,7 +55,7 @@ class VLMRateLimitError(VLMError):
         super().__init__(msg)
 
 
-def _validate_image(image_bytes: bytes, mime_type: Optional[str]) -> str:
+def _validate_image(image_bytes: bytes, mime_type: str | None) -> str:
     try:
         img = Image.open(io.BytesIO(image_bytes))
         img.verify()
@@ -71,7 +79,7 @@ def _validate_image(image_bytes: bytes, mime_type: Optional[str]) -> str:
     raise VLMError(f"Định dạng ảnh không được hỗ trợ: {fmt or mime_type}")
 
 
-def _validate_audio_mime(mime_type: Optional[str]) -> str:
+def _validate_audio_mime(mime_type: str | None) -> str:
     if not mime_type:
         raise VLMError("Thiếu mime_type cho audio")
     base = mime_type.split(";")[0].strip().lower()
@@ -80,7 +88,7 @@ def _validate_audio_mime(mime_type: Optional[str]) -> str:
     return base
 
 
-def _parse_voice_response(raw: str) -> Tuple[str, str]:
+def _parse_voice_response(raw: str) -> tuple[str, str]:
     text = raw.strip()
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*", "", text)
@@ -100,7 +108,7 @@ def _parse_voice_response(raw: str) -> Tuple[str, str]:
     return question, answer
 
 
-async def ask_vlm(image_bytes: bytes, question: str, mime_type: Optional[str] = None) -> str:
+async def ask_vlm(image_bytes: bytes, question: str, mime_type: str | None = None) -> str:
     """Text question + image → text answer."""
     if not question.strip():
         raise VLMError("Câu hỏi không được để trống")
@@ -135,7 +143,7 @@ async def ask_vlm(image_bytes: bytes, question: str, mime_type: Optional[str] = 
         raise VLMError(f"Lỗi gọi VLM: {e}") from e
 
 
-def _extract_retry_seconds(exc: Exception) -> Optional[int]:
+def _extract_retry_seconds(exc: Exception) -> int | None:
     msg = str(exc)
     m = re.search(r"retry in ([0-9]+(?:\.[0-9]+)?)s", msg, re.IGNORECASE)
     if m:
@@ -149,9 +157,9 @@ def _extract_retry_seconds(exc: Exception) -> Optional[int]:
 async def ask_vlm_voice(
     image_bytes: bytes,
     audio_bytes: bytes,
-    image_mime: Optional[str] = None,
-    audio_mime: Optional[str] = None,
-) -> Tuple[str, str]:
+    image_mime: str | None = None,
+    audio_mime: str | None = None,
+) -> tuple[str, str]:
     """Audio question + image → (transcribed_question, answer). Gemini does STT+VLM in one call."""
     resolved_image_mime = _validate_image(image_bytes, image_mime)
     resolved_audio_mime = _validate_audio_mime(audio_mime)

@@ -1,6 +1,6 @@
 """Feedback model for user ratings and comments on learning moments and sessions."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import uuid4
 
@@ -18,15 +18,15 @@ class Feedback(Base):
     __tablename__ = "feedbacks"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: uuid4().hex)
-    learning_moment_id: Mapped[Optional[str]] = mapped_column(
+    learning_moment_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("learning_moments.id", ondelete="SET NULL"), nullable=True
     )
-    session_id: Mapped[Optional[str]] = mapped_column(
+    session_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("learning_sessions.id", ondelete="SET NULL"), nullable=True
     )
     rating: Mapped[int] = mapped_column(default=5)  # 1-5
-    comment: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
 
     # Relationships
     learning_moment: Mapped[Optional["LearningMoment"]] = relationship(back_populates="feedbacks")

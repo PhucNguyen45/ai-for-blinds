@@ -9,7 +9,12 @@ import logging
 import os
 import sys
 from dataclasses import dataclass, field
-from typing import Optional
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load .env from project root (two levels up from backend/)
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 @dataclass
@@ -31,23 +36,25 @@ class Settings:
     cors_headers: list[str] = field(default_factory=lambda: ["*"])
 
     # ── Gemini (VLM) ─────────────────────────────────────────────
-    google_api_key: Optional[str] = os.environ.get("GOOGLE_API_KEY")
+    google_api_key: str | None = os.environ.get("GOOGLE_API_KEY")
     gemini_model: str = "gemini-2.5-flash"
 
     # ── Database (PostgreSQL + pgvector) ─────────────────────────
-    database_url: Optional[str] = os.environ.get(
+    database_url: str | None = os.environ.get(
         "DATABASE_URL",
-        "postgresql+psycopg2://sgbe_admin:sgbe_secret@localhost:5432/sgbe_vision",
+        "postgresql+psycopg2://aifb_admin:aifb_secret@localhost:5432/aifb_vision",
     )
 
     # ── File Upload ──────────────────────────────────────────────
     max_file_size: int = 10 * 1024 * 1024  # 10 MB
-    allowed_content_types: set[str] = field(default_factory=lambda: {
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "image/bmp",
-    })
+    allowed_content_types: set[str] = field(
+        default_factory=lambda: {
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/bmp",
+        }
+    )
 
     # ── Edge TTS ─────────────────────────────────────────────────
     tts_voice: str = "vi-VN-HoaiMyNeural"  # Default Vietnamese voice
@@ -64,16 +71,12 @@ class Settings:
     whisper_compute_type: str = os.environ.get("WHISPER_COMPUTE", "int8")
 
     # ── ChromaDB (RAG) ──────────────────────────────────────────
-    chroma_persist_dir: str = os.environ.get(
-        "CHROMA_PERSIST_DIR", "./data/embeddings"
-    )
+    chroma_persist_dir: str = os.environ.get("CHROMA_PERSIST_DIR", "./data/embeddings")
     chroma_collection: str = "sgbe_textbook"
     embedding_model: str = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 
     # ── YOLOv8 (Object Detection) ───────────────────────────────
-    yolo_model_path: str = os.environ.get(
-        "YOLO_MODEL_PATH", "./models/yolo/yolov8n.pt"
-    )
+    yolo_model_path: str = os.environ.get("YOLO_MODEL_PATH", "./models/yolo/yolov8n.pt")
     yolo_confidence: float = 0.5
     yolo_device: str = os.environ.get("YOLO_DEVICE", "cpu")
 
@@ -88,7 +91,9 @@ class Settings:
 
 def configure_logging() -> None:
     """Configure logging for the application."""
-    level = logging.DEBUG if os.getenv("DEBUG", "").lower() in ("true", "1", "yes") else logging.INFO
+    level = (
+        logging.DEBUG if os.getenv("DEBUG", "").lower() in ("true", "1", "yes") else logging.INFO
+    )
     logging.basicConfig(
         level=level,
         format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",

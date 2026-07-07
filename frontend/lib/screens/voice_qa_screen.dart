@@ -7,16 +7,17 @@ import 'package:provider/provider.dart';
 
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
-import '../theme/app_theme.dart';
-import '../widgets/big_button.dart';
-import '../widgets/voice_indicator.dart';
+import '../widgets/pulse_circle.dart';
+import '../widgets/conversation_bubble.dart';
+import '../widgets/glass_bottom_sheet.dart';
+import '../widgets/neon_button.dart';
+import '../widgets/waveform_bar.dart';
 
-/// Screen for voice-based Q&A with RAG knowledge base.
-/// Follows the SgBe Vision design spec:
-/// - VoiceIndicator (hiệu ứng sóng âm) khi đang nghe
-/// - BigButton "NHẤN ĐỂ HỎI" — nhấn giữ để ghi âm, thả để gửi
-/// - Vùng hiển thị text câu hỏi và câu trả lời
-/// - TTS tự động đọc câu trả lời, kèm trích dẫn nguồn SGK
+/// Neon Pulse voice Q&A screen with conversation UI.
+///
+/// Uses [PulseCircle] for visual voice state, [ConversationList] for
+/// chat-bubble Q&A display, and [GlassBottomSheetContainer] anchored
+/// at the bottom with action buttons.
 class VoiceQAScreen extends StatefulWidget {
   const VoiceQAScreen({super.key});
 
@@ -31,6 +32,8 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
   String? _question;
   String? _answer;
   String? _source;
+
+  // ─── Recording / Q&A logic ───────────────────────────────
 
   Future<void> _startRecording() async {
     final audio = context.read<AudioService>();
@@ -142,6 +145,28 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
     }
   }
 
+  void _speakResult() {
+    if (_answer == null) return;
+    final audio = context.read<AudioService>();
+    audio.stop();
+    if (_source != null) {
+      audio.speak('$_answer. Nguồn: $_source');
+    } else {
+      audio.speak(_answer!);
+    }
+  }
+
+  void _resetAndPrompt() {
+    setState(() {
+      _question = null;
+      _answer = null;
+      _source = null;
+    });
+    final audio = context.read<AudioService>();
+    audio.stop();
+    audio.speak('Hãy nhấn giữ nút để đặt câu hỏi mới.');
+  }
+
   void _showSnackBar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -149,324 +174,214 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
     );
   }
 
+  // ─── Build ────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bgColor = isDark ? AppTheme.pureBlack : AppTheme.pureWhite;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Hỏi đáp kiến thức'),
-        backgroundColor: isDark ? AppTheme.pureBlack : AppTheme.primaryBlue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 32),
-          onPressed: () {
-            context.read<AudioService>().stop();
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: Container(
-        color: bgColor,
+    return Container(
+      color: const Color(0xFF0A0E1A),
+      child: SafeArea(
         child: Column(
           children: [
-            // Voice indicator + record button area
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              color: isDark ? AppTheme.darkCard : Colors.grey.shade50,
-              child: Consumer<AudioService>(
-                builder: (context, audio, _) {
-                  return Column(
+            // ── Top bar ──────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      context.read<AudioService>().stop();
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_rounded,
+                      size: 32,
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                  const Spacer(),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      // Voice indicator (shows when listening/speaking)
-                      VoiceIndicator(
-                        isSpeaking: audio.isSpeaking,
-                        isListening: _isRecording,
-                        isPaused: audio.isPaused,
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Record button — press and hold to ask
-                      Semantics(
-                        label: 'NHẤN ĐỂ HỎI. Nhấn giữ để ghi âm câu hỏi, thả để gửi.',
-                        hint: 'Nhấn giữ để ghi âm',
-                        button: true,
-                        child: GestureDetector(
-                          onLongPressStart: (_) => _startRecording(),
-                          onLongPressEnd: (_) => _stopRecordingAndAsk(),
-                          child: Container(
-                            width: 160,
-                            height: 160,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _isRecording
-                                  ? AppTheme.accentRed
-                                  : AppTheme.accentGreen,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 4,
-                              ),
-                            ),
-                            child: Icon(
-                              _isRecording ? Icons.mic_rounded : Icons.mic_none_rounded,
-                              size: 72,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Label
                       Text(
-                        _isRecording
-                            ? 'Đang nghe...'
-                            : (_isProcessing
-                                ? 'Đang xử lý...'
-                                : 'NHẤN GIỮ ĐỂ HỎI'),
-                        style: theme.textTheme.titleLarge?.copyWith(
+                        'Hỏi đáp kiến thức',
+                        style: TextStyle(
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: _isRecording
-                              ? AppTheme.accentRed
-                              : (_isProcessing
-                                  ? AppTheme.accentOrange
-                                  : null),
+                          color: Color(0xFFFFFFFF),
                         ),
                       ),
-                      if (!_isRecording && !_isProcessing)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            'Nhấn giữ nút để ghi âm câu hỏi,\nthả nút để gửi và nhận câu trả lời',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade500,
-                              height: 1.4,
-                            ),
-                          ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Hỏi bài bằng giọng nói',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF8892B0),
                         ),
+                      ),
                     ],
-                  );
-                },
+                  ),
+                ],
               ),
             ),
 
-            // Processing indicator
-            if (_isProcessing)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Semantics(
-                  label: 'Đang xử lý câu hỏi.',
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        width: 28,
-                        height: 28,
-                        child: CircularProgressIndicator(strokeWidth: 3),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        'Đang tra cứu kiến thức...',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            // Q&A result area
-            if (_question != null && _answer != null)
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Question
-                      Semantics(
-                        label: 'Câu hỏi. $_question',
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: AppTheme.primaryBlue.withValues(alpha: 0.3),
-                              width: 2,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.volume_up_rounded,
-                                    size: 22,
-                                    color: AppTheme.primaryBlue,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Câu hỏi',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.primaryBlue,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _question!,
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Answer
-                      Semantics(
-                        label: 'Câu trả lời. $_answer',
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: isDark ? AppTheme.darkCard : AppTheme.pureWhite,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-                              width: 2,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.lightbulb_rounded,
-                                    size: 22,
-                                    color: AppTheme.accentOrange,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Câu trả lời',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.accentOrange,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _answer!,
-                                style: theme.textTheme.bodyLarge?.copyWith(height: 1.6),
-                              ),
-                              if (_source != null) ...[
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.menu_book_rounded,
-                                      size: 18,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      _source!,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey.shade500,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Listen again button + new question
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          BigMediaButton(
-                            icon: Icons.volume_up_rounded,
-                            label: 'Nghe lại',
-                            color: AppTheme.accentGreen,
-                            onTap: () {
-                              context.read<AudioService>().stop();
-                              context.read<AudioService>().speak(
-                                '$_answer. Nguồn: $_source',
-                              );
-                            },
-                          ),
-                          BigMediaButton(
-                            icon: Icons.mic_rounded,
-                            label: 'Hỏi khác',
-                            color: AppTheme.primaryBlue,
-                            onTap: () {
-                              setState(() {
-                                _question = null;
-                                _answer = null;
-                                _source = null;
-                              });
-                              final audio = context.read<AudioService>();
-                              audio.stop();
-                              audio.speak('Hãy nhấn giữ nút để đặt câu hỏi mới.');
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            // Empty state when no Q&A yet
-            if (_question == null && !_isProcessing)
-              Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.mic_rounded,
-                          size: 64,
-                          color: Colors.grey.shade400,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Chưa có câu hỏi nào.\nNhấn giữ nút để bắt đầu.',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey.shade500,
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            // ── Body area (state-dependent) ─────────────────
+            Expanded(child: _buildBody()),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBody() {
+    // Q&A result (conversation view)
+    if (_question != null && _answer != null) {
+      return _buildConversationView();
+    }
+
+    // Processing state
+    if (_isProcessing) {
+      return _buildProcessingView();
+    }
+
+    // Recording state
+    if (_isRecording) {
+      return _buildRecordingView();
+    }
+
+    // Empty / idle state
+    return _buildEmptyState();
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          PulseCircle(
+            state: PulseState.idle,
+            size: 180,
+            onTap: _startRecording,
+            showLabel: false,
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Nhấn giữ để hỏi',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF8892B0),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Nhấn giữ nút để ghi âm câu hỏi',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF4A5580),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecordingView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          PulseCircle(
+            state: PulseState.listening,
+            size: 180,
+            onTap: _stopRecordingAndAsk,
+            showLabel: false,
+          ),
+          const SizedBox(height: 24),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: WaveformBar(
+              state: WaveformState.active,
+              height: 40,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProcessingView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          PulseCircle(
+            state: PulseState.processing,
+            size: 120,
+            showLabel: false,
+          ),
+          const SizedBox(height: 24),
+          const WaveformBar(
+            state: WaveformState.processing,
+            height: 40,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Đang tra cứu kiến thức...',
+            style: TextStyle(
+              fontSize: 20,
+              color: Color(0xFFFFB300),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConversationView() {
+    return Column(
+      children: [
+        Expanded(
+          child: ConversationList(
+            messages: [
+              ConversationMessage(
+                content: _question!,
+                isUser: true,
+                timestamp: 'Vừa xong',
+              ),
+              ConversationMessage(
+                content: _answer!,
+                isUser: false,
+                source: _source,
+                timestamp: 'Vừa xong',
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 100,
+          child: GlassBottomSheetContainer(
+            showDragHandle: false,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                NeonIconButton(
+                  icon: Icons.volume_up_rounded,
+                  label: 'Nghe lại',
+                  color: const Color(0xFF00F0FF),
+                  onTap: _speakResult,
+                ),
+                NeonIconButton(
+                  icon: Icons.mic_rounded,
+                  label: 'Hỏi khác',
+                  color: const Color(0xFF39FF14),
+                  onTap: _resetAndPrompt,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -10,7 +10,7 @@ import logging
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
 from backend.api.auth import verify_api_key
-from backend.main import limiter
+from backend.deps import limiter
 from backend.services.object_detection import object_detection_service
 from backend.utils.file_handler import validate_image
 from backend.utils.response_builder import success_response

@@ -1,18 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'screens/home_screen.dart';
 import 'screens/review_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/voice_qa_screen.dart';
 import 'services/audio_service.dart';
+import 'services/voice_command_service.dart';
 import 'theme/app_theme.dart';
+import 'widgets/bottom_nav_bar.dart';
+import 'widgets/gesture_navigator.dart';
 
-/// Root widget for the SgBe Vision application.
-/// Cung cấp AudioService qua Provider (StorageService được tạo trực tiếp trong các screen).
-/// Routes: / (Home), /scanner, /voice-qa, /review, /settings.
-class BlindScholarApp extends StatelessWidget {
+/// Root widget for SgBe Vision — Neon Pulse edition.
+/// 
+/// Architecture:
+/// - MultiProvider: AudioService + VoiceCommandService
+/// - GestureNavigator: swipe navigation + shake-to-voice
+/// - NeonBottomNavBar: 4 tabs + center voice FAB
+/// - Dark-first: darkHighContrast là theme mặc định
+/// - Voice-first: voice commands hoạt động toàn cục
+class BlindScholarApp extends StatefulWidget {
   const BlindScholarApp({super.key});
+
+  @override
+  State<BlindScholarApp> createState() => _BlindScholarAppState();
+}
+
+class _BlindScholarAppState extends State<BlindScholarApp> {
+  int _currentTab = 0;
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  /// Các route paths tương ứng với tab index
+  static const _tabRoutes = ['/', '/scanner', '/voice-qa', '/review'];
+
+  void _onTabChanged(int index) {
+    if (index < 0 || index >= _tabRoutes.length) return;
+    setState(() => _currentTab = index);
+    _navigatorKey.currentState?.pushReplacementNamed(_tabRoutes[index]);
+  }
+
+  void _onVoiceCommand() {
+    // Voice command service xử lý — chỉ trigger haptic
+    final audio = context.read<AudioService>();
+    audio.stop();
+    audio.speak('Tôi đang nghe. Hãy nói lệnh của bạn.');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +53,12 @@ class BlindScholarApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) {
           final service = AudioService();
-          service.init(); // fire and forget
+          service.init();
+          return service;
+        }),
+        ChangeNotifierProvider(create: (_) {
+          final service = VoiceCommandService();
+          service.init();
           return service;
         }),
       ],
@@ -28,12 +66,13 @@ class BlindScholarApp extends StatelessWidget {
         title: 'SgBe Vision',
         debugShowCheckedModeBanner: false,
 
-        // High-contrast themes
+        // Dark-first: theme mặc định là darkHighContrast
         theme: AppTheme.lightHighContrast,
         darkTheme: AppTheme.darkHighContrast,
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.dark,
 
-        // Route configuration — voice-first navigation
+        // Navigator key để điều khiển từ bottom nav
+        navigatorKey: _navigatorKey,
         initialRoute: '/',
         routes: {
           '/': (context) => const HomeScreen(),
@@ -42,20 +81,44 @@ class BlindScholarApp extends StatelessWidget {
           '/review': (context) => const ReviewScreen(),
           '/settings': (context) => const SettingsScreen(),
         },
+        onGenerateRoute: (settings) {
+          // Fallback về home nếu route không tồn tại
+          if (settings.name == null || !settings.name!.startsWith('/')) {
+            return MaterialPageRoute(
+              builder: (_) => const HomeScreen(),
+              settings: const RouteSettings(name: '/'),
+            );
+          }
+          return null;
+        },
 
         // Accessibility: large text, high contrast, bold text
         builder: (context, child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              accessibleNavigation: true,
-              boldText: true,
-              highContrast: true,
-              textScaler: MediaQuery.of(context).textScaler.clamp(
-                minScaleFactor: 1.2,
-                maxScaleFactor: 2.0,
+          return GestureNavigator(
+            currentIndex: _currentTab,
+            onNavigate: _onTabChanged,
+            onVoiceCommand: _onVoiceCommand,
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                accessibleNavigation: true,
+                boldText: true,
+                highContrast: true,
+                textScaler: MediaQuery.of(context).textScaler.clamp(
+                  minScaleFactor: 1.2,
+                  maxScaleFactor: 2.0,
+                ),
+              ),
+              child: Scaffold(
+                body: child!,
+                bottomNavigationBar: NeonBottomNavBar(
+                  currentIndex: _currentTab,
+                  onTabChanged: _onTabChanged,
+                  onVoiceTap: _onVoiceCommand,
+                  isVoiceActive:
+                      context.watch<VoiceCommandService>().isListening,
+                ),
               ),
             ),
-            child: child!,
           );
         },
       ),

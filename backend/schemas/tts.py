@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 class TtsRequest(BaseModel):
     """Request schema for TTS endpoint."""
+
     text: str = Field(
         ...,
         min_length=1,

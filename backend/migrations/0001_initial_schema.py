@@ -12,16 +12,15 @@ Creates all core tables:
 Enables pgvector extension for vector similarity search.
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 revision: str = "0001_initial_schema"
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -84,7 +83,9 @@ def upgrade() -> None:
         sa.Column("content_type", sa.String(32), nullable=False, server_default="text"),
         sa.Column("file_path", sa.String(512), nullable=True),
         sa.Column("file_type", sa.String(16), nullable=True),
-        sa.Column("textbook_id", sa.String(36), sa.ForeignKey("textbook_contents.id"), nullable=True),
+        sa.Column(
+            "textbook_id", sa.String(36), sa.ForeignKey("textbook_contents.id"), nullable=True
+        ),
         sa.Column("page_number", sa.Integer(), nullable=True),
         sa.Column("chapter", sa.String(128), nullable=True),
         sa.Column("embedding", sa.Text(), nullable=True),
@@ -111,8 +112,12 @@ def upgrade() -> None:
     op.create_table(
         "feedbacks",
         sa.Column("id", sa.String(36), primary_key=True),
-        sa.Column("learning_moment_id", sa.String(36), sa.ForeignKey("learning_moments.id"), nullable=True),
-        sa.Column("session_id", sa.String(36), sa.ForeignKey("learning_sessions.id"), nullable=True),
+        sa.Column(
+            "learning_moment_id", sa.String(36), sa.ForeignKey("learning_moments.id"), nullable=True
+        ),
+        sa.Column(
+            "session_id", sa.String(36), sa.ForeignKey("learning_sessions.id"), nullable=True
+        ),
         sa.Column("rating", sa.Integer(), nullable=False),
         sa.Column("helpful", sa.Boolean(), nullable=False, server_default="true"),
         sa.Column("comment", sa.Text(), nullable=True),

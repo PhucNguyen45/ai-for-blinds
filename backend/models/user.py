@@ -6,10 +6,9 @@ and device identifiers for push notifications.
 """
 
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
-from sqlalchemy import String, Float, Boolean, DateTime, Text
+from sqlalchemy import Boolean, DateTime, Float, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import Base
@@ -18,11 +17,9 @@ from . import Base
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     display_name: Mapped[str] = mapped_column(String(128), nullable=True)
-    device_id: Mapped[Optional[str]] = mapped_column(String(256), unique=True, nullable=True)
+    device_id: Mapped[str | None] = mapped_column(String(256), unique=True, nullable=True)
 
     # Accessibility preferences
     tts_speed: Mapped[float] = mapped_column(Float, default=0.5)
@@ -32,12 +29,12 @@ class User(Base):
 
     # Metadata
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
 
     # Relationships

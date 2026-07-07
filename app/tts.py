@@ -1,5 +1,5 @@
 import logging
-from typing import AsyncIterator, Optional
+from collections.abc import AsyncIterator
 
 import edge_tts
 
@@ -14,9 +14,9 @@ class TTSError(Exception):
 
 async def stream_tts(
     text: str,
-    voice: Optional[str] = None,
-    rate: Optional[str] = None,
-    pitch: Optional[str] = None,
+    voice: str | None = None,
+    rate: str | None = None,
+    pitch: str | None = None,
 ) -> AsyncIterator[bytes]:
     """Stream MP3 audio chunks (24kHz mono) for the given text via Microsoft Edge TTS."""
     if not text or not text.strip():

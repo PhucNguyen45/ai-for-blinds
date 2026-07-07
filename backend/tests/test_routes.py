@@ -1,7 +1,5 @@
 """Integration tests for API routes using TestClient."""
 
-import io
-import pytest
 from fastapi import status
 
 
@@ -26,6 +24,7 @@ class TestDescribeRoute:
         return None and a 502 would be raised instead.
         """
         import json
+
         try:
             response = client.post(
                 "/describe", files={"file": ("test.txt", b"not an image", "image/png")}

@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 class RagQueryRequest(BaseModel):
     """Request schema for RAG query endpoint."""
+
     question: str = Field(
         ...,
         min_length=1,
@@ -37,6 +38,7 @@ class RagQueryRequest(BaseModel):
 
 class SourceCitation(BaseModel):
     """Citation from a specific textbook chunk."""
+
     chunk_id: str = Field(..., description="ID của đoạn văn bản trong ChromaDB")
     text: str = Field(..., description="Nội dung đoạn văn bản trích dẫn")
     grade: int | None = Field(None, description="Lớp")
@@ -48,6 +50,7 @@ class SourceCitation(BaseModel):
 
 class RagQueryResponse(BaseModel):
     """Response schema for RAG query endpoint."""
+
     answer: str = Field(
         ...,
         description="Câu trả lời dựa trên nội dung SGK",

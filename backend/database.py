@@ -6,8 +6,7 @@ Uses SQLAlchemy 2.0 async with asyncpg for PostgreSQL.
 
 import logging
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 logger = logging.getLogger(__name__)
 

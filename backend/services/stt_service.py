@@ -9,8 +9,6 @@ import logging
 import os
 import tempfile
 import uuid
-from typing import Optional
-
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +60,7 @@ class SttService:
         self,
         audio_bytes: bytes,
         language: str = "vi",
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """
         Transcribe audio to text.
 
@@ -97,11 +95,13 @@ class SttService:
             segment_list = []
             for segment in segments:
                 text_parts.append(segment.text)
-                segment_list.append({
-                    "start": segment.start,
-                    "end": segment.end,
-                    "text": segment.text,
-                })
+                segment_list.append(
+                    {
+                        "start": segment.start,
+                        "end": segment.end,
+                        "text": segment.text,
+                    }
+                )
 
             return {
                 "text": " ".join(text_parts),

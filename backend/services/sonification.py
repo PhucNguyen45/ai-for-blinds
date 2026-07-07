@@ -1,12 +1,11 @@
 """Sonification service - convert data to audio descriptions."""
 
 import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def sonify_data(data_points: list[dict], chart_type: str = "bar") -> Optional[dict]:
+def sonify_data(data_points: list[dict], chart_type: str = "bar") -> dict | None:
     """
     Convert data points to an audio description and sonification parameters.
 
@@ -55,15 +54,17 @@ def sonify_data(data_points: list[dict], chart_type: str = "bar") -> Optional[di
         # Generate tone mapping (frequency range 200-800 Hz)
         if max_val > min_val:
             tones = [
-                {"label": labels[i], "value": values[i],
-                 "frequency": 200 + (values[i] - min_val) / (max_val - min_val) * 600,
-                 "duration": 0.5}
+                {
+                    "label": labels[i],
+                    "value": values[i],
+                    "frequency": 200 + (values[i] - min_val) / (max_val - min_val) * 600,
+                    "duration": 0.5,
+                }
                 for i in range(n)
             ]
         else:
             tones = [
-                {"label": labels[i], "value": values[i],
-                 "frequency": 500, "duration": 0.5}
+                {"label": labels[i], "value": values[i], "frequency": 500, "duration": 0.5}
                 for i in range(n)
             ]
 

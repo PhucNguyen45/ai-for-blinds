@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
-import '../theme/app_theme.dart';
-import '../widgets/big_button.dart';
+import '../widgets/neon_button.dart';
+import '../widgets/eq_visualizer.dart';
+import '../widgets/gradient_background.dart';
 
-/// Settings screen — điều chỉnh tốc độ, cao độ, âm lượng giọng đọc.
-/// Tuân thủ thiết kế SgBe Vision: slider đơn giản, nút test, không trang trí.
+/// Neon Pulse settings screen — điều chỉnh tốc độ, cao độ, âm lượng giọng đọc.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -45,261 +45,377 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bgColor = isDark ? AppTheme.pureBlack : AppTheme.pureWhite;
-    final cardColor = isDark ? AppTheme.darkCard : AppTheme.pureWhite;
-    final borderColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cài đặt'),
-        backgroundColor: isDark ? AppTheme.pureBlack : AppTheme.primaryBlue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 32),
-          onPressed: () {
-            context.read<AudioService>().stop();
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: Container(
-        color: bgColor,
-        child: Consumer<AudioService>(
-          builder: (context, audio, _) {
-            return ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                const SizedBox(height: 8),
-
-                // Tốc độ giọng đọc
-                _SettingSlider(
-                  label: 'Tốc độ giọng đọc',
-                  value: audio.speechRate,
-                  min: 0.2,
-                  max: 1.0,
-                  divisions: 8,
-                  displayValue: _getSpeedLabel(audio.speechRate),
-                  sliderSemanticLabel: 'Tốc độ: ${_getSpeedLabel(audio.speechRate)}',
-                  onChanged: (val) => audio.setSpeechRate(val),
-                  cardColor: cardColor,
-                  borderColor: borderColor,
-                  theme: theme,
-                ),
-                const SizedBox(height: 12),
-
-                // Cao độ giọng đọc
-                _SettingSlider(
-                  label: 'Cao độ giọng đọc',
-                  value: audio.pitch,
-                  min: 0.5,
-                  max: 2.0,
-                  divisions: 6,
-                  displayValue: _getPitchLabel(audio.pitch),
-                  sliderSemanticLabel: 'Cao độ: ${_getPitchLabel(audio.pitch)}',
-                  onChanged: (val) => audio.setPitch(val),
-                  cardColor: cardColor,
-                  borderColor: borderColor,
-                  theme: theme,
-                ),
-                const SizedBox(height: 12),
-
-                // Âm lượng
-                _SettingSlider(
-                  label: 'Âm lượng',
-                  value: audio.volume,
-                  min: 0.0,
-                  max: 1.0,
-                  divisions: 5,
-                  displayValue: _getVolumeLabel(audio.volume),
-                  sliderSemanticLabel: 'Âm lượng: ${_getVolumeLabel(audio.volume)}',
-                  onChanged: (val) => audio.setVolume(val),
-                  cardColor: cardColor,
-                  borderColor: borderColor,
-                  theme: theme,
-                ),
-
-                const SizedBox(height: 24),
-
-                // Nút kiểm tra
-                Semantics(
-                  button: true,
-                  label: 'Kiểm tra cài đặt giọng đọc.',
-                  child: GestureDetector(
-                    onTap: () {
-                      HapticFeedback.mediumImpact();
-                      audio.speak(
-                        'Đây là giọng đọc hiện tại của bạn. '
-                        'Nếu bạn nghe rõ, cài đặt đã phù hợp.',
-                      );
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      constraints: const BoxConstraints(minHeight: 72),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      decoration: BoxDecoration(
-                        color: AppTheme.accentGreen,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Kiểm tra giọng đọc',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+    return Stack(
+      children: [
+        const GradientBackground(),
+        SafeArea(
+          child: Consumer<AudioService>(
+            builder: (context, audio, _) {
+              return Column(
+                children: [
+                  _buildTopBar(context, audio),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionTitle('Giọng đọc'),
+                          const SizedBox(height: 12),
+                          EQVisualizer(
+                            speed: audio.speechRate,
+                            pitch: audio.pitch,
+                            volume: audio.volume,
                           ),
-                        ),
+                          const SizedBox(height: 24),
+                          _buildSectionTitle('Điều chỉnh'),
+                          const SizedBox(height: 12),
+                          _buildAdjustmentCard(context, audio),
+                          const SizedBox(height: 24),
+                          _buildSectionTitle('Máy chủ'),
+                          const SizedBox(height: 12),
+                          _buildServerCard(context, audio),
+                          const SizedBox(height: 24),
+                          _buildSectionTitle('Ứng dụng'),
+                          const SizedBox(height: 12),
+                          _buildAppInfoCard(),
+                          const SizedBox(height: 32),
+                        ],
                       ),
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Cấu hình máy chủ
-                const SizedBox(height: 16),
-                Text(
-                  'Cấu hình máy chủ',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Semantics(
-                  textField: true,
-                  label: 'Địa chỉ máy chủ',
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Địa chỉ máy chủ API',
-                      hintText: 'http://192.168.1.100:8000',
-                      border: OutlineInputBorder(),
-                    ),
-                    controller: _serverUrlController,
-                    keyboardType: TextInputType.url,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                BigButton(
-                  icon: Icons.save,
-                  label: 'Lưu địa chỉ máy chủ',
-                  onTap: () {
-                    final url = _serverUrlController.text.trim();
-                    if (url.isNotEmpty) {
-                      _apiService.setBaseUrl(url);
-                      audio.speak('Đã lưu địa chỉ máy chủ');
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 32),
-
-                // Thông tin ứng dụng
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: borderColor),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'SgBe Vision v1.0.0',
-                        style: theme.textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Trợ lý học tập AI cho học sinh khiếm thị.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTopBar(BuildContext context, AudioService audio) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+      child: Row(
+        children: [
+          Semantics(
+            button: true,
+            label: 'Quay lại',
+            child: GestureDetector(
+              onTap: () {
+                audio.stop();
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF141829),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF1E2A4A)),
+                ),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  size: 32,
+                  color: Color(0xFF00F0FF),
+                ),
+              ),
+            ),
+          ),
+          const Spacer(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Text(
+                'Cài đặt',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const Text(
+                'Tùy chỉnh giọng đọc',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF8892B0),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
-}
 
-/// Một slider đơn giản với nhãn và giá trị.
-class _SettingSlider extends StatelessWidget {
-  final String label;
-  final double value;
-  final double min;
-  final double max;
-  final int divisions;
-  final String displayValue;
-  final String sliderSemanticLabel;
-  final ValueChanged<double> onChanged;
-  final Color cardColor;
-  final Color borderColor;
-  final ThemeData theme;
-
-  const _SettingSlider({
-    required this.label,
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.divisions,
-    required this.displayValue,
-    required this.sliderSemanticLabel,
-    required this.onChanged,
-    required this.cardColor,
-    required this.borderColor,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: '$label. $displayValue',
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: borderColor),
+  Widget _buildSectionTitle(String title) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF00F0FF),
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  label,
-                  style: theme.textTheme.titleLarge,
+        const SizedBox(height: 4),
+        Container(height: 1, color: const Color(0xFF1E2A4A)),
+      ],
+    );
+  }
+
+  Widget _buildAdjustmentCard(BuildContext context, AudioService audio) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141829),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF1E2A4A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Tốc độ
+          Row(
+            children: [
+              const Icon(Icons.speed, color: Color(0xFF00F0FF), size: 28),
+              const SizedBox(width: 8),
+              Text(
+                'Tốc độ',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-                const Spacer(),
-                Text(
-                  displayValue,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              const Spacer(),
+              Text(
+                _getSpeedLabel(audio.speechRate),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF8892B0),
                 ),
-              ],
-            ),
-            Semantics(
-              slider: true,
-              value: value.toStringAsFixed(1),
-              label: sliderSemanticLabel,
-              child: Slider(
-                value: value,
-                min: min,
-                max: max,
-                divisions: divisions,
-                label: sliderSemanticLabel,
-                onChanged: onChanged,
+              ),
+            ],
+          ),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: const Color(0xFF00F0FF),
+              inactiveTrackColor: const Color(0xFF1E2A4A),
+              thumbColor: const Color(0xFF00F0FF),
+              overlayColor: const Color(0xFF00F0FF).withValues(alpha: 0.15),
+              valueIndicatorColor: const Color(0xFF00F0FF),
+              valueIndicatorTextStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
-        ),
+            child: Slider(
+              value: audio.speechRate,
+              min: 0.2,
+              max: 1.0,
+              divisions: 8,
+              label: _getSpeedLabel(audio.speechRate),
+              onChanged: (val) => audio.setSpeechRate(val),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Cao độ
+          Row(
+            children: [
+              const Icon(Icons.tune, color: Color(0xFF00F0FF), size: 28),
+              const SizedBox(width: 8),
+              Text(
+                'Cao độ',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                _getPitchLabel(audio.pitch),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF8892B0),
+                ),
+              ),
+            ],
+          ),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: const Color(0xFF00F0FF),
+              inactiveTrackColor: const Color(0xFF1E2A4A),
+              thumbColor: const Color(0xFF00F0FF),
+              overlayColor: const Color(0xFF00F0FF).withValues(alpha: 0.15),
+              valueIndicatorColor: const Color(0xFF00F0FF),
+              valueIndicatorTextStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            child: Slider(
+              value: audio.pitch,
+              min: 0.5,
+              max: 2.0,
+              divisions: 6,
+              label: _getPitchLabel(audio.pitch),
+              onChanged: (val) => audio.setPitch(val),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Âm lượng
+          Row(
+            children: [
+              const Icon(Icons.volume_up, color: Color(0xFF00F0FF), size: 28),
+              const SizedBox(width: 8),
+              Text(
+                'Âm lượng',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                _getVolumeLabel(audio.volume),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF8892B0),
+                ),
+              ),
+            ],
+          ),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: const Color(0xFF00F0FF),
+              inactiveTrackColor: const Color(0xFF1E2A4A),
+              thumbColor: const Color(0xFF00F0FF),
+              overlayColor: const Color(0xFF00F0FF).withValues(alpha: 0.15),
+              valueIndicatorColor: const Color(0xFF00F0FF),
+              valueIndicatorTextStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            child: Slider(
+              value: audio.volume,
+              min: 0.0,
+              max: 1.0,
+              divisions: 5,
+              label: _getVolumeLabel(audio.volume),
+              onChanged: (val) => audio.setVolume(val),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          NeonButton(
+            icon: Icons.volume_up,
+            label: 'Kiểm tra giọng đọc',
+            color: const Color(0xFF39FF14),
+            glow: true,
+            onTap: () {
+              HapticFeedback.mediumImpact();
+              audio.speak(
+                'Đây là giọng đọc hiện tại của bạn. '
+                'Nếu bạn nghe rõ, cài đặt đã phù hợp.',
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServerCard(BuildContext context, AudioService audio) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141829),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF1E2A4A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'Địa chỉ máy chủ API',
+              labelStyle: const TextStyle(color: Color(0xFF8892B0)),
+              hintText: 'http://192.168.1.100:8000',
+              hintStyle: TextStyle(color: const Color(0xFF8892B0).withValues(alpha: 0.5)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFF1E2A4A)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFF00F0FF)),
+              ),
+              filled: true,
+              fillColor: const Color(0xFF0A0E1A),
+            ),
+            style: const TextStyle(color: Colors.white),
+            controller: _serverUrlController,
+            keyboardType: TextInputType.url,
+          ),
+          const SizedBox(height: 12),
+          NeonButton(
+            icon: Icons.save,
+            label: 'Lưu địa chỉ',
+            color: const Color(0xFF00F0FF),
+            onTap: () {
+              final url = _serverUrlController.text.trim();
+              if (url.isNotEmpty) {
+                _apiService.setBaseUrl(url);
+                audio.speak('Đã lưu địa chỉ máy chủ');
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppInfoCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF141829),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF1E2A4A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'SgBe Vision v1.0.0',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Trợ lý học tập AI',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF8892B0),
+            ),
+          ),
+        ],
       ),
     );
   }

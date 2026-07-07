@@ -1,7 +1,6 @@
 """Detection schemas for YOLOv8 object detection."""
 
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class BoundingBox(BaseModel):
@@ -20,4 +19,4 @@ class DetectedObject(BaseModel):
 class DetectionResponse(BaseModel):
     success: bool = True
     message: str = "Phát hiện vật thể thành công"
-    data: Optional[dict] = None
+    data: dict | None = None
