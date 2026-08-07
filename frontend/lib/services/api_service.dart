@@ -194,8 +194,78 @@ class ApiService {
     }
   }
 
-  /// Send data points to the backend for sonification.
-  /// Returns sonification data (tones, description, summary), or null on failure.
+  /// Send an image to the backend for VND banknote denomination recognition.
+  /// Returns a result map (denomination, formatted, method, confidence), or
+  /// null on failure.
+  Future<Map<String, dynamic>?> recognizeMoney(File imageFile) async {
+    try {
+      final uri = Uri.parse('$baseUrl/money');
+      final request = http.MultipartRequest('POST', uri);
+      request.headers['X-API-Key'] = _apiKey;
+      request.files.add(
+        await http.MultipartFile.fromPath('file', imageFile.path),
+      );
+
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 60),
+      );
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is Map && data.containsKey('data')) {
+          return data['data'] as Map<String, dynamic>;
+        }
+        return data as Map<String, dynamic>?;
+      } else {
+        debugPrint('API money error: ${response.statusCode} ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('API money exception: $e');
+      return null;
+    }
+  }
+
+  /// Search the web + Vietnamese news via the IR backend.
+  /// Returns a list of result maps (title, snippet, url, source, score).
+  Future<List<Map<String, dynamic>>> searchWeb(
+    String query, {
+    int nResults = 5,
+  }) async {
+    try {
+      final uri = Uri.parse('$baseUrl/search');
+      final response = await http
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-Key': _apiKey,
+            },
+            body: jsonEncode({
+              'query': query,
+              'n_results': nResults,
+            }),
+          )
+          .timeout(const Duration(seconds: 45));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final payload = data is Map ? data['data'] : null;
+        final results = payload is Map ? payload['results'] : null;
+        if (results is List) {
+          return results.cast<Map<String, dynamic>>();
+        }
+      } else {
+        debugPrint('API search error: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('API search exception: $e');
+    }
+    return [];
+  }
+
+  /// Send data points to the backend for sonification.  /// Returns sonification data (tones, description, summary), or null on failure.
   Future<Map<String, dynamic>?> sonifyData({
     required List<Map<String, dynamic>> dataPoints,
     String chartType = 'bar',

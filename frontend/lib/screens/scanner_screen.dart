@@ -8,6 +8,7 @@ import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../services/camera_service.dart';
 import '../services/local_ocr_service.dart';
+import '../utils/responsive.dart';
 import '../widgets/neon_button.dart';
 import '../widgets/glow_chip.dart';
 import '../widgets/waveform_bar.dart';
@@ -43,6 +44,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     Color(0xFF9D4EDD), // Describe – purple
     Color(0xFFFFB300), // Chart – amber
     Color(0xFF39FF14), // Detect – lime
+    Color(0xFFFFD700), // Money – gold
   ];
 
   @override
@@ -111,6 +113,23 @@ class _ScannerScreenState extends State<ScannerScreen> {
             } else {
               result = detectMap['scene_description'] as String? ??
                   'Không phát hiện vật thể nào.';
+            }
+          }
+          break;
+
+        case ScanMode.money:
+          final moneyMap = await _apiService.recognizeMoney(photo);
+          if (moneyMap != null) {
+            final formatted = moneyMap['formatted'] as String?;
+            final confidence = moneyMap['confidence'];
+            if (formatted != null && formatted.isNotEmpty) {
+              result = 'Tờ tiền $formatted';
+              if (confidence is num && confidence > 0) {
+                result =
+                    '$result. Độ tin cậy ${(confidence * 100).round()} phần trăm.';
+              }
+            } else {
+              result = 'Không phát hiện tờ tiền Việt Nam trong ảnh.';
             }
           }
           break;
@@ -194,10 +213,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         },
                       ),
                       const Spacer(),
-                      const Text(
+                      Text(
                         'Quét tài liệu',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -223,6 +242,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         ScanMode.describe: 'Chế độ mô tả ảnh',
                         ScanMode.chart: 'Chế độ đọc biểu đồ',
                         ScanMode.detect: 'Chế độ phát hiện vật thể',
+                        ScanMode.money: 'Chế độ nhận dạng tiền',
                       };
                       context.read<AudioService>().stop();
                       context.read<AudioService>().speak(labels[mode]!);
@@ -234,58 +254,56 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
                 // ── Center camera / processing area ───────────────────
                 Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (!_isProcessing) ...[
-                          NeonCircleButton(
-                            icon: Icons.camera_alt,
-                            label: 'CHỤP ẢNH',
-                            size: 160,
-                            color: const Color(0xFF00F0FF),
-                            onTap: _takePhoto,
+                  child: Column(
+                    children: [
+                      if (!_isProcessing) ...[
+                        NeonCircleButton(
+                          icon: Icons.camera_alt,
+                          label: 'CHỤP ẢNH',
+                          size: Responsive.safeButtonSize(context, 160, min: 120, max: 180),
+                          color: const Color(0xFF00F0FF),
+                          onTap: _takePhoto,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Chụp ảnh tài liệu',
+                          style: TextStyle(
+                            fontSize: Responsive.textScale(context, 20, min: 16, max: 24),
+                            color: Color(0xFF8892B0),
                           ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Chụp ảnh tài liệu',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Color(0xFF8892B0),
-                            ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Đưa camera vào tài liệu để quét',
+                          style: TextStyle(
+                            fontSize: Responsive.textScale(context, 16, min: 13, max: 20),
+                            color: Color(0xFF4A5580),
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Đưa camera vào tài liệu để quét',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFF4A5580),
-                            ),
+                        ),
+                      ] else ...[
+                        WaveformBar(
+                          state: WaveformState.processing,
+                          height: 60,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Đang xử lý...',
+                          style: TextStyle(
+                            fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFFB300),
                           ),
-                        ] else ...[
-                          WaveformBar(
-                            state: WaveformState.processing,
-                            height: 60,
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Đang xử lý...',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFFFB300),
-                            ),
-                          ),
-                        ],
+                        ),
                       ],
-                    ),
+                      const Spacer(flex: 1),
+                    ],
                   ),
                 ),
 
                 // ── Result area (glass bottom sheet style) ────────────
                 if (_resultText != null && _resultText!.isNotEmpty)
                   SizedBox(
-                    height: 300,
+                    height: (MediaQuery.of(context).size.height * 0.35).clamp(200, 350),
                     child: GlassBottomSheetContainer(
                       title: 'Kết quả',
                       icon: Icons.check_circle,

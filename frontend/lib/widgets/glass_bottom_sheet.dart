@@ -2,6 +2,8 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
+import '../utils/responsive.dart';
+
 /// A glassmorphism-style bottom-anchored container with blur backdrop
 /// and neon border.
 ///
@@ -91,8 +93,8 @@ class GlassBottomSheetContainer extends StatelessWidget {
                               children: <Widget>[
                                 Text(
                                   title!,
-                                  style: const TextStyle(
-                                    fontSize: 24,
+                                  style: TextStyle(
+                                    fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFFFFFFFF),
                                   ),
@@ -100,8 +102,8 @@ class GlassBottomSheetContainer extends StatelessWidget {
                                 if (subtitle != null)
                                   Text(
                                     subtitle!,
-                                    style: const TextStyle(
-                                      fontSize: 16,
+                                    style: TextStyle(
+                                      fontSize: Responsive.textScale(context, 16, min: 13, max: 20),
                                       color: Color(0xFF8892B0),
                                     ),
                                   ),

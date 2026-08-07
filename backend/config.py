@@ -80,6 +80,22 @@ class Settings:
     yolo_confidence: float = 0.5
     yolo_device: str = os.environ.get("YOLO_DEVICE", "cpu")
 
+    # ── VND Banknote Recognition (Money) ────────────────────────
+    # Optional trained YOLO model. When absent, Gemini VLM is used.
+    vnd_yolo_model_path: str = os.environ.get("VND_YOLO_MODEL_PATH", "./models/yolo/vnd_yolov8n.pt")
+    money_confidence: float = 0.5
+
+    # ── Internet Retrieval (IR / Search) ────────────────────────
+    search_default_n: int = 5
+    news_feeds: list[str] = field(
+        default_factory=lambda: [
+            "https://vnexpress.net/rss/tin-moi-nhat.rss",
+            "https://dantri.com.vn/rss/tin-moi-nhat.rss",
+        ]
+    )
+    news_cache_dir: str = os.environ.get("NEWS_CACHE_DIR", "./data/news_cache")
+    news_refresh_hours: float = float(os.environ.get("NEWS_REFRESH_HOURS", "6"))
+
     # ── Validate required settings ──────────────────────────────
     def validate(self) -> None:
         if not self.google_api_key:

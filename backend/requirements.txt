@@ -29,6 +29,13 @@ sentence-transformers>=3.0.0
 # ─── AI — Object Detection ─────────────────────────────────
 ultralytics==8.3.0
 
+# ─── AI — Money (VND banknotes) ─────────────────────────────
+# Uses Gemini VLM by default; optional YOLO model slot in money_service.
+
+# ─── AI — Internet Retrieval (IR / Search) ──────────────────
+ddgs>=8.1.1
+feedparser>=6.0.11
+
 # ─── Env / Config ──────────────────────────────────────────
 python-dotenv>=1.0.0
 

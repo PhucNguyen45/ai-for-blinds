@@ -99,6 +99,9 @@ class VoiceCommandService extends ChangeNotifier {
     if (trimmed == 'hỏi đáp' || trimmed == 'hỏi bài' || trimmed == 'đặt câu hỏi' || trimmed == 'câu hỏi' || trimmed == 'qa') {
       return 'voice-qa';
     }
+    if (trimmed == 'tìm kiếm' || trimmed == 'tim kiem' || trimmed == 'search') {
+      return 'search';
+    }
     if (trimmed == 'ôn tập' || trimmed == 'xem lại' || trimmed == 'review') {
       return 'review';
     }

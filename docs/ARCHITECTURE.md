@@ -17,6 +17,8 @@ Mobile App (Flutter)
             ├── /tts        → TTS Service (Edge TTS)
             ├── /rag/query  → RAG Service (ChromaDB)
             ├── /detect     → Detection Service (YOLOv8)
+            ├── /money      → Money Service (YOLO VND → fallback Gemini VLM)
+            ├── /search     → IR Service (DuckDuckGo + RSS tin tức + TF-IDF)
             └── /sonify     → Sonification Service
 ```
 
@@ -33,6 +35,18 @@ Mobile App (Flutter)
 2. Gửi audio → /stt → text
 3. Gửi text → /rag/query → câu trả lời
 4. TTS đọc câu trả lời + nguồn tham khảo
+
+### Nhận dạng tiền VNĐ (Money)
+1. User chụp ảnh tờ tiền → ScannerScreen (ScanMode.money)
+2. POST /money (multipart ảnh) → MoneyService
+3. Ưu tiên YOLO nếu có `vnd_yolo_model_path`, ngược lại dùng Gemini VLM
+4. Trả về mệnh giá + độ tin cậy → TTS đọc "Tờ tiền 500.000 đồng..."
+
+### Tìm kiếm thông tin (Search / IR)
+1. User ghi âm từ khóa → AudioService → POST /stt → text
+2. POST /search → IR Service: gộp DuckDuckGo + RSS tin tức (xếp hạng TF-IDF)
+3. Kết quả (web/news) hiển thị + TTS đọc top 3 kết quả
+4. RSS được cache đĩa với TTL `NEWS_REFRESH_HOURS` (mặc định 6 giờ)
 
 ## Database Schema (PostgreSQL + pgvector)
 

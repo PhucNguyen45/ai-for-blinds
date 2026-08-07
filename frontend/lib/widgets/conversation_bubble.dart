@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/responsive.dart';
+
 /// A single Q&A message in the voice conversation UI.
 class ConversationMessage {
   final String content;
@@ -37,7 +39,9 @@ class ConversationBubble extends StatelessWidget {
       child: Align(
         alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 0.85 * double.infinity),
+          constraints: BoxConstraints(
+            maxWidth: (MediaQuery.of(context).size.width * 0.85).clamp(200, 500),
+          ),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isUser ? const Color(0xFF00F0FF) : const Color(0xFF141829),
@@ -76,7 +80,7 @@ class ConversationBubble extends StatelessWidget {
                       Text(
                         content,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: Responsive.textScale(context, 20, min: 14, max: 24),
                           fontWeight: FontWeight.w400,
                           height: 1.5,
                           color: isUser
@@ -96,8 +100,8 @@ class ConversationBubble extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               source!,
-                              style: const TextStyle(
-                                fontSize: 14,
+                              style: TextStyle(
+                                fontSize: Responsive.textScale(context, 14, min: 11, max: 17),
                                 fontStyle: FontStyle.italic,
                                 color: Color(0xFF8892B0),
                               ),
@@ -109,8 +113,8 @@ class ConversationBubble extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           timestamp!,
-                          style: const TextStyle(
-                            fontSize: 12,
+                          style: TextStyle(
+                            fontSize: Responsive.textScale(context, 12, min: 10, max: 15),
                             color: Color(0xFF8892B0),
                           ),
                         ),

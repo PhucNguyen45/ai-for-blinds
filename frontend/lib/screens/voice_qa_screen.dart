@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
+import '../utils/responsive.dart';
 import '../widgets/pulse_circle.dart';
 import '../widgets/conversation_bubble.dart';
 import '../widgets/glass_bottom_sheet.dart';
@@ -200,22 +201,22 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
                     ),
                   ),
                   const Spacer(),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         'Hỏi đáp kiến thức',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFFFFFFF),
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
                         'Hỏi bài bằng giọng nói',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: Responsive.textScale(context, 14, min: 12, max: 18),
                           color: Color(0xFF8892B0),
                         ),
                       ),
@@ -254,87 +255,81 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          PulseCircle(
-            state: PulseState.idle,
-            size: 180,
-            onTap: _startRecording,
-            showLabel: false,
+    return Column(
+      children: [
+        PulseCircle(
+          state: PulseState.idle,
+          size: Responsive.safeButtonSize(context, 180, min: 120, max: 200),
+          onTap: _startRecording,
+          showLabel: false,
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Nhấn giữ để hỏi',
+          style: TextStyle(
+            fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF8892B0),
           ),
-          const SizedBox(height: 24),
-          const Text(
-            'Nhấn giữ để hỏi',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF8892B0),
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Nhấn giữ nút để ghi âm câu hỏi',
+          style: TextStyle(
+            fontSize: Responsive.textScale(context, 16, min: 13, max: 20),
+            color: Color(0xFF4A5580),
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Nhấn giữ nút để ghi âm câu hỏi',
-            style: TextStyle(
-              fontSize: 16,
-              color: Color(0xFF4A5580),
-            ),
-          ),
-        ],
-      ),
+        ),
+        const Spacer(flex: 1),
+      ],
     );
   }
 
   Widget _buildRecordingView() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          PulseCircle(
-            state: PulseState.listening,
-            size: 180,
-            onTap: _stopRecordingAndAsk,
-            showLabel: false,
+    return Column(
+      children: [
+        PulseCircle(
+          state: PulseState.listening,
+          size: 180,
+          onTap: _stopRecordingAndAsk,
+          showLabel: false,
+        ),
+        const SizedBox(height: 24),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: WaveformBar(
+            state: WaveformState.active,
+            height: 40,
           ),
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: WaveformBar(
-              state: WaveformState.active,
-              height: 40,
-            ),
-          ),
-        ],
-      ),
+        ),
+        const Spacer(flex: 1),
+      ],
     );
   }
 
   Widget _buildProcessingView() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          PulseCircle(
-            state: PulseState.processing,
-            size: 120,
-            showLabel: false,
+    return Column(
+      children: [
+        PulseCircle(
+          state: PulseState.processing,
+          size: 120,
+          showLabel: false,
+        ),
+        const SizedBox(height: 24),
+        const WaveformBar(
+          state: WaveformState.processing,
+          height: 40,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Đang tra cứu kiến thức...',
+          style: TextStyle(
+            fontSize: Responsive.textScale(context, 20, min: 15, max: 24),
+            color: Color(0xFFFFB300),
           ),
-          const SizedBox(height: 24),
-          const WaveformBar(
-            state: WaveformState.processing,
-            height: 40,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Đang tra cứu kiến thức...',
-            style: TextStyle(
-              fontSize: 20,
-              color: Color(0xFFFFB300),
-            ),
-          ),
-        ],
-      ),
+        ),
+        const Spacer(flex: 1),
+      ],
     );
   }
 

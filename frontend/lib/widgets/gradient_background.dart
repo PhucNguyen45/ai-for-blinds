@@ -47,7 +47,7 @@ class GradientBackground extends StatefulWidget {
 }
 
 class _GradientBackgroundState extends State<GradientBackground>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   /// Controller for the slow gradient direction shift (30s loop, auto-reverse).
   late final AnimationController _gradientController;
   late final Animation<Alignment> _gradientAnimation;

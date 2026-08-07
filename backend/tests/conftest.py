@@ -86,7 +86,7 @@ def app():
     from slowapi.errors import RateLimitExceeded
 
     # Import routers (they use limiter from the mocked backend.main)
-    from backend.api.routes import describe, detect, ocr, rag, sonify, stt, tts
+    from backend.api.routes import describe, detect, money, ocr, rag, search, sonify, stt, tts
     from backend.config import settings
 
     _app = FastAPI(title=settings.app_name, version=settings.app_version)
@@ -112,6 +112,8 @@ def app():
     _app.include_router(stt.router, tags=["STT"])
     _app.include_router(rag.router, prefix="/rag", tags=["RAG"])
     _app.include_router(detect.router, tags=["Detection"])
+    _app.include_router(money.router, tags=["Money"])
+    _app.include_router(search.router, tags=["Search"])
     _app.include_router(sonify.router, tags=["Sonification"])
 
     # Health endpoint

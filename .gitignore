@@ -44,6 +44,7 @@ data/chromadb/
 data/embeddings/
 data/audio_samples/
 data/sgk/
+data/news_cache/
 
 # Docker
 docker/volumes/

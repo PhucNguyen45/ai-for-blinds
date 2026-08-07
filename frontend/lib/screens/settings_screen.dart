@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
+import '../utils/responsive.dart';
 import '../widgets/neon_button.dart';
 import '../widgets/eq_visualizer.dart';
 import '../widgets/gradient_background.dart';
@@ -125,18 +126,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
+              Text(
                 'Cài đặt',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-              const Text(
+              Text(
                 'Tùy chỉnh giọng đọc',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: Responsive.textScale(context, 14, min: 12, max: 18),
                   color: Color(0xFF8892B0),
                 ),
               ),
@@ -153,8 +154,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 20,
+          style: TextStyle(
+            fontSize: Responsive.textScale(context, 20, min: 15, max: 24),
             fontWeight: FontWeight.bold,
             color: Color(0xFF00F0FF),
           ),
@@ -183,8 +184,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(width: 8),
               Text(
                 'Tốc độ',
-                style: const TextStyle(
-                  fontSize: 22,
+                style: TextStyle(
+                  fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -231,8 +232,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(width: 8),
               Text(
                 'Cao độ',
-                style: const TextStyle(
-                  fontSize: 22,
+                style: TextStyle(
+                  fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -279,8 +280,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(width: 8),
               Text(
                 'Âm lượng',
-                style: const TextStyle(
-                  fontSize: 22,
+                style: TextStyle(
+                  fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -288,8 +289,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const Spacer(),
               Text(
                 _getVolumeLabel(audio.volume),
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: Responsive.textScale(context, 16, min: 13, max: 20),
                   color: Color(0xFF8892B0),
                 ),
               ),

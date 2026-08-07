@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../utils/responsive.dart';
+
 /// Data model for a selectable chip in [GlowChipBar].
 class GlowChipData {
   final String label;
@@ -99,7 +101,7 @@ class GlowChip extends StatelessWidget {
         },
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(Responsive.scale(context, 16, min: 10, max: 24)),
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(16),
@@ -122,7 +124,7 @@ class GlowChip extends StatelessWidget {
                     Text(
                       label,
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: Responsive.textScale(context, 20, min: 14, max: 24),
                         fontWeight: FontWeight.bold,
                         color: labelColor,
                       ),
@@ -133,7 +135,7 @@ class GlowChip extends StatelessWidget {
                         child: Text(
                           subtitle!,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: Responsive.textScale(context, 14, min: 11, max: 17),
                             fontWeight: FontWeight.normal,
                             color: subtitleColor,
                           ),

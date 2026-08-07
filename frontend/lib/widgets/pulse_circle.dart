@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../utils/responsive.dart';
+
 /// Represents the current state of the voice interaction.
 enum PulseState {
   /// No activity — waiting for input.
@@ -237,7 +239,7 @@ class _PulseCircleState extends State<PulseCircle>
               Text(
                 _stateLabel,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
                   fontWeight: FontWeight.bold,
                   color: _stateLabelColor,
                 ),

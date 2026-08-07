@@ -21,7 +21,7 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 # ── Routes ─────────────────────────────────────────────────────
-from backend.api.routes import describe, detect, ocr, rag, sonify, stt, tts
+from backend.api.routes import describe, detect, money, ocr, rag, search, sonify, stt, tts
 
 # ── App Initialization ──────────────────────────────────────────
 
@@ -54,6 +54,8 @@ app.include_router(tts.router, tags=["TTS"])
 app.include_router(stt.router, tags=["STT"])
 app.include_router(rag.router, prefix="/rag", tags=["RAG"])
 app.include_router(detect.router, tags=["Detection"])
+app.include_router(money.router, tags=["Money"])
+app.include_router(search.router, tags=["Search"])
 app.include_router(sonify.router, tags=["Sonification"])
 
 

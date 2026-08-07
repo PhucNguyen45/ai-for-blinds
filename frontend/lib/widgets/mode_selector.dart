@@ -6,7 +6,8 @@ enum ScanMode {
   ocr,
   describe,
   chart,
-  detect;
+  detect,
+  money;
 
   String get label {
     switch (this) {
@@ -18,6 +19,8 @@ enum ScanMode {
         return 'Đọc biểu đồ';
       case ScanMode.detect:
         return 'Phát hiện vật thể';
+      case ScanMode.money:
+        return 'Nhận dạng tiền';
     }
   }
 
@@ -31,6 +34,8 @@ enum ScanMode {
         return 'Chuyển biểu đồ thành âm thanh';
       case ScanMode.detect:
         return 'YOLO nhận diện đồ vật';
+      case ScanMode.money:
+        return 'Xác định mệnh giá tiền Việt Nam';
     }
   }
 
@@ -44,6 +49,8 @@ enum ScanMode {
         return Icons.bar_chart_rounded;
       case ScanMode.detect:
         return Icons.search_rounded;
+      case ScanMode.money:
+        return Icons.attach_money_rounded;
     }
   }
 }

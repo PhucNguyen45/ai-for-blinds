@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/audio_service.dart';
+import '../utils/responsive.dart';
 import '../widgets/neon_button.dart';
 import '../widgets/gradient_background.dart';
 
@@ -40,6 +41,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final greetingS = Responsive.textScale(context, 36, min: 24, max: 42);
+    final subS = Responsive.textScale(context, 18, min: 14, max: 22);
+    final titleS = Responsive.textScale(context, 24, min: 18, max: 30);
+    final hintS = Responsive.textScale(context, 16, min: 13, max: 20);
+    final topPad = Responsive.scale(context, 24, min: 12, max: 32);
+    final sidePad = Responsive.scale(context, 20, min: 12, max: 24);
+
     return Semantics(
       label: 'SgBe Vision. Chạm để bắt đầu. Vuốt để chuyển trang.',
       child: Stack(
@@ -53,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 // ── Top section: greeting header ─────────
                 Padding(
-                  padding: const EdgeInsets.only(top: 24, left: 20, right: 20),
+                  padding: EdgeInsets.only(top: topPad, left: sidePad, right: sidePad),
                   child: Row(
                     children: [
                       Column(
@@ -61,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                             'Chào bạn 👋',
-                            style: const TextStyle(
-                              fontSize: 36,
+                            style: TextStyle(
+                              fontSize: greetingS,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -71,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             'SgBe Vision',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: subS,
                               color: const Color(0xFF8892B0),
                             ),
                           ),
@@ -82,27 +90,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 // ── Center: pulse-style greeting area ────
-                const Expanded(
+                Expanded(
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         // Glowing icon
                         _GlowingIcon(),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           'Chạm để bắt đầu',
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: titleS,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           'Nói "Trợ giúp" để biết thêm',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: hintS,
                             color: Color(0xFF8892B0),
                           ),
                         ),
@@ -113,8 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // ── Quick actions row ────────────────────
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                  padding: EdgeInsets.only(
+                    left: sidePad,
+                    right: sidePad,
+                    bottom: Responsive.scale(context, 16, min: 8, max: 24),
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -140,6 +151,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
+                // ── Internet search action ─────────────────
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: sidePad,
+                    right: sidePad,
+                    bottom: Responsive.scale(context, 16, min: 8, max: 24),
+                  ),
+                  child: NeonButton(
+                    icon: Icons.travel_explore_rounded,
+                    label: 'Tìm kiếm thông tin',
+                    subtitle: 'Tra cứu Internet bằng giọng nói',
+                    color: const Color(0xFFFFB300),
+                    onTap: () => Navigator.pushNamed(context, '/search'),
+                  ),
+                ),
+
                 // ── Bottom section: "Gần đây" (placeholder) ──
                 // Reserved for recent activity items when available.
                 const SizedBox(height: 8),
@@ -161,9 +188,11 @@ class _GlowingIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = Responsive.safeButtonSize(context, 96, min: 64, max: 120);
+    final iconSize = size * 0.67;
     return Container(
-      width: 96,
-      height: 96,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: const Color(0xFF00F0FF).withValues(alpha: 0.08),
@@ -175,9 +204,9 @@ class _GlowingIcon extends StatelessWidget {
           ),
         ],
       ),
-      child: const Icon(
+      child: Icon(
         Icons.auto_awesome_rounded,
-        size: 64,
+        size: iconSize,
         color: Color(0xFF00F0FF),
       ),
     );

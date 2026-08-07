@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/review_screen.dart';
 import 'screens/scanner_screen.dart';
+import 'screens/search_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/voice_qa_screen.dart';
 import 'services/audio_service.dart';
@@ -79,6 +80,7 @@ class _BlindScholarAppState extends State<BlindScholarApp> {
           '/scanner': (context) => const ScannerScreen(),
           '/voice-qa': (context) => const VoiceQAScreen(),
           '/review': (context) => const ReviewScreen(),
+          '/search': (context) => const SearchScreen(),
           '/settings': (context) => const SettingsScreen(),
         },
         onGenerateRoute: (settings) {

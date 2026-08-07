@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../utils/responsive.dart';
+
 /// Large oval/rounded action button for the Neon Pulse theme.
 class NeonButton extends StatefulWidget {
   final IconData icon;
@@ -34,6 +36,7 @@ class _NeonButtonState extends State<NeonButton> {
     final Color textColor = widget.color == const Color(0xFF00F0FF)
         ? const Color(0xFF000000)
         : const Color(0xFFFFFFFF);
+    final minH = Responsive.scale(context, 72, min: 56, max: 80);
 
     return Semantics(
       button: true,
@@ -47,7 +50,7 @@ class _NeonButtonState extends State<NeonButton> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: widget.fullWidth ? double.infinity : null,
-          constraints: const BoxConstraints(minHeight: 72),
+          constraints: BoxConstraints(minHeight: minH),
           decoration: BoxDecoration(
             color: widget.color,
             borderRadius: BorderRadius.circular(20),
@@ -65,7 +68,10 @@ class _NeonButtonState extends State<NeonButton> {
                   ]
                 : null,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          padding: EdgeInsets.symmetric(
+            horizontal: Responsive.scale(context, 24, min: 16, max: 32),
+            vertical: Responsive.scale(context, 20, min: 14, max: 24),
+          ),
           child: Row(
             children: [
               Icon(widget.icon, size: 40, color: const Color(0xFFFFFFFF)),
@@ -123,8 +129,14 @@ class NeonCircleButton extends StatelessWidget {
     this.semanticLabel,
   });
 
+  double _responsiveSize(BuildContext context) {
+    final shortest = MediaQuery.of(context).size.shortestSide;
+    return (shortest * (size / 414)).clamp(100.0, size);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final s = _responsiveSize(context);
     return Semantics(
       button: true,
       label: semanticLabel ?? label,
@@ -135,8 +147,8 @@ class NeonCircleButton extends StatelessWidget {
           onTap();
         },
         child: Container(
-          width: size,
-          height: size,
+          width: s,
+          height: s,
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
@@ -156,7 +168,7 @@ class NeonCircleButton extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            size: size * 0.45,
+            size: s * 0.45,
             color: const Color(0xFFFFFFFF),
           ),
         ),
@@ -186,6 +198,9 @@ class NeonIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = Responsive.scale(context, size, min: 56, max: 88);
+    final iconS = Responsive.scale(context, 32, min: 24, max: 40);
+    final fontS = Responsive.textScale(context, 13, min: 11, max: 16);
     return Semantics(
       button: true,
       label: semanticLabel ?? label,
@@ -197,8 +212,8 @@ class NeonIconButton extends StatelessWidget {
         },
         child: Container(
           constraints: BoxConstraints(
-            minWidth: size,
-            minHeight: size * 0.7,
+            minWidth: s,
+            minHeight: s * 0.7,
           ),
           decoration: BoxDecoration(
             color: color,
@@ -207,12 +222,12 @@ class NeonIconButton extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: const Color(0xFFFFFFFF)),
+              Icon(icon, size: iconS, color: const Color(0xFFFFFFFF)),
               const SizedBox(height: 4),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 13,
+                style: TextStyle(
+                  fontSize: fontS,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFFFFFFF),
                 ),

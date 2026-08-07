@@ -85,6 +85,8 @@ ai-for-blinds/
 │   │   ├── stt_service.py               #   Whisper / phoWhisper
 │   │   ├── rag_service.py               #   ChromaDB + embeddings
 │   │   ├── object_detection.py          #   YOLOv8 + Vietnamese labels
+│   │   ├── money_service.py             #   VND banknote recognition (YOLO→VLM)
+│   │   ├── ir_service.py                #   Internet retrieval (DDG + RSS + TF-IDF)
 │   │   └── sonification.py              #   Tone.js subprocess
 │   ├── routes/                           # API route handlers
 │   │   ├── __init__.py
@@ -93,6 +95,9 @@ ai-for-blinds/
 │   │   ├── tts.py                       #   POST /tts
 │   │   ├── stt.py                       #   POST /stt
 │   │   ├── rag.py                       #   POST /rag/search, /rag/add, GET /rag/stats
+│   │   ├── detect.py                    #   POST /detect
+│   │   ├── money.py                     #   POST /money
+│   │   ├── search.py                    #   POST /search
 │   │   └── sonify.py                    #   POST /sonify
 │   ├── utils/                            # Shared utilities
 │   │   ├── __init__.py
@@ -199,8 +204,10 @@ ai-for-blinds/
 │                  │  /tts     │    ocr_service.py     │           │  (vector search) │
 │                  │  /stt     │    tts_service.py     │           └──────────────────┘
 │                  │  /rag     │    stt_service.py     │
-│                  │  /sonify  │    rag_service.py     │
-│                  │           │    object_detection.py│
+│                  │  /money   │    rag_service.py     │
+│                  │  /search  │    object_detection.py│
+│                  │  /sonify  │    money_service.py   │
+│                  │           │    ir_service.py      │
 │                  │           │    sonification.py    │
 └──────────────────┘           └──────────────────────┘
          │                              │
@@ -250,20 +257,19 @@ Frontend **hoạt động fully offline** (local ML Kit OCR + platform TTS). Bac
 ### App Root
 
 **`frontend/lib/app.dart`** — `BlindScholarApp`:
-- `MultiProvider` với `TtsService` + `LibraryService`
-- `MaterialApp` với high-contrast light/dark themes
+- `MultiProvider` với `AudioService` + `VoiceCommandService`
+- `MaterialApp` với high-contrast light/dark themes + Neon Pulse theme
 - `accessibleNavigation: true`, `boldText: true`, `highContrast: true`
-- Text scale clamp 1.2×–2.0×
+- Text scale clamp 1.2×–2.0×, `GestureNavigator` (swipe + shake-to-voice)
 
 | Route | Screen | Description |
 |-------|--------|-------------|
-| `/` | `SplashScreen` | TTS "BlindScholar" → auto-nav to `/home` |
-| `/home` | `HomeScreen` | 5 feature buttons (My Library + Book Scanner + Text Reader + Voice Notes + Settings) |
-| `/library` | `LibraryScreen` | Search & filter saved scans, voice notes, text entries |
-| `/book-scanner` | `BookScannerScreen` | Multi-page scan + camera guidance + save to library |
-| `/text-reader` | `TextReaderScreen` | Type/paste text → TTS (accepts route arguments) |
-| `/voice-notes` | `VoiceNotesScreen` | Record/play/delete with metadata persistence + library sync |
-| `/settings` | `SettingsScreen` | TTS speed, pitch, volume + about |
+| `/` | `HomeScreen` | Dashboard Neon Pulse + quick actions (Quét, Hỏi đáp, Tìm kiếm) |
+| `/scanner` | `ScannerScreen` | Quét tài liệu: OCR / Mô tả ảnh / Đọc biểu đồ / Phát hiện vật thể / Nhận dạng tiền |
+| `/voice-qa` | `VoiceQAScreen` | Hỏi đáp SGK bằng giọng nói (STT → RAG → TTS) |
+| `/review` | `ReviewScreen` | Ôn tập / xem lại kiến thức |
+| `/search` | `SearchScreen` | Tìm kiếm thông tin Internet voice-first (STT → `/search` → TTS) |
+| `/settings` | `SettingsScreen` | TTS speed, pitch, volume + server config |
 
 ### Theme
 
@@ -278,7 +284,7 @@ Frontend **hoạt động fully offline** (local ML Kit OCR + platform TTS). Bac
 |---------|------|-----------|
 | `TtsService` | `services/tts_service.dart` | `FlutterTts` wrapper (`ChangeNotifier`). Speed/pitch/volume, `speak()`, `pause()`, `resume()` (native platform resume), `stop()`. |
 | `OcrService` | `services/ocr_service.dart` | Google ML Kit `TextRecognizer`. `extractTextFromImage(File)` → offline OCR. |
-| `ApiService` | `services/api_service.dart` | HTTP client cho FastAPI: `describeImage()`, `ocrImage()`, `isBackendAvailable()`. |
+| `ApiService` | `services/api_service.dart` | HTTP client cho FastAPI: `describeImage()`, `ocrImage()`, `sttAudio()`, `ragQuery()`, `detectImage()`, `recognizeMoney()`, `searchWeb()`, `isBackendAvailable()`. |
 | `LibraryService` | `services/library_service.dart` | JSON file persistence cho `LibraryItem`. `load()`, `addItem()`, `removeItem()`, `search()`. |
 
 ### Widgets
@@ -326,6 +332,8 @@ Mọi service đều dùng **singleton pattern** với lazy initialization — k
 | **STT** | `services/stt_service.py` | Whisper / phoWhisper | Nhận dạng giọng nói tiếng Việt. Ưu tiên phoWhisper, fallback base model. |
 | **RAG** | `services/rag_service.py` | ChromaDB + sentence embeddings | Tra cứu SGK. `search()`, `add_textbook_chunk()`, `count_chunks()`. |
 | **Object Detection** | `services/object_detection.py` | YOLOv8 | Nhận diện vật thể. Vietnamese labels + `describe_detections()`. |
+| **Money** | `services/money_service.py` | YOLO VND → fallback Gemini VLM | Nhận dạng mệnh giá tiền Việt Nam. `recognize()` với 2 tầng yolo/vlm. |
+| **IR / Search** | `services/ir_service.py` | DuckDuckGo + RSS tin tức + TF-IDF | Truy hồi thông tin Internet. `search()` gộp web + news, cache RSS. |
 | **Sonification** | `services/sonification.py` | Tone.js (subprocess) | Chuyển dữ liệu thành âm thanh. `sonify_data()` với 3 modes. |
 
 ### Database Models
@@ -353,6 +361,11 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 | `WHISPER_MODEL` | `base` | Whisper model size |
 | `CHROMA_PERSIST_DIR` | `./data/embeddings` | ChromaDB persistence |
 | `YOLO_MODEL_PATH` | `./models/yolo/yolov8n.pt` | YOLO weights |
+| `VND_YOLO_MODEL_PATH` | `./models/yolo/vnd_yolov8n.pt` | YOLO nhận dạng tiền (tùy chọn; nếu thiếu dùng Gemini VLM) |
+| `MONEY_CONFIDENCE` | `0.5` | Ngưỡng tin cậy nhận dạng tiền |
+| `SEARCH_DEFAULT_N` | `5` | Số kết quả mặc định cho `/search` |
+| `NEWS_CACHE_DIR` | `./data/news_cache` | Cache RSS tin tức |
+| `NEWS_REFRESH_HOURS` | `6` | Chu kỳ làm mới cache tin tức (giờ) |
 | `MAX_FILE_SIZE` | `10MB` | Upload limit |
 
 ---
@@ -535,6 +548,29 @@ Dùng `URLSession.upload(for:from:)` với multipart body — tương tự patte
 | `timeseries` | Dữ liệu chuỗi thời gian | Frequency mapping (C4–C6) |
 | `categories` | Dữ liệu phân loại | Scale ascending |
 | `simple` | Dãy số đơn giản | Melody mapping |
+
+#### `POST /money` — Nhận dạng mệnh giá tiền VNĐ
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `file` | Multipart | Ảnh tờ tiền Việt Nam, max 10MB |
+
+**Response:** `{ "success": true, "data": { "denomination": "500000", "formatted": "500.000 đồng", "method": "vlm", "confidence": 0.95 } }`
+
+- `method`: `yolo` (nếu `VND_YOLO_MODEL_PATH` hợp lệ) hoặc `vlm` (Gemini). `denomination = null` khi không phải tờ tiền VN. `503` khi không có phương thức khả dụng. Rate limit: 10/phút.
+
+#### `POST /search` — Truy hồi thông tin Internet
+
+```json
+{
+  "query": "Thủ đô của Việt Nam là gì?",
+  "n_results": 5
+}
+```
+
+**Response:** `{ "success": true, "data": { "query": "...", "results": [{ "title": "...", "snippet": "...", "url": "...", "source": "web|news", "score": 0.98 }] } }`
+
+- `source`: `web` (DuckDuckGo) hoặc `news` (RSS VnExpress/Dân Trí xếp hạng TF-IDF). Rate limit: 20/phút.
 
 ---
 
@@ -784,6 +820,8 @@ python -m py_compile app/main.py app/vlm.py app/tts.py app/config.py
 | `ultralytics` | 8.3.0 | AI — Detection | YOLOv8 |
 | `opencv-python-headless` | 4.13.0 | AI — OCR | Image processing |
 | `torch` | 2.5.0 | AI — All | PyTorch backend |
+| `ddgs` | ≥8.1 | AI — IR | DuckDuckGo search |
+| `feedparser` | ≥6.0 | AI — IR | RSS tin tức |
 
 ---
 
@@ -799,8 +837,10 @@ python -m py_compile app/main.py app/vlm.py app/tts.py app/config.py
 | Voice Recording | ✅ | Database model `VoiceNote` | `VoiceNotesScreen` |
 | My Library | ✅ | — (Local JSON storage) | `LibraryScreen` + `LibraryService` |
 | VLM Server | 🆕 | `app/main.py` (Gemini + Edge TTS) | Web demo + mobile API |
-| Speech-to-Text | 🆕 | `services/stt_service.py` (PhoWhisper) | Cần tích hợp frontend |
-| RAG Textbook Q&A | 🆕 | `services/rag_service.py` (ChromaDB) | Cần màn hình Q&A |
+| Speech-to-Text | 🆕 | `services/stt_service.py` (PhoWhisper) | ✅ Voice Q&A + Search |
+| RAG Textbook Q&A | 🆕 | `services/rag_service.py` (ChromaDB) | ✅ `VoiceQAScreen` |
+| Money Recognition (tiền VNĐ) | ✅ | `services/money_service.py` (YOLO→Gemini VLM) | ✅ `ScanMode.money` trong `ScannerScreen` |
+| Internet Retrieval | ✅ | `services/ir_service.py` (DuckDuckGo + RSS + TF-IDF) | ✅ `SearchScreen` voice-first |
 
 ### Advanced (Giai đoạn 2) 🆕 Đã có backend, cần frontend
 
@@ -809,7 +849,8 @@ python -m py_compile app/main.py app/vlm.py app/tts.py app/config.py
 | Persistent Visual Memory | `models/learning_moment.py` + pgvector | Cần xây dựng |
 | Sonification | `services/sonification.py` (Tone.js) | Cần màn hình nghe dữ liệu |
 | Emotion-aware Literature | `services/tts_service.py` (SSML) | Cần UI chọn cảm xúc |
-| Object Detection | `services/object_detection.py` (YOLOv8) | Cần màn hình phát hiện vật thể |
+| Color Recognition | `services/vlm_service.py` (Gemini) | Cần xây dựng |
+| Mở rộng Object Detection sang mặt hàng siêu thị | `services/object_detection.py` (YOLOv8) | Cần dữ liệu + tinh chỉnh |
 
 ### Research (Giai đoạn 3) 🔮 Tương lai
 
