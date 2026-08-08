@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/learning_moment.dart';
 import '../services/audio_service.dart';
 import '../services/storage_service.dart';
+import '../utils/responsive.dart';
 import '../widgets/swipeable_carousel.dart';
 import '../widgets/neon_button.dart';
 import '../widgets/gradient_background.dart';
@@ -129,41 +130,50 @@ class _ReviewScreenState extends State<ReviewScreen> {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () {
-              context.read<AudioService>().stop();
-              Navigator.pop(context);
-            },
-            child: Semantics(
-              button: true,
-              label: 'Quay lại',
-              child: const Icon(
-                Icons.arrow_back_rounded,
-                size: 32,
-                color: Colors.white,
+          Semantics(
+            button: true,
+            label: 'Quay lại',
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                context.read<AudioService>().stop();
+                Navigator.pop(context);
+              },
+              behavior: HitTestBehavior.opaque,
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.arrow_back_rounded,
+                  size: 32,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
           const Spacer(),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                'Ôn tập',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'Ôn tập',
+                  style: TextStyle(
+                    fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Text(
-                'Vuốt lên/xuống để duyệt',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF8892B0),
+                Text(
+                  'Vuốt lên/xuống để duyệt',
+                  style: TextStyle(
+                    fontSize: Responsive.textScale(context, 14, min: 12, max: 18),
+                    color: Color(0xFF8892B0),
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -261,76 +271,93 @@ class _ReviewScreenState extends State<ReviewScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
         children: [
-          const Spacer(flex: 2),
-          // Type indicator icon
-          Icon(
-            hasImage ? Icons.image_rounded : Icons.text_snippet,
-            size: 80,
-            color: const Color(0xFF00F0FF),
-          ),
-          const SizedBox(height: 24),
-          // Title
-          Text(
-            moment.title,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          // Scrollable content, vertically centered when short.
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Type indicator icon
+                          Icon(
+                            hasImage ? Icons.image_rounded : Icons.text_snippet,
+                            size: Responsive.scale(context, 80, min: 60, max: 100),
+                            color: const Color(0xFF00F0FF),
+                          ),
+                          const SizedBox(height: 24),
+                          // Title
+                          Text(
+                            moment.title,
+                            style: TextStyle(
+                              fontSize:
+                                  Responsive.textScale(context, 28, min: 22, max: 34),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          // Description
+                          Text(
+                            moment.description,
+                            style: TextStyle(
+                              fontSize:
+                                  Responsive.textScale(context, 20, min: 16, max: 26),
+                              color: Color(0xFF8892B0),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          // Date
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.access_time, size: 16, color: Color(0xFF4A5580)),
+                              const SizedBox(width: 4),
+                              Text(
+                                moment.formattedDate,
+                                style: TextStyle(
+                                  fontSize: Responsive.textScale(context, 16, min: 13, max: 20),
+                                  color: Color(0xFF4A5580),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Source text (only if available)
+                          if (moment.sourceTextbook != null) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.menu_book, size: 16, color: Color(0xFF4A5580)),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    moment.sourceTextbook!,
+                                    style: TextStyle(
+                                      fontSize: Responsive.textScale(context, 16, min: 13, max: 20),
+                                      color: Color(0xFF4A5580),
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
-          // Description
-          Text(
-            moment.description,
-            style: const TextStyle(
-              fontSize: 20,
-              color: Color(0xFF8892B0),
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 16),
-          // Date
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.access_time, size: 16, color: Color(0xFF4A5580)),
-              const SizedBox(width: 4),
-              Text(
-                moment.formattedDate,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF4A5580),
-                ),
-              ),
-            ],
-          ),
-          // Source text (only if available)
-          if (moment.sourceTextbook != null) ...[
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.menu_book, size: 16, color: Color(0xFF4A5580)),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    moment.sourceTextbook!,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF4A5580),
-                      fontStyle: FontStyle.italic,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ],
-          const Spacer(flex: 3),
           // Bottom action controls
           CarouselControls(
             onListen: () => _speakMoment(moment),

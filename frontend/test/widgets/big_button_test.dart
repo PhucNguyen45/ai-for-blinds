@@ -39,6 +39,6 @@ void main() {
       ),
     );
 
-    expect(find.text('CHỤP ẢNH'), findsOneWidget);
+    expect(find.bySemanticsLabel('CHỤP ẢNH'), findsOneWidget);
   });
 }

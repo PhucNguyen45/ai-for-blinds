@@ -6,27 +6,51 @@ import 'package:http/http.dart' as http;
 
 /// Service for communicating with the FastAPI backend.
 /// Handles OCR, image description, TTS, STT, and RAG query via API calls.
+///
+/// Server URL and API key are stored as static state so every [ApiService]
+/// instance shares the same configuration. Configure them once at startup
+/// (via [configure]) or from the settings screen.
 class ApiService {
   static const _defaultBaseUrl = 'http://192.168.1.100:8000';
   static const _defaultApiKey = 'sgbe_dev_key_2024';
 
+  static String _baseUrl = _defaultBaseUrl;
+  static String _apiKey = _defaultApiKey;
+
   /// Base URL of the backend server.
   /// Defaults to a sensible LAN address for real-world use.
-  String baseUrl;
+  String get baseUrl => _baseUrl;
 
-  /// API key for backend authentication.
-  String _apiKey = _defaultApiKey;
+  /// Current API key for backend authentication.
+  String get apiKey => _apiKey;
 
-  ApiService({String? baseUrl}) : baseUrl = baseUrl ?? _defaultBaseUrl;
+  ApiService({String? baseUrl}) {
+    if (baseUrl != null) setBaseUrl(baseUrl);
+  }
+
+  /// Apply persisted configuration. Empty values keep the current default.
+  static void configure({String? baseUrl, String? apiKey}) {
+    if (baseUrl != null && baseUrl.trim().isNotEmpty) {
+      final trimmed = baseUrl.trim();
+      _baseUrl = trimmed.endsWith('/')
+          ? trimmed.substring(0, trimmed.length - 1)
+          : trimmed;
+    }
+    if (apiKey != null && apiKey.trim().isNotEmpty) {
+      _apiKey = apiKey.trim();
+    }
+  }
 
   /// Set a custom backend URL (e.g., from settings).
   void setBaseUrl(String url) {
-    baseUrl = url.endsWith('/') ? url.substring(0, url.length - 1) : url;
+    final trimmed = url.trim();
+    _baseUrl =
+        trimmed.endsWith('/') ? trimmed.substring(0, trimmed.length - 1) : trimmed;
   }
 
   /// Set a custom API key (e.g., from settings).
   void setApiKey(String key) {
-    _apiKey = key;
+    if (key.trim().isNotEmpty) _apiKey = key.trim();
   }
 
   /// Send an image to the backend for AI-powered description in Vietnamese.

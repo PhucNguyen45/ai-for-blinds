@@ -5,13 +5,12 @@ import 'package:ai_for_blinds/widgets/mode_selector.dart';
 void main() {
   testWidgets('ModeSelector shows all scan modes',
       (WidgetTester tester) async {
-    ScanMode? selected;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: ModeSelector(
             selectedMode: ScanMode.ocr,
-            onModeChanged: (mode) => selected = mode,
+            onModeChanged: (_) {},
           ),
         ),
       ),

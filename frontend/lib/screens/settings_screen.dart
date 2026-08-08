@@ -3,12 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
+import '../services/settings_service.dart';
+import '../services/voice_controller.dart';
 import '../utils/responsive.dart';
 import '../widgets/neon_button.dart';
 import '../widgets/eq_visualizer.dart';
 import '../widgets/gradient_background.dart';
 
-/// Neon Pulse settings screen — điều chỉnh tốc độ, cao độ, âm lượng giọng đọc.
+/// Neon Pulse settings screen — điều chỉnh tốc độ, cao độ, âm lượng giọng đọc,
+/// cấu hình máy chủ và lựa chọn "luôn lắng nghe".
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -17,12 +20,25 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _serverUrlController = TextEditingController(text: 'http://192.168.1.100:8000');
-  final _apiService = ApiService();
+  final _serverUrlController = TextEditingController(text: ApiService().baseUrl);
+  final _apiKeyController = TextEditingController(text: ApiService().apiKey);
+  bool _obscureKey = true;
+  bool _testingConnection = false;
+  bool _autoListen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _autoListen = context.read<VoiceController>().autoListen;
+    });
+  }
 
   @override
   void dispose() {
     _serverUrlController.dispose();
+    _apiKeyController.dispose();
     super.dispose();
   }
 
@@ -42,6 +58,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (volume < 0.3) return 'Nhỏ (${volume.toStringAsFixed(1)})';
     if (volume <= 0.7) return 'Vừa (${volume.toStringAsFixed(1)})';
     return 'Lớn (${volume.toStringAsFixed(1)})';
+  }
+
+  Future<void> _saveSettings() async {
+    final url = _serverUrlController.text.trim();
+    final key = _apiKeyController.text.trim();
+    final audio = context.read<AudioService>();
+    final settings = AppSettings(
+      serverUrl: url,
+      apiKey: key,
+      autoListen: _autoListen,
+    );
+    await SettingsService().save(settings);
+    ApiService.configure(baseUrl: url, apiKey: key);
+    audio.stop();
+    audio.speak('Đã lưu cài đặt.');
+  }
+
+  Future<void> _testConnection() async {
+    final audio = context.read<AudioService>();
+    setState(() => _testingConnection = true);
+    final ok = await ApiService().isBackendAvailable();
+    if (!mounted) return;
+    setState(() => _testingConnection = false);
+    audio.stop();
+    if (ok) {
+      audio.speak('Kết nối máy chủ thành công.');
+    } else {
+      audio.speak(
+        'Không kết nối được máy chủ. Hãy kiểm tra địa chỉ và mạng.',
+      );
+    }
+  }
+
+  void _onAutoListenChanged(bool value) {
+    setState(() => _autoListen = value);
+    final controller = context.read<VoiceController>();
+    controller.autoListen = value;
+    // Persist immediately so the choice survives restart.
+    SettingsService().save(
+      AppSettings(
+        serverUrl: _serverUrlController.text.trim(),
+        apiKey: _apiKeyController.text.trim(),
+        autoListen: value,
+      ),
+    );
   }
 
   @override
@@ -72,6 +133,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _buildSectionTitle('Điều chỉnh'),
                           const SizedBox(height: 12),
                           _buildAdjustmentCard(context, audio),
+                          const SizedBox(height: 24),
+                          _buildSectionTitle('Điều khiển bằng giọng nói'),
+                          const SizedBox(height: 12),
+                          _buildVoiceCard(context, audio),
                           const SizedBox(height: 24),
                           _buildSectionTitle('Máy chủ'),
                           const SizedBox(height: 12),
@@ -104,44 +169,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
             label: 'Quay lại',
             child: GestureDetector(
               onTap: () {
+                HapticFeedback.mediumImpact();
                 audio.stop();
                 Navigator.pop(context);
               },
-              child: Container(
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF141829),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF1E2A4A)),
-                ),
-                child: const Icon(
-                  Icons.arrow_back_rounded,
-                  size: 32,
-                  color: Color(0xFF00F0FF),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF141829),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF1E2A4A)),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.arrow_back_rounded,
+                      size: 28,
+                      color: Color(0xFF00F0FF),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
           const Spacer(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                'Cài đặt',
-                style: TextStyle(
-                  fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'Cài đặt',
+                  style: TextStyle(
+                    fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              Text(
-                'Tùy chỉnh giọng đọc',
-                style: TextStyle(
-                  fontSize: Responsive.textScale(context, 14, min: 12, max: 18),
-                  color: Color(0xFF8892B0),
+                Text(
+                  'Tùy chỉnh giọng đọc',
+                  style: TextStyle(
+                    fontSize: Responsive.textScale(context, 14, min: 12, max: 18),
+                    color: Color(0xFF8892B0),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -166,14 +240,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildAdjustmentCard(BuildContext context, AudioService audio) {
+  Widget _buildCard({required Widget child}) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: const Color(0xFF141829),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFF1E2A4A)),
       ),
+      child: child,
+    );
+  }
+
+  Widget _buildAdjustmentCard(BuildContext context, AudioService audio) {
+    return _buildCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -339,14 +420,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildServerCard(BuildContext context, AudioService audio) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF141829),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF1E2A4A)),
+  Widget _buildVoiceCard(BuildContext context, AudioService audio) {
+    return _buildCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.mic, color: Color(0xFF39FF14), size: 28),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Luôn lắng nghe',
+                  style: TextStyle(
+                    fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Semantics(
+                toggled: _autoListen,
+                button: true,
+                label: 'Luôn lắng nghe lệnh giọng nói',
+                child: Switch(
+                  value: _autoListen,
+                  activeTrackColor: const Color(0xFF39FF14),
+                  onChanged: _onAutoListenChanged,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Bật để ứng dụng tự lắng nghe lệnh sau khi đọc lời nhắc. '
+            'Khi tắt, nhấn giữ màn hình hoặc lắc nhẹ máy để gọi giọng nói.',
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.4,
+              color: Color(0xFF8892B0),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildServerCard(BuildContext context, AudioService audio) {
+    return _buildCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -371,18 +492,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
             controller: _serverUrlController,
             keyboardType: TextInputType.url,
           ),
-          const SizedBox(height: 12),
-          NeonButton(
-            icon: Icons.save,
-            label: 'Lưu địa chỉ',
-            color: const Color(0xFF00F0FF),
-            onTap: () {
-              final url = _serverUrlController.text.trim();
-              if (url.isNotEmpty) {
-                _apiService.setBaseUrl(url);
-                audio.speak('Đã lưu địa chỉ máy chủ');
-              }
-            },
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Khóa API',
+                    labelStyle: const TextStyle(color: Color(0xFF8892B0)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF1E2A4A)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF00F0FF)),
+                    ),
+                    filled: true,
+                    fillColor: const Color(0xFF0A0E1A),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureKey
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: const Color(0xFF8892B0),
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscureKey = !_obscureKey),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  controller: _apiKeyController,
+                  obscureText: _obscureKey,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: NeonButton(
+                  icon: Icons.cloud_upload,
+                  label: 'Lưu cài đặt',
+                  color: const Color(0xFF00F0FF),
+                  onTap: _saveSettings,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: NeonButton(
+                  icon: Icons.wifi_tethering,
+                  label: _testingConnection ? 'Đang kiểm tra...' : 'Kiểm tra',
+                  color: const Color(0xFF9D4EDD),
+                  glow: !_testingConnection,
+                  onTap: _testingConnection ? () {} : _testConnection,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -390,13 +557,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildAppInfoCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF141829),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF1E2A4A)),
-      ),
+    return _buildCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

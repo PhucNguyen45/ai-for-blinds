@@ -76,44 +76,46 @@ class ModeSelector extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Semantics(
-            label: 'Chọn chế độ quét.',
-            child: Text(
-              'Chế độ quét',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Semantics(
+              label: 'Chọn chế độ quét.',
+              child: Text(
+                'Chế độ quét',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Semantics(
-            label: 'Chọn chế độ quét.',
-            child: Text(
-              'Chọn chế độ quét:',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Semantics(
+              label: 'Chọn chế độ quét.',
+              child: Text(
+                'Chọn chế độ quét:',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
-        ),
-        ...ScanMode.values.map((mode) {
-          final isSelected = mode == selectedMode;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: _ModeButton(
-              mode: mode,
-              isSelected: isSelected,
-              isDark: isDark,
-              onTap: () => onModeChanged(mode),
-            ),
-          );
-        }),
-      ],
+          ...ScanMode.values.map((mode) {
+            final isSelected = mode == selectedMode;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: _ModeButton(
+                mode: mode,
+                isSelected: isSelected,
+                isDark: isDark,
+                onTap: () => onModeChanged(mode),
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 }

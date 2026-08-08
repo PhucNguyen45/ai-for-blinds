@@ -9,6 +9,14 @@ class VoiceCommandService extends ChangeNotifier {
   String lastCommand = '';
   String lastHypothesis = '';
 
+  /// Called when a final result matches a known command keyword.
+  /// The argument is the parsed command (e.g. 'home', 'scanner').
+  ValueChanged<String>? onCommand;
+
+  /// Called when a final result does not match any known command.
+  /// The argument is the raw recognized text.
+  ValueChanged<String>? onUnrecognized;
+
   // ---------------------------------------------------------------------------
   // Getters
   // ---------------------------------------------------------------------------
@@ -50,10 +58,13 @@ class VoiceCommandService extends ChangeNotifier {
     }
 
     final started = await _speech.listen(
-      localeId: 'vi_VN',
-      listenFor: const Duration(seconds: 30),
-      pauseFor: const Duration(seconds: 3),
-      partialResults: true,
+      listenOptions: stt.SpeechListenOptions(
+        localeId: 'vi_VN',
+        listenFor: const Duration(seconds: 30),
+        pauseFor: const Duration(seconds: 3),
+        partialResults: true,
+        enableHapticFeedback: true,
+      ),
       onResult: (result) {
         lastHypothesis = result.recognizedWords;
 
@@ -62,6 +73,9 @@ class VoiceCommandService extends ChangeNotifier {
           final cmd = parseCommand(text);
           if (cmd != null) {
             lastCommand = cmd;
+            onCommand?.call(cmd);
+          } else {
+            onUnrecognized?.call(text);
           }
         }
 
@@ -127,8 +141,10 @@ class VoiceCommandService extends ChangeNotifier {
 
   @override
   void dispose() {
-    stopListening();
+    // Cancel synchronously; do not call stopListening() (async) here because
+    // its completion may call notifyListeners() after this object is disposed.
     _speech.cancel();
+    _isListening = false;
     super.dispose();
   }
 

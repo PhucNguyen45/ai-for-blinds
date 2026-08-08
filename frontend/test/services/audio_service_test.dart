@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ai_for_blinds/services/audio_service.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('AudioService', () {
     test('initial state is idle', () {
       final service = AudioService();

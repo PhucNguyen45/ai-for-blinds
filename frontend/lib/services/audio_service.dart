@@ -31,10 +31,17 @@ class AudioService extends ChangeNotifier {
   // --- Playback ---
   final AudioPlayer _player = AudioPlayer();
 
+  // --- TTS completion notifications ---
+  final StreamController<void> _ttsCompleteController =
+      StreamController<void>.broadcast();
+
   // --- STT ---
   bool _isListening = false;
   final StreamController<String> _sttResultController =
       StreamController<String>.broadcast();
+
+  /// Stream emitted each time TTS finishes speaking naturally.
+  Stream<void> get onTtsComplete => _ttsCompleteController.stream;
 
   /// Stream of ASR (speech-to-text) results from the backend.
   Stream<String> get sttResults => _sttResultController.stream;
@@ -54,6 +61,9 @@ class AudioService extends ChangeNotifier {
   // Recording
   bool get isRecording => _isRecording;
   String? get currentRecordingPath => _currentRecordingPath;
+
+  /// The last text spoken via TTS.
+  String get lastSpokenText => _lastSpokenText;
 
   // Playback
   bool get isPlaying => _player.state == PlayerState.playing;
@@ -88,6 +98,7 @@ class AudioService extends ChangeNotifier {
       _isSpeaking = false;
       _isPaused = false;
       notifyListeners();
+      _ttsCompleteController.add(null);
     });
 
     _tts.setCancelHandler(() {
@@ -386,6 +397,7 @@ class AudioService extends ChangeNotifier {
     try { _tts.stop(); } catch (_) {}
     _recorder.dispose();
     _player.dispose();
+    _ttsCompleteController.close();
     _sttResultController.close();
     super.dispose();
   }

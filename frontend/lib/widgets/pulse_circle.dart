@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../utils/responsive.dart';
 
@@ -126,15 +127,15 @@ class _PulseCircleState extends State<PulseCircle>
   String get _semanticsLabel {
     switch (widget.state) {
       case PulseState.idle:
-        return 'Voice assistant idle. Tap to start listening.';
+        return 'Trợ lý giọng nói đang chờ. Nhấn để bắt đầu ghi âm.';
       case PulseState.listening:
-        return 'Listening for your speech.';
+        return 'Đang lắng nghe. Nhấn để kết thúc và xử lý.';
       case PulseState.speaking:
-        return 'Speaking.';
+        return 'Đang đọc.';
       case PulseState.processing:
-        return 'Processing your request.';
+        return 'Đang xử lý yêu cầu.';
       case PulseState.error:
-        return 'An error occurred. Tap to retry.';
+        return 'Đã xảy ra lỗi. Nhấn để thử lại.';
     }
   }
 
@@ -169,7 +170,12 @@ class _PulseCircleState extends State<PulseCircle>
       button: widget.onTap != null,
       label: _semanticsLabel,
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: () {
+          if (widget.onTap != null) {
+            HapticFeedback.selectionClick();
+            widget.onTap!();
+          }
+        },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -165,7 +164,7 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
     });
     final audio = context.read<AudioService>();
     audio.stop();
-    audio.speak('Hãy nhấn giữ nút để đặt câu hỏi mới.');
+    audio.speak('Nhấn nút để đặt câu hỏi mới.');
   }
 
   void _showSnackBar(String message) {
@@ -189,38 +188,51 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      context.read<AudioService>().stop();
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.arrow_back_rounded,
-                      size: 32,
-                      color: Color(0xFFFFFFFF),
-                    ),
-                  ),
-                  const Spacer(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Hỏi đáp kiến thức',
-                        style: TextStyle(
-                          fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
-                          fontWeight: FontWeight.bold,
+                  Semantics(
+                    button: true,
+                    label: 'Quay lại',
+                    child: GestureDetector(
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        context.read<AudioService>().stop();
+                        Navigator.pop(context);
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          size: 32,
                           color: Color(0xFFFFFFFF),
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Hỏi bài bằng giọng nói',
-                        style: TextStyle(
-                          fontSize: Responsive.textScale(context, 14, min: 12, max: 18),
-                          color: Color(0xFF8892B0),
+                    ),
+                  ),
+                  const Spacer(),
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Hỏi đáp kiến thức',
+                          style: TextStyle(
+                            fontSize: Responsive.textScale(context, 24, min: 18, max: 28),
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFFFFFF),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 2),
+                        Text(
+                          'Hỏi bài bằng giọng nói',
+                          style: TextStyle(
+                            fontSize: Responsive.textScale(context, 14, min: 12, max: 18),
+                            color: Color(0xFF8892B0),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -265,7 +277,7 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
         ),
         const SizedBox(height: 24),
         Text(
-          'Nhấn giữ để hỏi',
+          'Nhấn để hỏi',
           style: TextStyle(
             fontSize: Responsive.textScale(context, 22, min: 16, max: 26),
             fontWeight: FontWeight.bold,
@@ -274,7 +286,7 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Nhấn giữ nút để ghi âm câu hỏi',
+          'Nhấn nút để ghi âm câu hỏi',
           style: TextStyle(
             fontSize: Responsive.textScale(context, 16, min: 13, max: 20),
             color: Color(0xFF4A5580),

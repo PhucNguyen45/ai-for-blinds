@@ -9,6 +9,7 @@ import 'screens/settings_screen.dart';
 import 'screens/voice_qa_screen.dart';
 import 'services/audio_service.dart';
 import 'services/voice_command_service.dart';
+import 'services/voice_controller.dart';
 import 'theme/app_theme.dart';
 import 'widgets/bottom_nav_bar.dart';
 import 'widgets/gesture_navigator.dart';
@@ -16,13 +17,16 @@ import 'widgets/gesture_navigator.dart';
 /// Root widget for SgBe Vision — Neon Pulse edition.
 /// 
 /// Architecture:
-/// - MultiProvider: AudioService + VoiceCommandService
+/// - MultiProvider: AudioService + VoiceCommandService + VoiceController
 /// - GestureNavigator: swipe navigation + shake-to-voice
 /// - NeonBottomNavBar: 4 tabs + center voice FAB
 /// - Dark-first: darkHighContrast là theme mặc định
 /// - Voice-first: voice commands hoạt động toàn cục
 class BlindScholarApp extends StatefulWidget {
-  const BlindScholarApp({super.key});
+  /// Initial value for the "auto-listen" setting, loaded at startup.
+  final bool initialAutoListen;
+
+  const BlindScholarApp({super.key, this.initialAutoListen = false});
 
   @override
   State<BlindScholarApp> createState() => _BlindScholarAppState();
@@ -41,11 +45,17 @@ class _BlindScholarAppState extends State<BlindScholarApp> {
     _navigatorKey.currentState?.pushReplacementNamed(_tabRoutes[index]);
   }
 
+  void _onNavigateRoute(String route) {
+    final tabIndex = _tabRoutes.indexOf(route);
+    if (tabIndex >= 0) {
+      _onTabChanged(tabIndex);
+    } else {
+      _navigatorKey.currentState?.pushNamed(route);
+    }
+  }
+
   void _onVoiceCommand() {
-    // Voice command service xử lý — chỉ trigger haptic
-    final audio = context.read<AudioService>();
-    audio.stop();
-    audio.speak('Tôi đang nghe. Hãy nói lệnh của bạn.');
+    context.read<VoiceController>().triggerGlobalVoice();
   }
 
   @override
@@ -62,6 +72,16 @@ class _BlindScholarAppState extends State<BlindScholarApp> {
           service.init();
           return service;
         }),
+        ChangeNotifierProxyProvider2<
+            AudioService,
+            VoiceCommandService,
+            VoiceController>(
+          create: (_) => VoiceController()
+            ..onNavigate = _onNavigateRoute
+            ..autoListen = widget.initialAutoListen,
+          update: (_, audio, voice, controller) =>
+              controller!..attach(audio: audio, voice: voice),
+        ),
       ],
       child: MaterialApp(
         title: 'SgBe Vision',

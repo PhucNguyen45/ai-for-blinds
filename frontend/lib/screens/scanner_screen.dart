@@ -205,12 +205,17 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () {
-                          context.read<AudioService>().stop();
-                          Navigator.pop(context);
-                        },
+                      Semantics(
+                        button: true,
+                        label: 'Quay lại',
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            context.read<AudioService>().stop();
+                            Navigator.pop(context);
+                          },
+                        ),
                       ),
                       const Spacer(),
                       Text(

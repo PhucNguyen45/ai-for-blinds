@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../services/audio_service.dart';
+import '../services/voice_controller.dart';
 import '../utils/responsive.dart';
 import '../widgets/neon_button.dart';
 import '../widgets/gradient_background.dart';
@@ -30,13 +31,19 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_hasGreeted) {
         _hasGreeted = true;
-        final audio = context.read<AudioService>();
-        audio.stop();
-        audio.speak(
-          'Chào mừng đến với SgBe Vision. Chạm để bắt đầu. Vuốt để chuyển trang.',
-        );
+        context.read<VoiceController>().speak(
+              'Chào mừng đến với SgBe Vision. Chạm để bắt đầu. '
+              'Nhấn giữ màn hình hoặc lắc nhẹ máy để gọi giọng nói. '
+              'Vuốt để chuyển trang.',
+              awaitReply: true,
+            );
       }
     });
+  }
+
+  void _onTapStart() {
+    HapticFeedback.mediumImpact();
+    context.read<VoiceController>().triggerGlobalVoice();
   }
 
   @override
@@ -92,29 +99,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 // ── Center: pulse-style greeting area ────
                 Expanded(
                   child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Glowing icon
-                        _GlowingIcon(),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Chạm để bắt đầu',
-                          style: TextStyle(
-                            fontSize: titleS,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                    child: Semantics(
+                      button: true,
+                      label: 'Chạm để gọi giọng nói',
+                      child: GestureDetector(
+                        onTap: _onTapStart,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Glowing icon
+                            const _GlowingIcon(),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Chạm để bắt đầu',
+                              style: TextStyle(
+                                fontSize: titleS,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Nói "Trợ giúp" để biết thêm',
+                              style: TextStyle(
+                                fontSize: hintS,
+                                color: Color(0xFF8892B0),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Nói "Trợ giúp" để biết thêm',
-                          style: TextStyle(
-                            fontSize: hintS,
-                            color: Color(0xFF8892B0),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
