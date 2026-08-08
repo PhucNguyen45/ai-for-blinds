@@ -19,7 +19,8 @@ Mobile App (Flutter)
             ├── /detect     → Detection Service (YOLOv8)
             ├── /money      → Money Service (YOLO VND → fallback Gemini VLM)
             ├── /search     → IR Service (DuckDuckGo + RSS tin tức + TF-IDF)
-            └── /sonify     → Sonification Service
+            ├── /sonify     → Sonification Service
+            └── /moments    → Moment Service (SentenceTransformer + cosine) — Persistent Visual Memory
 ```
 
 ## Data Flow
@@ -48,12 +49,19 @@ Mobile App (Flutter)
 3. Kết quả (web/news) hiển thị + TTS đọc top 3 kết quả
 4. RSS được cache đĩa với TTL `NEWS_REFRESH_HOURS` (mặc định 6 giờ)
 
+### Bộ nhớ khoảnh khắc học tập (Persistent Visual Memory)
+1. User quét tài liệu hoặc hỏi đáp → nhấn "Lưu" (ScannerScreen / VoiceQAScreen)
+2. POST /moments (X-Device-Id) → MomentService tạo embedding (SentenceTransformer) + lưu LearningMoment
+3. ReviewScreen nạp danh sách qua GET /moments (merge với storage local, dedupe theo id)
+4. Tìm lại bằng POST /moments/search → cosine distance theo thiết bị
+5. Xóa qua DELETE /moments/{id} (cũng xóa local)
+
 ## Database Schema (PostgreSQL + pgvector)
 
 - users → device-based auth + TTS preferences
 - textbook_contents → SGK chunks + embeddings
 - learning_sessions → session tracking
-- learning_moments → persistent visual memory
+- learning_moments → persistent visual memory (embedding lưu JSON text; grade/subject từ migration 0002)
 - voice_notes → recording metadata
 - feedbacks → user ratings
 

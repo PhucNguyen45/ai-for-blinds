@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
+import '../services/settings_service.dart';
 import '../utils/responsive.dart';
 import '../widgets/pulse_circle.dart';
 import '../widgets/conversation_bubble.dart';
@@ -32,6 +33,10 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
   String? _question;
   String? _answer;
   String? _source;
+  int? _sourceGrade;
+  String? _sourceSubject;
+  String? _sourceChapter;
+  int? _sourcePage;
 
   // ─── Recording / Q&A logic ───────────────────────────────
 
@@ -89,6 +94,10 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
           final sourceMap = ragResult['source'] as Map<String, dynamic>?;
 
           String? sourceText;
+          int? sourceGrade;
+          String? sourceSubject;
+          String? sourceChapter;
+          int? sourcePage;
           if (sourceMap != null) {
             final parts = <String>[];
             final subject = sourceMap['subject'] as String?;
@@ -104,12 +113,20 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
             if (chapter != null) parts.add(chapter);
             if (page != null) parts.add('trang $page');
             if (parts.isNotEmpty) sourceText = parts.join(', ');
+            sourceGrade = grade is int ? grade : null;
+            sourceSubject = subject;
+            sourceChapter = chapter;
+            sourcePage = page is int ? page : null;
           }
 
           setState(() {
             _question = questionText;
             _answer = answerText;
             _source = sourceText;
+            _sourceGrade = sourceGrade;
+            _sourceSubject = sourceSubject;
+            _sourceChapter = sourceChapter;
+            _sourcePage = sourcePage;
             _isProcessing = false;
           });
 
@@ -161,10 +178,51 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
       _question = null;
       _answer = null;
       _source = null;
+      _sourceGrade = null;
+      _sourceSubject = null;
+      _sourceChapter = null;
+      _sourcePage = null;
     });
     final audio = context.read<AudioService>();
     audio.stop();
     audio.speak('Nhấn nút để đặt câu hỏi mới.');
+  }
+
+  /// Save the Q&A exchange as a persistent learning moment.
+  Future<void> _saveMoment() async {
+    final question = _question;
+    final answer = _answer;
+    if (question == null || answer == null || answer.isEmpty) return;
+
+    final settings = await SettingsService().load();
+    if (!mounted) return;
+    if (settings.deviceId.isEmpty) {
+      context.read<AudioService>().speak('Chưa có định danh thiết bị.');
+      return;
+    }
+
+    final preview = question.length > 40
+        ? '${question.substring(0, 40)}…'
+        : question;
+    final moment = await _apiService.createMoment(
+      deviceId: settings.deviceId,
+      title: 'Hỏi đáp: $preview',
+      content: 'Câu hỏi: $question\n\nTrả lời: $answer',
+      contentType: 'description',
+      grade: _sourceGrade,
+      subject: _sourceSubject,
+      chapter: _sourceChapter,
+      pageNumber: _sourcePage,
+    );
+
+    if (!mounted) return;
+    final audio = context.read<AudioService>();
+    await audio.stop();
+    if (moment != null) {
+      audio.speak('Đã lưu khoảnh khắc học tập.');
+    } else {
+      audio.speak('Không thể lưu khoảnh khắc. Hãy kiểm tra kết nối máy chủ.');
+    }
   }
 
   void _showSnackBar(String message) {
@@ -377,6 +435,12 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
                   label: 'Nghe lại',
                   color: const Color(0xFF00F0FF),
                   onTap: _speakResult,
+                ),
+                NeonIconButton(
+                  icon: Icons.save_alt,
+                  label: 'Lưu',
+                  color: const Color(0xFFFFD700),
+                  onTap: _saveMoment,
                 ),
                 NeonIconButton(
                   icon: Icons.mic_rounded,

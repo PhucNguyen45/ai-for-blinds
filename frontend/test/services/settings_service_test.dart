@@ -14,6 +14,7 @@ void main() {
     expect(settings.serverUrl, '');
     expect(settings.apiKey, '');
     expect(settings.autoListen, false);
+    expect(settings.deviceId, '');
   });
 
   test('save then load round-trips values', () async {
@@ -23,6 +24,7 @@ void main() {
         serverUrl: 'http://10.0.0.5:8000',
         apiKey: 'my-key',
         autoListen: true,
+        deviceId: 'dev-abc123',
       ),
     );
 
@@ -30,6 +32,7 @@ void main() {
     expect(loaded.serverUrl, 'http://10.0.0.5:8000');
     expect(loaded.apiKey, 'my-key');
     expect(loaded.autoListen, true);
+    expect(loaded.deviceId, 'dev-abc123');
   });
 
   test('copyWith preserves unset fields', () {
@@ -37,10 +40,20 @@ void main() {
       serverUrl: 'http://a',
       apiKey: 'k',
       autoListen: false,
+      deviceId: 'dev-1',
     );
     final updated = base.copyWith(autoListen: true);
     expect(updated.serverUrl, 'http://a');
     expect(updated.apiKey, 'k');
     expect(updated.autoListen, true);
+    expect(updated.deviceId, 'dev-1');
+  });
+
+  test('generateDeviceId returns a non-empty unique id', () {
+    final a = SettingsService.generateDeviceId();
+    final b = SettingsService.generateDeviceId();
+    expect(a, isNotEmpty);
+    expect(a, startsWith('dev-'));
+    expect(a, isNot(b));
   });
 }

@@ -45,6 +45,8 @@ class LearningMoment(Base):
     textbook_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("textbook_contents.id"), nullable=True
     )
+    grade: Mapped[int | None] = mapped_column(nullable=True)
+    subject: Mapped[str | None] = mapped_column(String(128), nullable=True)
     page_number: Mapped[int | None] = mapped_column(nullable=True)
     chapter: Mapped[str | None] = mapped_column(String(128), nullable=True)
 

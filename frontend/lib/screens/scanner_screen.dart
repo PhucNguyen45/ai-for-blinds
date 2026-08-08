@@ -4,16 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../models/scan_mode.dart';
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../services/camera_service.dart';
 import '../services/local_ocr_service.dart';
+import '../services/settings_service.dart';
 import '../utils/responsive.dart';
 import '../widgets/neon_button.dart';
 import '../widgets/glow_chip.dart';
 import '../widgets/waveform_bar.dart';
 import '../widgets/glass_bottom_sheet.dart';
-import '../widgets/mode_selector.dart';
 
 /// Scanner screen where students capture book pages, documents, or diagrams.
 ///
@@ -177,6 +178,57 @@ class _ScannerScreenState extends State<ScannerScreen> {
     }
   }
 
+  /// Save the current scan result as a persistent learning moment.
+  Future<void> _saveMoment() async {
+    final result = _resultText;
+    if (result == null || result.isEmpty) return;
+
+    final settings = await SettingsService().load();
+    if (!mounted) return;
+    if (settings.deviceId.isEmpty) {
+      context.read<AudioService>().speak('Chưa có định danh thiết bị.');
+      return;
+    }
+
+    final contentType = switch (_selectedMode) {
+      ScanMode.ocr => 'ocr',
+      ScanMode.describe => 'image_description',
+      ScanMode.detect => 'image_description',
+      ScanMode.money => 'image_description',
+      ScanMode.chart => 'description',
+    };
+
+    final title = _resultTitle(settings, contentType);
+    final moment = await _apiService.createMoment(
+      deviceId: settings.deviceId,
+      title: title,
+      content: result,
+      contentType: contentType,
+    );
+
+    if (!mounted) return;
+    final audio = context.read<AudioService>();
+    await audio.stop();
+    if (moment != null) {
+      audio.speak('Đã lưu khoảnh khắc học tập.');
+    } else {
+      audio.speak('Không thể lưu khoảnh khắc. Hãy kiểm tra kết nối máy chủ.');
+    }
+  }
+
+  String _resultTitle(AppSettings settings, String contentType) {
+    final base = switch (contentType) {
+      'ocr' => 'Văn bản quét được',
+      'image_description' => 'Mô tả hình ảnh',
+      _ => 'Nội dung đã quét',
+    };
+    final firstLine = _resultText!.trim().split('\n').first;
+    final preview = firstLine.length > 40
+        ? '${firstLine.substring(0, 40)}…'
+        : firstLine;
+    return '$base: $preview';
+  }
+
   @override
   Widget build(BuildContext context) {
     final modeItems = ScanMode.values.asMap().entries.map((entry) {
@@ -336,6 +388,15 @@ class _ScannerScreenState extends State<ScannerScreen> {
                                   label: 'Nghe lại',
                                   color: const Color(0xFF00F0FF),
                                   onTap: _speakResult,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: NeonIconButton(
+                                  icon: Icons.save_alt,
+                                  label: 'Lưu',
+                                  color: const Color(0xFFFFD700),
+                                  onTap: _saveMoment,
                                 ),
                               ),
                               const SizedBox(width: 12),

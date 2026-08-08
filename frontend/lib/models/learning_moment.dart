@@ -71,4 +71,31 @@ class LearningMoment {
         ? List<double>.from(json['embedding'] as List)
         : null,
   );
+
+  /// Build a LearningMoment from the backend /moments API response shape.
+  factory LearningMoment.fromApiMap(Map<String, dynamic> json) {
+    final content = json['content'] as String? ?? '';
+    final subject = json['subject'] as String?;
+    final grade = json['grade'];
+    final chapter = json['chapter'] as String?;
+    final page = json['page_number'];
+
+    final sourceParts = <String>[];
+    if (subject != null && subject.isNotEmpty) {
+      sourceParts.add(grade is num ? 'SGK $subject $grade' : 'SGK $subject');
+    }
+    if (chapter != null && chapter.isNotEmpty) sourceParts.add(chapter);
+    if (page is num) sourceParts.add('trang $page');
+
+    return LearningMoment(
+      id: json['id'] as String,
+      title: json['title'] as String? ?? '',
+      description: content,
+      textContent: content,
+      sourceTextbook: sourceParts.isEmpty ? null : sourceParts.join(', '),
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'] as String)
+          : null,
+    );
+  }
 }

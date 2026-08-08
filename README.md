@@ -87,6 +87,7 @@ ai-for-blinds/
 │   │   ├── object_detection.py          #   YOLOv8 + Vietnamese labels
 │   │   ├── money_service.py             #   VND banknote recognition (YOLO→VLM)
 │   │   ├── ir_service.py                #   Internet retrieval (DDG + RSS + TF-IDF)
+│   │   ├── moment_service.py            #   Persistent Visual Memory (CRUD + semantic search)
 │   │   └── sonification.py              #   Tone.js subprocess
 │   ├── routes/                           # API route handlers
 │   │   ├── __init__.py
@@ -98,6 +99,7 @@ ai-for-blinds/
 │   │   ├── detect.py                    #   POST /detect
 │   │   ├── money.py                     #   POST /money
 │   │   ├── search.py                    #   POST /search
+│   │   ├── moments.py                   #   POST/GET/DELETE /moments, POST /moments/search
 │   │   └── sonify.py                    #   POST /sonify
 │   ├── utils/                            # Shared utilities
 │   │   ├── __init__.py
@@ -106,7 +108,8 @@ ai-for-blinds/
 │   └── migrations/                       # Alembic migrations
 │       ├── env.py                        #   Migration environment
 │       ├── script.py.mako               #   Migration template
-│       └── 0001_initial_schema.py       #   Initial schema (6 tables + pgvector)
+│       ├── 0001_initial_schema.py       #   Initial schema (6 tables + pgvector)
+│       └── 0002_add_moment_grade_subject.py  #   grade + subject cho learning_moments
 │
 ├── frontend/                             # Flutter mobile app
 │   ├── pubspec.yaml                      # Flutter dependencies
@@ -116,23 +119,31 @@ ai-for-blinds/
 │   │   ├── theme/
 │   │   │   └── app_theme.dart           # Light & dark high-contrast themes
 │   │   ├── models/
+│   │   │   ├── learning_moment.dart     # LearningMoment model (local + API)
+│   │   │   ├── scan_mode.dart           # ScanMode enum (OCR/Describe/Chart/Detect/Money)
 │   │   │   ├── voice_note.dart          # VoiceNote data model
 │   │   │   └── library_item.dart        # Unified library item model
 │   │   ├── services/
 │   │   │   ├── tts_service.dart         # Text-to-speech (flutter_tts)
 │   │   │   ├── ocr_service.dart         # On-device OCR (Google ML Kit)
-│   │   │   ├── api_service.dart         # HTTP client for FastAPI
+│   │   │   ├── api_service.dart         # HTTP client for FastAPI (+ /moments)
+│   │   │   ├── settings_service.dart    # Persisted settings + deviceId
 │   │   │   └── library_service.dart     # Local library persistence
 │   │   ├── widgets/
-│   │   │   └── big_button.dart          # BigButton, BigCircleButton, BigMediaButton
+│   │   │   ├── neon_button.dart         # NeonButton, NeonCircleButton, NeonIconButton
+│   │   │   └── ...                      # glow_chip, waveform_bar, glass_bottom_sheet…
 │   │   └── screens/
 │   │       ├── splash_screen.dart       # TTS announcement → auto-navigate
 │   │       ├── home_screen.dart         # 5 feature buttons (My Library added)
+│   │       ├── scanner_screen.dart      # Quét tài liệu (5 modes) + lưu khoảnh khắc
+│   │       ├── voice_qa_screen.dart     # Hỏi đáp SGK + lưu khoảnh khắc
+│   │       ├── review_screen.dart       # Ôn tập (sync backend /moments)
+│   │       ├── search_screen.dart       # Tìm kiếm Internet voice-first
 │   │       ├── book_scanner_screen.dart # Multi-page scan + camera guidance
 │   │       ├── library_screen.dart      # Search/filter saved items
 │   │       ├── text_reader_screen.dart  # Type/paste → TTS reading
 │   │       ├── voice_notes_screen.dart  # Record/play/delete voice memos
-│   │       └── settings_screen.dart     # Speed, pitch, volume controls
+│   │       └── settings_screen.dart     # Speed, pitch, volume, server, deviceId
 │   ├── assets/                          # Static assets
 │   │   ├── images/
 │   │   ├── fonts/
@@ -284,7 +295,8 @@ Frontend **hoạt động fully offline** (local ML Kit OCR + platform TTS). Bac
 |---------|------|-----------|
 | `TtsService` | `services/tts_service.dart` | `FlutterTts` wrapper (`ChangeNotifier`). Speed/pitch/volume, `speak()`, `pause()`, `resume()` (native platform resume), `stop()`. |
 | `OcrService` | `services/ocr_service.dart` | Google ML Kit `TextRecognizer`. `extractTextFromImage(File)` → offline OCR. |
-| `ApiService` | `services/api_service.dart` | HTTP client cho FastAPI: `describeImage()`, `ocrImage()`, `sttAudio()`, `ragQuery()`, `detectImage()`, `recognizeMoney()`, `searchWeb()`, `isBackendAvailable()`. |
+| `ApiService` | `services/api_service.dart` | HTTP client cho FastAPI: `describeImage()`, `ocrImage()`, `sttAudio()`, `ragQuery()`, `detectImage()`, `recognizeMoney()`, `searchWeb()`, `createMoment()`, `listMoments()`, `deleteMoment()`, `searchMoments()`, `isBackendAvailable()`. |
+| `SettingsService` | `services/settings_service.dart` | Lưu/nạp settings (server, API key, autoListen) + sinh `deviceId` cố định cho thiết bị. |
 | `LibraryService` | `services/library_service.dart` | JSON file persistence cho `LibraryItem`. `load()`, `addItem()`, `removeItem()`, `search()`. |
 
 ### Widgets
@@ -334,6 +346,7 @@ Mọi service đều dùng **singleton pattern** với lazy initialization — k
 | **Object Detection** | `services/object_detection.py` | YOLOv8 | Nhận diện vật thể. Vietnamese labels + `describe_detections()`. |
 | **Money** | `services/money_service.py` | YOLO VND → fallback Gemini VLM | Nhận dạng mệnh giá tiền Việt Nam. `recognize()` với 2 tầng yolo/vlm. |
 | **IR / Search** | `services/ir_service.py` | DuckDuckGo + RSS tin tức + TF-IDF | Truy hồi thông tin Internet. `search()` gộp web + news, cache RSS. |
+| **Moment** | `services/moment_service.py` | SentenceTransformer + cosine | Persistent Visual Memory. `create()`, `list_for_device()`, `delete()`, `search()` — lưu khoảnh khắc học tập và tìm kiếm ngữ nghĩa theo thiết bị. |
 | **Sonification** | `services/sonification.py` | Tone.js (subprocess) | Chuyển dữ liệu thành âm thanh. `sonify_data()` với 3 modes. |
 
 ### Database Models
@@ -342,7 +355,7 @@ Mọi service đều dùng **singleton pattern** với lazy initialization — k
 |-------|-------|---------------|------------|
 | `User` | `users` | — | `device_id`, `tts_speed`, `tts_pitch`, `tts_volume`, `prefers_dark_mode` |
 | `LearningSession` | `learning_sessions` | — | `session_type`, `duration_seconds`, `items_processed`, `summary` |
-| `LearningMoment` | `learning_moments` | ✅ pgvector | `content`, `content_type`, `file_path`, `embedding`, `textbook_id`, `page_number` |
+| `LearningMoment` | `learning_moments` | ✅ pgvector | `content`, `content_type`, `file_path`, `embedding`, `textbook_id`, `grade`, `subject`, `page_number`, `chapter` |
 | `VoiceNote` | `voice_notes` | — | `title`, `file_path`, `duration_seconds`, `transcription`, `is_transcribed` |
 | `TextbookContent` | `textbook_contents` | ✅ pgvector | `grade`, `subject`, `chapter`, `page_number`, `content_hash`, `embedding` |
 | `Feedback` | `feedbacks` | — | `rating`, `helpful`, `comment`, `feedback_type` |
@@ -360,6 +373,7 @@ Tất cả settings tập trung tại **`backend/config.py`** (dataclass `Settin
 | `TTS_VOICE` | `vi-VN-HoaiMyNeural` | Edge TTS voice |
 | `WHISPER_MODEL` | `base` | Whisper model size |
 | `CHROMA_PERSIST_DIR` | `./data/embeddings` | ChromaDB persistence |
+| `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Model embedding cho moment search |
 | `YOLO_MODEL_PATH` | `./models/yolo/yolov8n.pt` | YOLO weights |
 | `VND_YOLO_MODEL_PATH` | `./models/yolo/vnd_yolov8n.pt` | YOLO nhận dạng tiền (tùy chọn; nếu thiếu dùng Gemini VLM) |
 | `MONEY_CONFIDENCE` | `0.5` | Ngưỡng tin cậy nhận dạng tiền |
@@ -571,6 +585,20 @@ Dùng `URLSession.upload(for:from:)` với multipart body — tương tự patte
 **Response:** `{ "success": true, "data": { "query": "...", "results": [{ "title": "...", "snippet": "...", "url": "...", "source": "web|news", "score": 0.98 }] } }`
 
 - `source`: `web` (DuckDuckGo) hoặc `news` (RSS VnExpress/Dân Trí xếp hạng TF-IDF). Rate limit: 20/phút.
+
+#### `/moments` — Persistent Visual Memory
+
+Tất cả endpoints yêu cầu thêm header `X-Device-Id: <device_id>` để phạm vi hóa dữ liệu theo thiết bị. Trả `503` khi database không khả dụng.
+
+| Method | Endpoint | Mô tả | Rate limit |
+|--------|----------|-------|------------|
+| POST | `/moments` | Lưu khoảnh khắc: `{title, content, content_type, grade, subject, chapter, page_number}` | 30/phút |
+| GET | `/moments` | Danh sách khoảnh khắc của thiết bị (mới nhất trước, tối đa 100) | 60/phút |
+| DELETE | `/moments/{id}` | Xóa khoảnh khắc (404 nếu không thuộc thiết bị) | 30/phút |
+| POST | `/moments/search` | Tìm kiếm ngữ nghĩa: `{query, n_results}` → `{results: [{id, title, content, distance}]}` | 30/phút |
+
+- Backend tự tạo embedding ngữ nghĩa (`all-MiniLM-L6-v2`) khi lưu; `distance` = khoảng cách cosine (càng nhỏ càng liên quan).
+- Chi tiết response xem `docs/API.md`.
 
 ---
 
@@ -846,7 +874,7 @@ python -m py_compile app/main.py app/vlm.py app/tts.py app/config.py
 
 | Tính năng | Backend | Frontend |
 |-----------|---------|----------|
-| Persistent Visual Memory | `models/learning_moment.py` + pgvector | Cần xây dựng |
+| Persistent Visual Memory | ✅ `services/moment_service.py` + `/moments` API + migration 0002 | ✅ Lưu từ Scanner/Q&A + `ReviewScreen` sync backend |
 | Sonification | `services/sonification.py` (Tone.js) | Cần màn hình nghe dữ liệu |
 | Emotion-aware Literature | `services/tts_service.py` (SSML) | Cần UI chọn cảm xúc |
 | Color Recognition | `services/vlm_service.py` (Gemini) | Cần xây dựng |

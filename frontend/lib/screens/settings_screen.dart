@@ -64,10 +64,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final url = _serverUrlController.text.trim();
     final key = _apiKeyController.text.trim();
     final audio = context.read<AudioService>();
+    final saved = await SettingsService().load();
     final settings = AppSettings(
       serverUrl: url,
       apiKey: key,
       autoListen: _autoListen,
+      deviceId: saved.deviceId,
     );
     await SettingsService().save(settings);
     ApiService.configure(baseUrl: url, apiKey: key);
@@ -96,11 +98,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final controller = context.read<VoiceController>();
     controller.autoListen = value;
     // Persist immediately so the choice survives restart.
-    SettingsService().save(
+    _saveDeviceIdAware();
+  }
+
+  Future<void> _saveDeviceIdAware() async {
+    final saved = await SettingsService().load();
+    await SettingsService().save(
       AppSettings(
         serverUrl: _serverUrlController.text.trim(),
         apiKey: _apiKeyController.text.trim(),
-        autoListen: value,
+        autoListen: _autoListen,
+        deviceId: saved.deviceId,
       ),
     );
   }

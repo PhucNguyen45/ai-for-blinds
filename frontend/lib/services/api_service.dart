@@ -336,4 +336,148 @@ class ApiService {
       return false;
     }
   }
+
+  /// Save a learning moment ("Persistent Visual Memory") to the backend.
+  /// Returns the created moment map, or null on failure.
+  Future<Map<String, dynamic>?> createMoment({
+    required String deviceId,
+    required String title,
+    String content = '',
+    String contentType = 'text',
+    int? grade,
+    String? subject,
+    String? chapter,
+    int? pageNumber,
+  }) async {
+    if (deviceId.isEmpty) return null;
+    try {
+      final uri = Uri.parse('$baseUrl/moments');
+      final body = <String, dynamic>{
+        'title': title,
+        'content': content,
+        'content_type': contentType,
+      };
+      if (grade != null) body['grade'] = grade;
+      if (subject != null) body['subject'] = subject;
+      if (chapter != null) body['chapter'] = chapter;
+      if (pageNumber != null) body['page_number'] = pageNumber;
+
+      final response = await http
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-Key': _apiKey,
+              'X-Device-Id': deviceId,
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is Map && data.containsKey('data')) {
+          return data['data'] as Map<String, dynamic>;
+        }
+        return data as Map<String, dynamic>?;
+      } else {
+        debugPrint('API createMoment error: ${response.statusCode} ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('API createMoment exception: $e');
+      return null;
+    }
+  }
+
+  /// List the learning moments saved by this device, newest first.
+  Future<List<Map<String, dynamic>>> listMoments(String deviceId) async {
+    if (deviceId.isEmpty) return [];
+    try {
+      final uri = Uri.parse('$baseUrl/moments');
+      final response = await http
+          .get(
+            uri,
+            headers: {
+              'X-API-Key': _apiKey,
+              'X-Device-Id': deviceId,
+            },
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final payload = data is Map ? data['data'] : null;
+        if (payload is List) {
+          return payload.cast<Map<String, dynamic>>();
+        }
+      } else {
+        debugPrint('API listMoments error: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('API listMoments exception: $e');
+    }
+    return [];
+  }
+
+  /// Delete a learning moment owned by this device.
+  Future<bool> deleteMoment(String deviceId, String momentId) async {
+    if (deviceId.isEmpty || momentId.isEmpty) return false;
+    try {
+      final uri = Uri.parse('$baseUrl/moments/$momentId');
+      final response = await http
+          .delete(
+            uri,
+            headers: {
+              'X-API-Key': _apiKey,
+              'X-Device-Id': deviceId,
+            },
+          )
+          .timeout(const Duration(seconds: 15));
+      return response.statusCode == 200;
+    } catch (e) {
+      debugPrint('API deleteMoment exception: $e');
+      return false;
+    }
+  }
+
+  /// Semantic search over the device's learning moments.
+  Future<List<Map<String, dynamic>>> searchMoments(
+    String deviceId,
+    String query, {
+    int nResults = 5,
+  }) async {
+    if (deviceId.isEmpty || query.trim().isEmpty) return [];
+    try {
+      final uri = Uri.parse('$baseUrl/moments/search');
+      final response = await http
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-Key': _apiKey,
+              'X-Device-Id': deviceId,
+            },
+            body: jsonEncode({
+              'query': query.trim(),
+              'n_results': nResults,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final payload = data is Map ? data['data'] : null;
+        final results = payload is Map ? payload['results'] : null;
+        if (results is List) {
+          return results.cast<Map<String, dynamic>>();
+        }
+      } else {
+        debugPrint('API searchMoments error: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('API searchMoments exception: $e');
+    }
+    return [];
+  }
 }

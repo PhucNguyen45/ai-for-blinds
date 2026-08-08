@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../models/learning_moment.dart';
+import '../services/api_service.dart';
 import '../services/audio_service.dart';
+import '../services/settings_service.dart';
 import '../services/storage_service.dart';
 import '../utils/responsive.dart';
 import '../widgets/swipeable_carousel.dart';
@@ -28,6 +30,7 @@ class ReviewScreen extends StatefulWidget {
 
 class _ReviewScreenState extends State<ReviewScreen> {
   final StorageService _storage = StorageService();
+  final ApiService _apiService = ApiService();
   List<LearningMoment> _moments = [];
   bool _isLoading = true;
   int _currentIndex = 0;
@@ -38,13 +41,31 @@ class _ReviewScreenState extends State<ReviewScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadMoments());
   }
 
+  /// Load moments from the backend when available, falling back to local
+  /// storage. Merges backend + local results by id (deduplicated).
   Future<void> _loadMoments() async {
     setState(() => _isLoading = true);
     try {
-      final moments = await _storage.loadLearningMoments();
+      final local = await _storage.loadLearningMoments();
+      final settings = await SettingsService().load();
+      final byId = <String, LearningMoment>{
+        for (final m in local) m.id: m,
+      };
+
+      if (settings.deviceId.isNotEmpty) {
+        try {
+          final remote = await _apiService.listMoments(settings.deviceId);
+          for (final item in remote) {
+            byId[item['id'] as String? ?? ''] = LearningMoment.fromApiMap(item);
+          }
+        } catch (e) {
+          debugPrint('ReviewScreen backend load error: $e');
+        }
+      }
+
       if (mounted) {
         setState(() {
-          _moments = moments
+          _moments = byId.values.toList()
             ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
           _currentIndex = 0;
           _isLoading = false;
@@ -88,6 +109,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
     HapticFeedback.mediumImpact();
     if (index >= _moments.length) return;
 
+    final deleted = _moments[index];
     setState(() {
       _moments.removeAt(index);
       if (_currentIndex >= _moments.length && _currentIndex > 0) {
@@ -95,9 +117,15 @@ class _ReviewScreenState extends State<ReviewScreen> {
       }
     });
 
-    // Persist the updated list.
+    // Persist the updated list locally.
     final encoded = _moments.map((m) => m.toJson()).toList();
     await _storage.writeJson('learning_moments.json', encoded);
+
+    // Sync deletion to the backend when a device id exists.
+    final settings = await SettingsService().load();
+    if (settings.deviceId.isNotEmpty && deleted.id.isNotEmpty) {
+      await _apiService.deleteMoment(settings.deviceId, deleted.id);
+    }
   }
 
   @override

@@ -8,7 +8,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load persisted settings and apply them before the app starts.
-  final settings = await SettingsService().load();
+  var settings = await SettingsService().load();
+  if (settings.deviceId.isEmpty) {
+    // First launch: generate and persist a stable device identifier so
+    // saved learning moments can be scoped to this device.
+    settings = settings.copyWith(deviceId: SettingsService.generateDeviceId());
+    await SettingsService().save(settings);
+  }
   ApiService.configure(
     baseUrl: settings.serverUrl,
     apiKey: settings.apiKey,
