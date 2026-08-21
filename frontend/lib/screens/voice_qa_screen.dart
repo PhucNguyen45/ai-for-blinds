@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'dart:io';
+
+import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/big_button.dart';
@@ -21,6 +24,7 @@ class VoiceQAScreen extends StatefulWidget {
 }
 
 class _VoiceQAScreenState extends State<VoiceQAScreen> {
+  final ApiService _apiService = ApiService();
   bool _isRecording = false;
   bool _isProcessing = false;
   String? _question;
@@ -31,7 +35,8 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
     final audio = context.read<AudioService>();
     final hasPermission = await audio.requestMicPermission();
     if (!hasPermission) {
-      _showSnackBar('Cần quyền micro để ghi âm.');
+      audio.speak('Ứng dụng cần quyền micro để ghi âm. '
+          'Hãy vào phần cài đặt của điện thoại để cấp quyền.');
       return;
     }
 
@@ -55,23 +60,43 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
     });
 
     if (path != null) {
-      // TODO: Send audio to backend /stt → /rag when STT endpoint is ready
-      // For now, simulate a response
-      await Future.delayed(const Duration(milliseconds: 1500));
+      // Bản ghi âm đi qua hai chặng: /stt đổi tiếng nói thành chữ,
+      // /rag/query tra sách giáo khoa rồi soạn câu trả lời.
+      final question = await _apiService.sttAudio(File(path));
 
       if (!mounted) return;
+      if (question == null || question.trim().isEmpty) {
+        setState(() => _isProcessing = false);
+        audio.stop();
+        audio.speak('Chưa nghe rõ câu hỏi. Hãy nhấn giữ nút và hỏi lại.');
+        return;
+      }
+
+      setState(() => _question = question);
+
+      final result = await _apiService.ragQuery(question: question);
+
+      if (!mounted) return;
+      if (result == null) {
+        setState(() => _isProcessing = false);
+        audio.stop();
+        audio.speak('Không kết nối được máy chủ. Hãy kiểm tra mạng rồi thử lại.');
+        return;
+      }
+
+      final source = result['source'] is Map
+          ? (result['source']['citation'] as String?)
+          : null;
+
       setState(() {
-        _question = 'Nguyên phân là gì?';
-        _answer = 'Nguyên phân là quá trình phân chia tế bào, trong đó một tế bào mẹ '
-            'tạo ra hai tế bào con có bộ nhiễm sắc thể giống hệt tế bào mẹ. '
-            'Quá trình này gồm 4 kỳ: kỳ đầu, kỳ giữa, kỳ sau và kỳ cuối.';
-        _source = 'SGK Sinh học 10, trang 45-47';
+        _answer = result['answer'] as String?;
+        _source = source;
         _isProcessing = false;
       });
 
       HapticFeedback.heavyImpact();
       audio.stop();
-      audio.speak('$_answer. Nguồn: $_source');
+      audio.speak(_source == null ? '$_answer' : '$_answer. Nguồn: $_source');
     } else {
       if (mounted) {
         setState(() => _isProcessing = false);
@@ -79,13 +104,6 @@ class _VoiceQAScreenState extends State<VoiceQAScreen> {
         audio.speak('Có lỗi khi ghi âm. Xin thử lại.');
       }
     }
-  }
-
-  void _showSnackBar(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
-    );
   }
 
   @override

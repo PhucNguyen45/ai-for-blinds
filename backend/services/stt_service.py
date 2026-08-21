@@ -27,24 +27,15 @@ class SttService:
         try:
             from faster_whisper import WhisperModel
 
-            # Try phoWhisper for Vietnamese first
-            try:
-                # phoWhisper is fine-tuned for Vietnamese
-                self._model = WhisperModel(
-                    "PhoWhisper/base",
-                    device=settings.whisper_device,
-                    compute_type=settings.whisper_compute_type,
-                )
-                self._model_size = "PhoWhisper/base"
-                print("Using PhoWhisper (Vietnamese-optimized model)")
-            except Exception:
-                # Fallback to standard Whisper
-                self._model = WhisperModel(
-                    self._model_size,
-                    device=settings.whisper_device,
-                    compute_type=settings.whisper_compute_type,
-                )
-                print(f"Using standard Whisper ({self._model_size})")
+            # PhoWhisper (VinAI) fine-tune cho tiếng Việt, nhưng faster-whisper
+            # chỉ nạp được bản đã chuyển sang CTranslate2. WHISPER_MODEL trỏ
+            # tới bản CT2 đó — hoặc một tên model Whisper chuẩn.
+            self._model = WhisperModel(
+                self._model_size,
+                device=settings.whisper_device,
+                compute_type=settings.whisper_compute_type,
+            )
+            print(f"STT ready: {self._model_size}")
         except Exception as e:
             print(f"Warning: Whisper not available: {e}")
             self._model = None

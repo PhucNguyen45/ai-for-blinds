@@ -7,6 +7,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import 'api_service.dart';
+
 /// Service that manages ALL audio operations in the app.
 /// Combines TTS (flutter_tts), STT (speech_to_text), and recording (record package).
 /// Exposed as a ChangeNotifier via Provider for reactive UI.
@@ -28,6 +30,17 @@ class AudioService extends ChangeNotifier {
 
   // --- Playback ---
   final AudioPlayer _player = AudioPlayer();
+  final ApiService _api = ApiService();
+
+  /// Prefer the server voice (Edge TTS, giọng Hoài My) over the on-device
+  /// engine. Turned off automatically the first time the server is
+  /// unreachable, so an offline device does not wait on every sentence.
+  bool _useServerVoice = true;
+  bool get useServerVoice => _useServerVoice;
+  set useServerVoice(bool value) {
+    _useServerVoice = value;
+    notifyListeners();
+  }
 
   // --- STT ---
   bool _isListening = false;
@@ -99,10 +112,38 @@ class AudioService extends ChangeNotifier {
   // ========== TTS Methods ==========
 
   /// Speak the given text aloud. Stops any current speech first.
+  ///
+  /// Tries the server voice, falls back to the on-device engine so the app
+  /// still talks with no network.
   Future<void> speak(String text) async {
     if (text.trim().isEmpty) return;
     _lastSpokenText = text;
     await _tts.stop();
+    await _player.stop();
+
+    if (_useServerVoice) {
+      final bytes = await _api.ttsAudio(text);
+      if (bytes != null && bytes.isNotEmpty) {
+        try {
+          final dir = await getTemporaryDirectory();
+          final file = File(
+            '${dir.path}/sgbe_speak_'
+            '${DateTime.now().millisecondsSinceEpoch}.mp3',
+          );
+          await file.writeAsBytes(bytes);
+          _isSpeaking = true;
+          notifyListeners();
+          await _player.play(DeviceFileSource(file.path));
+          return;
+        } catch (e) {
+          debugPrint('Server voice playback failed: $e');
+        }
+      } else {
+        // Server unreachable — stop paying the timeout on every sentence.
+        _useServerVoice = false;
+      }
+    }
+
     await _tts.speak(text);
   }
 
@@ -127,6 +168,7 @@ class AudioService extends ChangeNotifier {
   /// Stop speech entirely.
   Future<void> stop() async {
     await _tts.stop();
+    await _player.stop();
     _isSpeaking = false;
     _isPaused = false;
     notifyListeners();

@@ -16,20 +16,15 @@ router = APIRouter()
 @router.post("/ocr")
 async def ocr_image(file: UploadFile = File(...)):
     """
-    Nhận dạng văn bản từ ảnh bằng PaddleOCR.
+    Nhận dạng văn bản từ ảnh.
 
-    Hỗ trợ tiếng Việt và tiếng Anh.
+    Dùng PaddleOCR nếu đã cài, ngược lại để VLM đọc chữ.
     Trả về văn bản đã trích xuất.
     """
-    if not ocr_service.available:
-        return error_response(
-            message="OCR không khả dụng. Vui lòng kiểm tra cài đặt PaddleOCR.",
-            status_code=503,
-        )
-
     contents = validate_image(file)
 
-    text = ocr_service.extract_text(contents)
+    # Không chặn ở đây nữa: thiếu PaddleOCR thì service tự chuyển sang VLM.
+    text = ocr_service.extract_text(contents, file.content_type)
     if text is None:
         return error_response(
             message="Không thể trích xuất văn bản từ ảnh.",

@@ -1,0 +1,53 @@
+[
+  {
+    "model": "google/gemma-4-31b-it:free",
+    "ok": false,
+    "seconds": 3.6,
+    "image": "dia_ly_10_dan_so.png"
+  },
+  {
+    "model": "google/gemma-4-26b-a4b-it:free",
+    "ok": false,
+    "seconds": 2.2,
+    "image": "dia_ly_10_dan_so.png"
+  },
+  {
+    "model": "nvidia/nemotron-nano-12b-v2-vl:free",
+    "ok": true,
+    "seconds": 14.2,
+    "chars": 463,
+    "violations": {
+      "markdown": 0,
+      "visual_deixis": 0,
+      "digits": 59
+    },
+    "text": "Bài 12. Cổ cầu dân số Việt Nam. Dân số nước ta tăng trưởng giai đoạn 1979 đến 2019. Tỷ lệ dân thanh thị tăng từ 19,2% lên 34,4%, phản ánh quá trình đô thị hóa diễn ra mạnh mẽ. Hình 12.1. Dân số Việt Nam qua các năm. Triệu người. Năm 1979, dân số đạt 52,7 triệu. 1989, tăng lên 64,4 triệu. 1999, số lượng đạt 76,3 triệu. 2009, 85,8 triệu. 2019, số dân đạt 96,2 triệu. Nhận xét: dân số tăng thêm 43,5 triệu người sau hơn 40 năm. Tốc độ tăng trưởng dân số giảm dần.\n",
+    "image": "dia_ly_10_dan_so.png"
+  },
+  {
+    "model": "qwen/qwen3-vl-30b-a3b-instruct",
+    "ok": true,
+    "seconds": 9.3,
+    "chars": 810,
+    "violations": {
+      "markdown": 0,
+      "visual_deixis": 0,
+      "digits": 77
+    },
+    "text": "Bức ảnh này là một biểu đồ cột minh họa sự thay đổi dân số Việt Nam qua các năm. Tiêu đề của biểu đồ là Bài 12. Cơ cấu dân số Việt Nam. Dưới tiêu đề có một đoạn văn mô tả rằng dân số nước ta tăng nhanh trong giai đoạn 1979 đến 2019. Tỉ lệ dân thành thị tăng từ 19,2 phần trăm lên 34,4 phần trăm, phản ánh quá trình đô thị hóa diễn ra mạnh mẽ. Biểu đồ có tiêu đề là Hình 12.1. Dân số Việt Nam qua các năm (triệu người). Biểu đồ hiển thị các cột biểu diễn dân số vào các năm 1979, 1989, 1999, 2009 và 2019. Dân số năm 1979 là 52,7 triệu người. Dân số năm 1989 là 64,4 triệu người. Dân số năm 1999 là 76,3 triệu người. Dân số năm 2009 là 85,8 triệu người. Dân số năm 2019 là 96,2 triệu người. Dưới biểu đồ có nhận xét rằng dân số tăng thêm 43,5 triệu người sau bốn mươi năm. Tốc độ tăng chậm dần ở giai đoạn cuối.",
+    "image": "dia_ly_10_dan_so.png"
+  },
+  {
+    "model": "qwen/qwen3-vl-8b-instruct",
+    "ok": true,
+    "seconds": 2.9,
+    "chars": 826,
+    "violations": {
+      "markdown": 0,
+      "visual_deixis": 0,
+      "digits": 54
+    },
+    "text": "Bài học này có tên là Bài 12, Cơ cấu dân số Việt Nam. Nội dung bài viết nói rằng dân số nước ta tăng nhanh trong giai đoạn từ năm 1979 đến năm 2019. Tỷ lệ dân thành thị đã tăng từ 19,2 phần trăm lên 34,4 phần trăm, điều này cho thấy quá trình đô thị hóa diễn ra mạnh mẽ.\n\nTiếp theo là hình 12.1, biểu đồ cột thể hiện dân số Việt Nam qua các năm, đơn vị tính là triệu người. Biểu đồ có năm cột, mỗi cột tương ứng với một năm cụ thể. Cột đầu tiên ở năm 1979 cao 52,7 triệu người. Cột thứ hai ở năm 1989 cao 64,4 triệu người. Cột thứ ba ở năm 1999 cao 76,3 triệu người. Cột thứ tư ở năm 2009 cao 85,8 triệu người. Cột cuối cùng ở năm 2019 cao nhất với 96,2 triệu người.\n\nDưới biểu đồ có phần nhận xét. Nhận xét nói rằng dân số đã tăng thêm bốn mươi ba phẩy năm triệu người sau bốn mươi năm. Tốc độ tăng chậm dần ở giai đoạn cuối.",
+    "image": "dia_ly_10_dan_so.png"
+  }
+]

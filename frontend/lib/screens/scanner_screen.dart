@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../services/api_service.dart';
+import '../services/storage_service.dart';
+import '../models/learning_moment.dart';
 import '../services/audio_service.dart';
 import '../services/camera_service.dart';
 import '../theme/app_theme.dart';
@@ -27,6 +29,7 @@ class ScannerScreen extends StatefulWidget {
 class _ScannerScreenState extends State<ScannerScreen> {
   final CameraService _cameraService = CameraService();
   final ApiService _apiService = ApiService();
+  final StorageService _storage = StorageService();
 
   ScanMode _selectedMode = ScanMode.ocr;
   bool _isProcessing = false;
@@ -83,6 +86,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
         await audio.stop();
         await audio.speak(result);
         HapticFeedback.heavyImpact();
+
+        // Keep it so the student can hear it again from Ôn tập later.
+        await _saveMoment(photo, result);
       } else {
         setState(() {
           _isProcessing = false;
@@ -102,6 +108,29 @@ class _ScannerScreenState extends State<ScannerScreen> {
         await audio.speak('Có lỗi xảy ra. Xin thử lại.');
       }
     }
+  }
+
+  /// Store what was just read aloud, so the Ôn tập screen has something to
+  /// show. Without this the review list is always empty.
+  Future<void> _saveMoment(File photo, String result) async {
+    const labels = {
+      ScanMode.ocr: 'Đọc văn bản',
+      ScanMode.describe: 'Mô tả ảnh',
+      ScanMode.chart: 'Đọc biểu đồ',
+    };
+    final now = DateTime.now();
+    await _storage.saveLearningMoment(
+      LearningMoment(
+        id: now.microsecondsSinceEpoch.toString(),
+        title: '${labels[_selectedMode]} · '
+            '${now.day}/${now.month} ${now.hour}:'
+            '${now.minute.toString().padLeft(2, '0')}',
+        description: result,
+        imagePath: photo.path,
+        textContent: result,
+        createdAt: now,
+      ),
+    );
   }
 
   void _speakResult() {

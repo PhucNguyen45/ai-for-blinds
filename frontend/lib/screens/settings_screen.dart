@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../services/api_service.dart';
 import '../services/audio_service.dart';
+import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 
 /// Settings screen — điều chỉnh tốc độ, cao độ, âm lượng giọng đọc.
@@ -120,6 +122,15 @@ class SettingsScreen extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
+                // Địa chỉ máy chủ
+                _ServerAddressField(
+                  cardColor: cardColor,
+                  borderColor: borderColor,
+                  theme: theme,
+                ),
+
+                const SizedBox(height: 32),
+
                 // Thông tin ứng dụng
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -151,6 +162,103 @@ class SettingsScreen extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+/// Ô nhập địa chỉ máy chủ. Không có ô này thì đổi máy chủ phải build lại app.
+class _ServerAddressField extends StatefulWidget {
+  const _ServerAddressField({
+    required this.cardColor,
+    required this.borderColor,
+    required this.theme,
+  });
+
+  final Color cardColor;
+  final Color borderColor;
+  final ThemeData theme;
+
+  @override
+  State<_ServerAddressField> createState() => _ServerAddressFieldState();
+}
+
+class _ServerAddressFieldState extends State<_ServerAddressField> {
+  final _controller = TextEditingController(text: ApiService.activeBaseUrl);
+  final _storage = StorageService();
+  bool _checking = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final audio = context.read<AudioService>();
+    HapticFeedback.mediumImpact();
+    setState(() => _checking = true);
+
+    final url = _controller.text.trim();
+    ApiService.configure(url);
+    await _storage.saveBackendUrl(url);
+
+    final reachable = await ApiService().isBackendAvailable();
+    if (!mounted) return;
+    setState(() => _checking = false);
+
+    await audio.stop();
+    await audio.speak(reachable
+        ? 'Đã lưu địa chỉ máy chủ và kết nối được.'
+        : 'Đã lưu địa chỉ nhưng chưa kết nối được máy chủ. '
+            'Hãy kiểm tra lại địa chỉ và mạng.');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: widget.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: widget.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Địa chỉ máy chủ', style: widget.theme.textTheme.titleLarge),
+          const SizedBox(height: 8),
+          Semantics(
+            label: 'Địa chỉ máy chủ backend',
+            textField: true,
+            child: TextField(
+              controller: _controller,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+              style: widget.theme.textTheme.bodyLarge,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'http://10.0.2.2:8000',
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Semantics(
+            button: true,
+            label: 'Lưu và kiểm tra kết nối máy chủ',
+            child: SizedBox(
+              width: double.infinity,
+              height: 80,
+              child: ElevatedButton(
+                onPressed: _checking ? null : _save,
+                child: Text(
+                  _checking ? 'Đang kiểm tra...' : 'LƯU VÀ KIỂM TRA',
+                  style: widget.theme.textTheme.titleLarge,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

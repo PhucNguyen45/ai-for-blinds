@@ -40,7 +40,9 @@ class OcrService:
         self._initialize()
         return self._ocr is not None
 
-    def extract_text(self, image_bytes: bytes) -> Optional[str]:
+    def extract_text(
+        self, image_bytes: bytes, mime_type: str = "image/png"
+    ) -> Optional[str]:
         """
         Extract text from image bytes.
 
@@ -52,7 +54,11 @@ class OcrService:
         """
         self._initialize()
         if self._ocr is None:
-            return None
+            # Không có PaddleOCR thì để VLM đọc chữ — vẫn đúng ràng buộc
+            # "một mô hình gánh cả OCR lẫn mô tả" của đề tài.
+            from backend.services.vlm_service import vlm_service
+
+            return vlm_service.transcribe(image_bytes, mime_type)
 
         tmp_path = None
         try:

@@ -29,11 +29,13 @@ class LearningMoment {
     final now = DateTime.now();
     final diff = now.difference(createdAt);
 
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-    if (diff.inDays < 1) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
-    return '${createdAt.month}/${createdAt.day}/${createdAt.year}';
+    // Đọc lên bằng TTS nên viết thành lời, không dùng ký hiệu tắt.
+    if (diff.inMinutes < 1) return 'Vừa xong';
+    if (diff.inHours < 1) return '${diff.inMinutes} phút trước';
+    if (diff.inDays < 1) return '${diff.inHours} giờ trước';
+    if (diff.inDays < 7) return '${diff.inDays} ngày trước';
+    return 'Ngày ${createdAt.day} tháng ${createdAt.month} '
+        'năm ${createdAt.year}';
   }
 
   /// Preview text (first 100 chars).

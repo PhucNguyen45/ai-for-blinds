@@ -43,6 +43,10 @@ class SourceCitation(BaseModel):
     subject: str | None = Field(None, description="Môn học")
     chapter: str | None = Field(None, description="Chương")
     page_number: int | None = Field(None, description="Số trang")
+    citation: str | None = Field(
+        None,
+        description="Nguồn viết thành câu để đọc lên, ví dụ 'SGK Địa lý 10, Bài 13'",
+    )
     distance: float = Field(..., description="Khoảng cách cosine similarity")
 
 

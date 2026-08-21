@@ -7,9 +7,11 @@ Frontend plays the audio file directly.
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
+from starlette.background import BackgroundTask
 
 from backend.schemas.tts import TtsRequest
 from backend.services.tts_service import tts_service
+from backend.utils.file_handler import cleanup_temp_file
 from backend.utils.response_builder import error_response
 
 router = APIRouter()
@@ -40,6 +42,8 @@ async def text_to_speech(request: TtsRequest):
             status_code=500,
         )
 
+    # Delete the file once the response has been sent — otherwise every
+    # request leaves an MP3 behind and the disk fills up over time.
     return FileResponse(
         output_path,
         media_type="audio/mpeg",
@@ -47,4 +51,5 @@ async def text_to_speech(request: TtsRequest):
         headers={
             "Content-Disposition": 'attachment; filename="speech.mp3"',
         },
+        background=BackgroundTask(cleanup_temp_file, output_path),
     )

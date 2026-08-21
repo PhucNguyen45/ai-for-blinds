@@ -42,11 +42,24 @@ class RagService:
                 settings=ChromaSettings(anonymized_telemetry=False),
             )
 
+            # Không truyền embedding_function thì Chroma dùng mặc định
+            # all-MiniLM-L6-v2 (tiếng Anh) — sai hẳn với SGK tiếng Việt.
+            from chromadb.utils import embedding_functions
+
+            embedder = embedding_functions.SentenceTransformerEmbeddingFunction(
+                model_name=settings.embedding_model
+            )
+
             self._collection = client.get_or_create_collection(
                 name=settings.chroma_collection,
                 metadata={"hnsw:space": "cosine"},
+                embedding_function=embedder,
             )
-            print(f"ChromaDB ready: '{settings.chroma_collection}' collection")
+            print(
+                f"ChromaDB ready: '{settings.chroma_collection}' "
+                f"({self._collection.count()} đoạn, embedding "
+                f"{settings.embedding_model})"
+            )
         except Exception as e:
             print(f"Warning: ChromaDB not available: {e}")
 

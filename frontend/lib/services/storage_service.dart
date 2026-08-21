@@ -115,6 +115,22 @@ class StorageService {
     }
   }
 
+  /// Backend address chosen in Cài đặt. Null means use the build default.
+  Future<String?> loadBackendUrl() async {
+    final data = await readJson('settings.json');
+    if (data is Map && data['backend_url'] is String) {
+      return data['backend_url'] as String;
+    }
+    return null;
+  }
+
+  Future<bool> saveBackendUrl(String url) async {
+    final data = await readJson('settings.json');
+    final map = data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
+    map['backend_url'] = url;
+    return await writeJson('settings.json', map);
+  }
+
   /// Get a File reference within the app's documents directory.
   Future<File> _getFile(String fileName, {String? subdirectory}) async {
     final appDir = await getDocumentsDirectory();

@@ -40,3 +40,7 @@ docker/volumes/
 Thumbs.db
 *.swp
 *.swo
+
+# Dữ liệu sinh ra khi chạy, không đưa lên repo
+/data/embeddings/
+/data/audio_samples/*.mp3

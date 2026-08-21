@@ -9,6 +9,7 @@ from fastapi import APIRouter
 
 from backend.schemas.rag import RagQueryRequest, RagQueryResponse, SourceCitation
 from backend.services.rag_service import rag_service
+from backend.services.vlm_service import vlm_service
 from backend.utils.response_builder import success_response, error_response
 
 router = APIRouter()
@@ -53,23 +54,34 @@ async def rag_query(query: RagQueryRequest):
             "sources": [],
         })
 
-    # Build source citations
-    sources = [
-        SourceCitation(
+    # Chroma trả metadata trong một dict; SourceCitation lại khai báo từng
+    # trường riêng, nên phải trải ra — nếu không, nguồn trích dẫn bị mất và
+    # học sinh nghe câu trả lời mà không biết lấy từ bài nào.
+    def to_citation(r: dict) -> SourceCitation:
+        meta = r.get("metadata") or {}
+        return SourceCitation(
             chunk_id=r["id"],
             text=r["text"],
-            metadata=r.get("metadata", {}),
+            grade=meta.get("grade"),
+            subject=meta.get("subject"),
+            chapter=meta.get("section"),
+            page_number=meta.get("page_number"),
+            citation=meta.get("source"),
             distance=r.get("distance", 0.0),
         )
-        for r in results
-    ]
+
+    sources = [to_citation(r) for r in results]
 
     # Use the top result as the primary source
     primary = sources[0]
 
-    # TODO: Generate answer using Gemini LLM with context from retrieved chunks
-    # For now, use the top chunk text as the answer
-    answer = primary.text
+    # Let the model turn the retrieved passages into spoken Vietnamese. If the
+    # call fails, fall back to the top passage so the student still hears
+    # something rather than silence.
+    answer = vlm_service.answer_from_context(
+        question=query.question,
+        passages=[s.text for s in sources],
+    ) or primary.text
 
     return success_response(data=RagQueryResponse(
         answer=answer,

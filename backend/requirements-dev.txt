@@ -1,0 +1,12 @@
+# Minimal dev dependencies — enough to boot the API.
+# Heavy services (OCR, RAG, STT) import their libs lazily inside _initialize().
+fastapi
+uvicorn[standard]
+python-multipart
+sqlalchemy
+psycopg2-binary
+edge-tts
+httpx
+Pillow
+google-generativeai
+python-dotenv

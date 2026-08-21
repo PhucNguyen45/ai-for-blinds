@@ -57,10 +57,17 @@ async def startup():
 @app.get("/")
 def health():
     """Health check endpoint."""
+    from backend.services.vlm_service import vlm_service
+
     return {
         "status": "ok",
         "service": settings.app_name,
         "version": settings.app_version,
+        "vlm": {
+            "provider": settings.vlm_provider,
+            "model": vlm_service.model_name,
+            "configured": bool(settings.vlm_api_key or settings.google_api_key),
+        },
     }
 
 
