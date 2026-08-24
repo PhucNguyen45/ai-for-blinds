@@ -46,7 +46,14 @@ VISUAL_DEIXIS = [
 ]
 
 MARKDOWN = re.compile(r"(\*\*|^\s*[-*•]\s|^#{1,6}\s|```|\|\s*-{2,})", re.M)
-DIGITS = re.compile(r"\d")
+
+# Chữ số thì không sao — máy đọc phát âm đúng. Ký hiệu mới là thứ đọc lên
+# thành vô nghĩa, và từ tiếng Anh lọt vào thì máy đọc giọng Việt sẽ đọc sai.
+SYMBOLS = re.compile(r"[%°²³×÷≥≤±]|m2")
+ENGLISH = re.compile(
+    r"(point|percent|the|and|is|are|this|image|chart|figure|table|shows?)",
+    re.I,
+)
 
 
 def check_speech_rules(text: str) -> dict:
@@ -55,7 +62,8 @@ def check_speech_rules(text: str) -> dict:
     return {
         "markdown": len(MARKDOWN.findall(text)),
         "visual_deixis": sum(1 for p in VISUAL_DEIXIS if p in lowered),
-        "digits": len(DIGITS.findall(text)),
+        "symbols": len(SYMBOLS.findall(text)),
+        "english": len(ENGLISH.findall(text)),
     }
 
 
@@ -112,8 +120,8 @@ def main(patterns: list[str]) -> None:
             v = row["violations"]
             print(
                 f"  {model:42} {row['seconds']:>5}s  {row['chars']:>5} ký tự  "
-                f"markdown={v['markdown']} chỉ-thị-thị-giác={v['visual_deixis']} "
-                f"chữ-số={v['digits']}"
+                f"markdown={v['markdown']} chỉ-thị={v['visual_deixis']} "
+                f"ký-hiệu={v['symbols']} tiếng-Anh={v['english']}"
             )
 
     out = Path("data/eval/results.json")

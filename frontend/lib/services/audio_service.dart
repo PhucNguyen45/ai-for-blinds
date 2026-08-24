@@ -33,13 +33,36 @@ class AudioService extends ChangeNotifier {
   final ApiService _api = ApiService();
 
   /// Prefer the server voice (Edge TTS, giọng Hoài My) over the on-device
-  /// engine. Turned off automatically the first time the server is
-  /// unreachable, so an offline device does not wait on every sentence.
+  /// engine.
+  ///
+  /// A single timeout is not proof the server is gone — it may just have been
+  /// busy answering a description. Give up only after two failures in a row,
+  /// and try again after a minute rather than staying on the weaker device
+  /// voice for the rest of the session.
+  static const _failuresBeforeGivingUp = 2;
+  static const _retryAfter = Duration(minutes: 1);
+
   bool _useServerVoice = true;
+  int _serverVoiceFailures = 0;
+  DateTime? _serverVoiceDisabledAt;
+
   bool get useServerVoice => _useServerVoice;
   set useServerVoice(bool value) {
     _useServerVoice = value;
+    _serverVoiceFailures = 0;
+    _serverVoiceDisabledAt = null;
     notifyListeners();
+  }
+
+  bool get _shouldTryServerVoice {
+    if (_useServerVoice) return true;
+    final since = _serverVoiceDisabledAt;
+    if (since != null && DateTime.now().difference(since) > _retryAfter) {
+      _useServerVoice = true;
+      _serverVoiceFailures = 0;
+      return true;
+    }
+    return false;
   }
 
   // --- STT ---
@@ -121,9 +144,10 @@ class AudioService extends ChangeNotifier {
     await _tts.stop();
     await _player.stop();
 
-    if (_useServerVoice) {
+    if (_shouldTryServerVoice) {
       final bytes = await _api.ttsAudio(text);
       if (bytes != null && bytes.isNotEmpty) {
+        _serverVoiceFailures = 0;
         try {
           final dir = await getTemporaryDirectory();
           final file = File(
@@ -139,8 +163,13 @@ class AudioService extends ChangeNotifier {
           debugPrint('Server voice playback failed: $e');
         }
       } else {
-        // Server unreachable — stop paying the timeout on every sentence.
-        _useServerVoice = false;
+        _serverVoiceFailures++;
+        if (_serverVoiceFailures >= _failuresBeforeGivingUp) {
+          // Stop paying the timeout on every sentence, but only for a while.
+          _useServerVoice = false;
+          _serverVoiceDisabledAt = DateTime.now();
+          debugPrint('Server voice off for ${_retryAfter.inMinutes} min');
+        }
       }
     }
 

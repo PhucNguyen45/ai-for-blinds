@@ -11,6 +11,9 @@ file is tied to one vendor.
 """
 
 import base64
+import hashlib
+import time
+from collections import OrderedDict
 from typing import Optional
 
 from backend.config import settings
@@ -31,7 +34,12 @@ class VlmService:
         "tiêu đề hay bất kỳ ký hiệu đặc biệt nào. "
         "Không dùng cụm chỉ thị thị giác như 'như bạn thấy', 'hình bên trái', "
         "'ở phía trên'. "
-        "Đọc số liệu thành chữ, ví dụ 'hai mươi lăm phần trăm' thay vì '25%'. "
+        "Giữ nguyên chữ số cho các con số, ví dụ viết 85,8 chứ không viết "
+        "'tám mươi lăm phẩy tám' — máy đọc sẽ tự phát âm đúng. Dùng dấu phẩy "
+        "thập phân kiểu Việt Nam, không dùng dấu chấm. "
+        "Nhưng ký hiệu thì phải viết thành chữ: '%' viết là 'phần trăm', "
+        "'°C' viết là 'độ C', 'm2' viết là 'mét vuông'. "
+        "Tuyệt đối không chèn từ tiếng Anh nào vào câu trả lời. "
         "Viết câu ngắn, trình bày theo thứ tự tuyến tính, vì người nghe "
         "không tua lại được."
     )
@@ -43,9 +51,38 @@ class VlmService:
         "Nếu ảnh có biểu đồ, hãy mô tả số liệu và xu hướng. "
     )
 
+    # Chụp lại đúng trang sách là chuyện thường: học sinh nghe chưa kịp, chụp
+    # lại. Nhớ kết quả cũ thì lần sau trả lời tức thì và không tốn thêm tiền.
+    CACHE_SIZE = 64
+
     def __init__(self) -> None:
         self._client = None
         self._gemini = None
+        self._cache: OrderedDict[str, str] = OrderedDict()
+
+    # ── Cache ───────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _cache_key(prompt: str, image_bytes: bytes) -> str:
+        digest = hashlib.sha256(image_bytes).hexdigest()
+        return f"{settings.vlm_model}|{hashlib.sha256(prompt.encode()).hexdigest()[:16]}|{digest}"
+
+    def _cache_get(self, key: str) -> Optional[str]:
+        value = self._cache.get(key)
+        if value is not None:
+            self._cache.move_to_end(key)
+        return value
+
+    def _cache_put(self, key: str, value: str) -> None:
+        self._cache[key] = value
+        self._cache.move_to_end(key)
+        while len(self._cache) > self.CACHE_SIZE:
+            self._cache.popitem(last=False)
+
+    def clear_cache(self) -> int:
+        count = len(self._cache)
+        self._cache.clear()
+        return count
 
     # ── Client construction (lazy: importing this module needs no key) ──
 
@@ -85,12 +122,18 @@ class VlmService:
         b64 = base64.b64encode(image_bytes).decode("ascii")
         return f"data:{mime_type};base64,{b64}"
 
-    def _chat(self, prompt: str, image_bytes: bytes, mime_type: str) -> str:
+    def _chat(
+        self,
+        prompt: str,
+        image_bytes: bytes,
+        mime_type: str,
+        temperature: Optional[float] = None,
+    ) -> str:
         """One vision turn against the OpenAI-compatible endpoint."""
         response = self._get_client().chat.completions.create(
             model=settings.vlm_model,
             max_tokens=settings.vlm_max_tokens,
-            temperature=settings.vlm_temperature,
+            temperature=settings.vlm_temperature if temperature is None else temperature,
             messages=[
                 {
                     "role": "user",
@@ -109,21 +152,54 @@ class VlmService:
         return response.choices[0].message.content
 
     def _generate(
-        self, prompt: str, image_bytes: bytes, mime_type: str
+        self,
+        prompt: str,
+        image_bytes: bytes,
+        mime_type: str,
+        use_cache: bool = True,
+        temperature: Optional[float] = None,
     ) -> Optional[str]:
-        """Route to whichever provider is configured, reporting failures."""
-        try:
-            if settings.vlm_provider == "openai":
-                return self._chat(prompt, image_bytes, mime_type)
+        """
+        Route to whichever provider is configured, with cache and retry.
 
-            response = self._get_gemini().generate_content([
-                prompt,
-                {"mime_type": mime_type, "data": image_bytes},
-            ])
-            return response.text
-        except Exception as e:
-            print(f"VLM error ({self.model_name}): {e}")
-            return None
+        Providers return 429 often enough — free tiers share a pool — that a
+        single failure would leave the student listening to silence. Retry a
+        few times with growing waits before giving up.
+        """
+        key = self._cache_key(prompt, image_bytes)
+        if use_cache:
+            cached = self._cache_get(key)
+            if cached is not None:
+                return cached
+
+        last_error: Optional[Exception] = None
+        for attempt in range(settings.vlm_max_retries):
+            try:
+                if settings.vlm_provider == "openai":
+                    text = self._chat(prompt, image_bytes, mime_type, temperature)
+                else:
+                    response = self._get_gemini().generate_content([
+                        prompt,
+                        {"mime_type": mime_type, "data": image_bytes},
+                    ])
+                    text = response.text
+
+                if text:
+                    self._cache_put(key, text)
+                return text
+            except Exception as e:
+                last_error = e
+                retryable = any(
+                    code in str(e) for code in ("429", "500", "502", "503", "504")
+                )
+                if not retryable or attempt == settings.vlm_max_retries - 1:
+                    break
+                wait = 2**attempt
+                print(f"VLM {self.model_name} lỗi tạm thời, thử lại sau {wait}s")
+                time.sleep(wait)
+
+        print(f"VLM error ({self.model_name}): {last_error}")
+        return None
 
     # ── Public API ──────────────────────────────────────────────────────
 
@@ -178,7 +254,28 @@ class VlmService:
             "không thêm lời dẫn. Nếu ảnh không có chữ nào, trả lời đúng một "
             "câu: Ảnh này không có chữ."
         )
-        return self._generate(prompt, image_bytes, mime_type)
+        return self._generate(prompt, image_bytes, mime_type, temperature=0.0)
+
+    def answer_about_image(
+        self, image_bytes: bytes, mime_type: str, question: str
+    ) -> Optional[str]:
+        """
+        Trả lời một câu hỏi cụ thể về bức ảnh vừa chụp.
+
+        Học sinh nghe mô tả xong thường hỏi tiếp: "cột năm hai nghìn mười chín
+        bao nhiêu". Mô tả lại từ đầu vừa chậm vừa thừa, nên hỏi thẳng vào ảnh.
+        """
+        prompt = (
+            "Bạn là trợ lý cho học sinh khiếm thị Việt Nam. "
+            "Học sinh vừa chụp bức ảnh này và hỏi một câu về nó. "
+            "Trả lời đúng trọng tâm câu hỏi, không mô tả lại toàn bộ ảnh. "
+            "Nếu trong ảnh không có thông tin để trả lời, nói rõ là không thấy "
+            "thông tin đó trong ảnh. "
+            f"Câu hỏi: {question}. " + self.SPEECH_RULES
+        )
+        # Đọc số liệu trong ảnh là việc tra cứu. Nhiệt độ 0,3 làm cùng một câu
+        # hỏi lúc trả lời đúng lúc bảo "không thấy thông tin".
+        return self._generate(prompt, image_bytes, mime_type, temperature=0.0)
 
     def answer_from_context(self, question: str, passages: list[str]) -> Optional[str]:
         """

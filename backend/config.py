@@ -47,6 +47,7 @@ class Settings:
     vlm_model: str = os.environ.get("VLM_MODEL", "google/gemma-4-31b-it:free")
     vlm_max_tokens: int = int(os.environ.get("VLM_MAX_TOKENS", "1024"))
     vlm_temperature: float = float(os.environ.get("VLM_TEMPERATURE", "0.3"))
+    vlm_max_retries: int = int(os.environ.get("VLM_MAX_RETRIES", "3"))
 
     # ── Gemini — chỉ dùng khi không có OPENROUTER_API_KEY ────────
     google_api_key: Optional[str] = os.environ.get("GOOGLE_API_KEY")

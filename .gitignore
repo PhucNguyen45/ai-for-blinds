@@ -44,3 +44,8 @@ Thumbs.db
 # Dữ liệu sinh ra khi chạy, không đưa lên repo
 /data/embeddings/
 /data/audio_samples/*.mp3
+
+# Ghi chú riêng và dữ liệu tải về, không đẩy lên repo chung
+CLAUDE.md
+data/datasets/
+data/eval/*.json

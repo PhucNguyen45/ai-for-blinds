@@ -85,6 +85,40 @@ trong màn hình Cài đặt của app.
 | `scripts/eval_vlm.py` | Chấm điểm nhiều VLM trên cùng bộ ảnh, tự kiểm quy tắc văn nói |
 | `scripts/bench_stt.py` | Đo WER và tốc độ các model nhận dạng giọng nói |
 | `scripts/ingest_sgk.py` | Nạp SGK vào ChromaDB, cắt theo tiêu đề bài |
+| `scripts/eval_vqa.py` | Chấm model trên ViInfographicVQA — ảnh có sẵn đáp án |
+| `scripts/download_datasets.py` | Tải các bộ dữ liệu ảnh tiếng Việt |
+
+## Nâng cấp đợt hai
+
+**Hỏi thẳng về ảnh vừa chụp.** Nghe mô tả xong, nhấn "Hỏi về ảnh", nói câu hỏi,
+nhấn lần nữa để gửi. Ảnh được giữ lại nên không phải chụp lại. Đường đi:
+ghi âm → `/stt` → `/describe` kèm trường `question` → đọc đáp án.
+
+**Nhớ kết quả cũ.** Chụp lại đúng trang đã chụp thì trả lời ngay, không gọi lại
+mô hình: **4,66 giây xuống 0,0015 giây**, và không tốn thêm tiền. Nhớ 64 ảnh
+gần nhất, khoá theo mã băm của ảnh cộng với tên model.
+
+**Tự thử lại khi nhà cung cấp chặn.** Gặp 429 hoặc 5xx thì chờ 1, 2, 4 giây rồi
+thử lại, tối đa ba lần. Trước đây một lần chặn là học sinh nghe im lặng.
+
+**Nhiệt độ 0 cho việc tra cứu.** Đọc chữ và trả lời câu hỏi về ảnh là tra cứu,
+không phải sáng tác. Ở nhiệt độ 0,3 cùng một câu hỏi lúc trả lời đúng lúc bảo
+"không thấy thông tin trong ảnh". Hạ về 0 thì năm lần chạy cho cùng một kết quả.
+Phần mô tả tự do vẫn giữ 0,3.
+
+**Sửa quy tắc đọc số.** Quy tắc cũ bắt viết số thành chữ, model làm nửa vời và
+sinh ra câu "tám mươi lăm **point** tám". Nay giữ nguyên chữ số vì máy đọc phát
+âm đúng, chỉ bắt viết chữ cho ký hiệu: phần trăm, độ C, mét vuông. Cấm hẳn từ
+tiếng Anh.
+
+### Hai lỗi chỉ lộ ra khi chạy app thật
+
+Cả hai đều không thấy khi thử bằng `curl`.
+
+| Lỗi | Hậu quả | Sửa |
+|---|---|---|
+| File ghi âm gửi lên không kèm loại MIME | `/stt` trả 400 mọi lần — nút Hỏi đáp chưa từng chạy được từ app | Suy MIME từ đuôi file, giống phần ảnh |
+| Một lần TTS quá hạn là tắt hẳn giọng server cả phiên | Nghe giọng máy yếu suốt buổi dù mạng chỉ nghẽn một lúc | Chờ hai lần lỗi liên tiếp mới tắt, một phút sau tự thử lại. Thời gian chờ tính theo độ dài văn bản |
 
 ## Còn phải làm
 

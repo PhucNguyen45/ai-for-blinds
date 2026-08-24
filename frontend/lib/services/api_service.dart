@@ -56,6 +56,23 @@ class ApiService {
     }
   }
 
+  /// Same problem as images: the recorder writes .m4a but `fromPath` labels it
+  /// `application/octet-stream`, which `validate_audio()` rejects with 400.
+  MediaType _audioMediaType(String path) {
+    switch (path.split('.').last.toLowerCase()) {
+      case 'mp3':
+        return MediaType('audio', 'mpeg');
+      case 'wav':
+        return MediaType('audio', 'wav');
+      case 'ogg':
+        return MediaType('audio', 'ogg');
+      case 'webm':
+        return MediaType('audio', 'webm');
+      default:
+        return MediaType('audio', 'mp4');
+    }
+  }
+
   /// Unwrap `{success, message, data: {...}}` from `response_builder.py`.
   /// Falls back to the raw body for endpoints that reply flat.
   Map<String, dynamic>? _unwrap(dynamic body) {
@@ -71,10 +88,16 @@ class ApiService {
   }
 
   /// Send an image to the backend for AI-powered description in Vietnamese.
-  Future<String?> describeImage(File imageFile) async {
+  ///
+  /// Pass [question] to ask about one detail instead of hearing the whole
+  /// description again — the student has already listened to it once.
+  Future<String?> describeImage(File imageFile, {String? question}) async {
     try {
       final uri = Uri.parse('$baseUrl/describe');
       final request = http.MultipartRequest('POST', uri);
+      if (question != null && question.trim().isNotEmpty) {
+        request.fields['question'] = question.trim();
+      }
       request.files.add(
         await http.MultipartFile.fromPath(
           'file',
@@ -139,7 +162,11 @@ class ApiService {
       final uri = Uri.parse('$baseUrl/stt');
       final request = http.MultipartRequest('POST', uri);
       request.files.add(
-        await http.MultipartFile.fromPath('file', audioFile.path),
+        await http.MultipartFile.fromPath(
+          'file',
+          audioFile.path,
+          contentType: _audioMediaType(audioFile.path),
+        ),
       );
       request.fields['language'] = language;
 
@@ -212,7 +239,9 @@ class ApiService {
               'voice': ?voice,
             }),
           )
-          .timeout(const Duration(seconds: 15));
+          // A long description takes the server longer to synthesise than a
+          // one-line error message, so scale the wait with the text.
+          .timeout(Duration(seconds: 10 + (text.length ~/ 40).clamp(0, 35)));
 
       if (response.statusCode == 200 &&
           response.headers['content-type']?.contains('audio') == true) {

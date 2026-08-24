@@ -31,6 +31,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
   final ApiService _apiService = ApiService();
   final StorageService _storage = StorageService();
 
+  /// Ảnh của lần quét gần nhất, giữ lại để học sinh hỏi thêm về nó.
+  File? _lastPhoto;
+  bool _isAsking = false;
+
   ScanMode _selectedMode = ScanMode.ocr;
   bool _isProcessing = false;
   String? _resultText;
@@ -46,6 +50,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     try {
       final File? photo = await _cameraService.takePhoto();
       if (photo == null) return;
+      _lastPhoto = photo;
 
       if (!mounted) return;
       setState(() {
@@ -131,6 +136,66 @@ class _ScannerScreenState extends State<ScannerScreen> {
         createdAt: now,
       ),
     );
+  }
+
+  /// Nghe câu hỏi của học sinh rồi hỏi thẳng mô hình về bức ảnh vừa chụp.
+  ///
+  /// Nhấn lần đầu để bắt đầu nghe, nhấn lần nữa để gửi câu hỏi đi.
+  Future<void> _askAboutPhoto() async {
+    final audio = context.read<AudioService>();
+    final photo = _lastPhoto;
+    if (photo == null) return;
+
+    if (!_isAsking) {
+      final allowed = await audio.requestMicPermission();
+      if (!allowed) {
+        await audio.speak('Ứng dụng cần quyền micro. '
+            'Hãy vào cài đặt của điện thoại để cấp quyền.');
+        return;
+      }
+      HapticFeedback.heavyImpact();
+      await audio.stop();
+      await audio.speak('Hãy đặt câu hỏi về ảnh này');
+      await audio.startRecording();
+      if (mounted) setState(() => _isAsking = true);
+      return;
+    }
+
+    HapticFeedback.mediumImpact();
+    final path = await audio.stopRecording();
+    if (!mounted) return;
+    setState(() {
+      _isAsking = false;
+      _isProcessing = true;
+    });
+
+    if (path == null) {
+      setState(() => _isProcessing = false);
+      await audio.speak('Không ghi âm được. Xin thử lại.');
+      return;
+    }
+
+    final question = await _apiService.sttAudio(File(path));
+    if (!mounted) return;
+    if (question == null || question.trim().isEmpty) {
+      setState(() => _isProcessing = false);
+      await audio.stop();
+      await audio.speak('Chưa nghe rõ câu hỏi. Hãy nhấn nút và hỏi lại.');
+      return;
+    }
+
+    final answer = await _apiService.describeImage(photo, question: question);
+    if (!mounted) return;
+    setState(() {
+      _isProcessing = false;
+      if (answer != null && answer.isNotEmpty) _resultText = answer;
+    });
+
+    await audio.stop();
+    await audio.speak(answer != null && answer.isNotEmpty
+        ? answer
+        : 'Chưa trả lời được câu hỏi này. Xin thử lại.');
+    HapticFeedback.heavyImpact();
   }
 
   void _speakResult() {
@@ -274,6 +339,16 @@ class _ScannerScreenState extends State<ScannerScreen> {
                             label: 'Nghe lại',
                             color: AppTheme.accentGreen,
                             onTap: _speakResult,
+                          ),
+                          BigMediaButton(
+                            icon: _isAsking
+                                ? Icons.stop_circle_rounded
+                                : Icons.help_outline_rounded,
+                            label: _isAsking ? 'Gửi câu hỏi' : 'Hỏi về ảnh',
+                            color: _isAsking
+                                ? AppTheme.accentOrange
+                                : AppTheme.accentGreen,
+                            onTap: _askAboutPhoto,
                           ),
                           BigMediaButton(
                             icon: Icons.camera_alt_rounded,

@@ -4,7 +4,9 @@ POST /describe — Image description with Gemini 2.5 Flash in Vietnamese.
 Part of the VLM (Vision-Language Model) service.
 """
 
-from fastapi import APIRouter, UploadFile, File
+from typing import Optional
+
+from fastapi import APIRouter, File, Form, UploadFile
 
 from backend.services.vlm_service import vlm_service
 from backend.utils.file_handler import validate_image
@@ -14,16 +16,30 @@ router = APIRouter()
 
 
 @router.post("/describe")
-async def describe_image(file: UploadFile = File(...)):
+async def describe_image(
+    file: UploadFile = File(...),
+    question: Optional[str] = Form(None),
+    context: Optional[str] = Form(None),
+):
     """
     Mô tả ảnh bằng tiếng Việt cho học sinh khiếm thị.
 
-    Sử dụng Gemini 2.5 Flash để phân tích và mô tả nội dung ảnh.
-    Trả về mô tả chi tiết bằng tiếng Việt tự nhiên.
+    Không truyền gì thêm thì trả về mô tả đầy đủ. Truyền `question` để hỏi
+    thẳng một chi tiết trong ảnh — nhanh hơn và đỡ phải nghe lại từ đầu.
+    Truyền `context` (ví dụ tên bài đang học) để mô tả bám nội dung đó.
     """
     contents = validate_image(file)
 
-    description = vlm_service.describe(contents, file.content_type)
+    if question and question.strip():
+        description = vlm_service.answer_about_image(
+            contents, file.content_type, question.strip()
+        )
+    elif context and context.strip():
+        description = vlm_service.describe_with_context(
+            contents, file.content_type, context.strip()
+        )
+    else:
+        description = vlm_service.describe(contents, file.content_type)
     if description is None:
         return error_response(
             message="Không thể mô tả ảnh. Vui lòng thử lại sau.",
