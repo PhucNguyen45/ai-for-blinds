@@ -1,0 +1,140 @@
+{
+  "_mo_ta": "Bộ đối chiếu chuẩn cho các trang SGK. Mỗi trang liệt kê những thông tin mô hình BẮT BUỘC phải đọc đúng. Điểm của một trang là tỉ lệ các mục 'phai_co' xuất hiện trong câu trả lời. Thêm trang mới thì chép một khối và điền tay.",
+  "_nguon": "Lịch sử và Địa lí 4, bộ Kết nối tri thức với cuộc sống, NXB Giáo dục Việt Nam, tái bản lần thứ ba",
+  "trang": [
+    {
+      "id": "ldl4_bia",
+      "file": "ldl4_bia.png",
+      "trang_sach": "Bìa",
+      "loai": ["bia", "anh_phong_canh"],
+      "kho": "de",
+      "phai_co": [
+        "Bộ Giáo dục và Đào tạo",
+        "Lịch sử và Địa lí",
+        "4",
+        "Nhà xuất bản Giáo dục Việt Nam"
+      ],
+      "nen_co": ["Kết nối tri thức với cuộc sống", "ruộng bậc thang", "hồ"],
+      "ghi_chu": "Trang dễ nhất. Nếu model sai ở đây thì ảnh chụp có vấn đề, không phải model."
+    },
+    {
+      "id": "ldl4_tacgia",
+      "file": "ldl4_tacgia.png",
+      "trang_sach": "Trang tên sách",
+      "loai": ["danh_sach_ten_rieng"],
+      "kho": "trung_binh",
+      "phai_co": [
+        "Vũ Minh Giang",
+        "Nghiêm Đình Vỳ",
+        "Nguyễn Thị Thu Thuỷ",
+        "Đào Thị Hồng",
+        "Lê Thị Thu Hương",
+        "Đào Ngọc Hùng",
+        "Trần Thị Hà Giang",
+        "Đặng Tiên Dung",
+        "Đoàn Thị Thanh Phương"
+      ],
+      "nen_co": ["Tổng Chủ biên", "Chủ biên", "Tái bản lần thứ ba"],
+      "ghi_chu": "Đo khả năng đọc tên riêng tiếng Việt có dấu. Sai dấu là sai."
+    },
+    {
+      "id": "ldl4_tr06_07",
+      "file": "ldl4_tr06_07.png",
+      "trang_sach": "6-7",
+      "loai": ["ban_do", "van_ban", "hinh_minh_hoa"],
+      "kho": "kho",
+      "phai_co": [
+        "Bài 1",
+        "Làm quen với phương tiện học tập môn Lịch sử và Địa lí",
+        "Bản đồ, lược đồ",
+        "Hình 1",
+        "Bản đồ địa hình Việt Nam",
+        "Hà Nội",
+        "Trung Quốc",
+        "Cam-pu-chia",
+        "Biển Đông",
+        "Hoàng Sa",
+        "Trường Sa"
+      ],
+      "nen_co": [
+        "chú giải",
+        "phân tầng độ cao",
+        "2 500",
+        "1 500 m",
+        "Thái Lan",
+        "khởi động",
+        "khám phá"
+      ],
+      "ghi_chu": "Bản đồ địa hình có chú giải phân tầng độ cao và độ sâu. Đây là loại trang khó nhất với người khiếm thị, cũng là loại quan trọng nhất của đề tài."
+    },
+    {
+      "id": "ldl4_tr08_09",
+      "file": "ldl4_tr08_09.png",
+      "trang_sach": "8-9",
+      "loai": ["luoc_do", "bang_so_lieu", "bieu_do_cot", "so_do"],
+      "kho": "kho",
+      "phai_co": [
+        "Hình 2",
+        "Lược đồ khởi nghĩa Hai Bà Trưng năm 40",
+        "Mê Linh",
+        "Cổ Loa",
+        "Luy Lâu",
+        "Hát Môn",
+        "Giao Chỉ",
+        "Hà Nội",
+        "3 360",
+        "8 718",
+        "Đà Nẵng",
+        "11 860",
+        "Lâm Đồng",
+        "24 233",
+        "Thành phố Hồ Chí Minh",
+        "13 609",
+        "Cần Thơ",
+        "6 361"
+      ],
+      "nen_co": [
+        "dãy Tam Đảo",
+        "hướng tiến quân",
+        "Hình 3",
+        "Hình 4",
+        "Biểu đồ diện tích",
+        "Niên giám thống kê",
+        "2024",
+        "Bước 1"
+      ],
+      "ghi_chu": "Trang đo nặng nhất: một lược đồ lịch sử, một bảng số liệu năm dòng hai cột số, một biểu đồ cột. Số phải đọc đúng từng con, lẫn số là hỏng."
+    },
+    {
+      "id": "ldl4_tr10_11",
+      "file": "ldl4_tr10_11.png",
+      "trang_sach": "10-11",
+      "loai": ["truc_thoi_gian", "hien_vat", "anh_phong_canh", "so_do"],
+      "kho": "trung_binh",
+      "phai_co": [
+        "Hình 5",
+        "Trục thời gian",
+        "1945",
+        "Cách mạng tháng Tám",
+        "Việt Nam Dân chủ Cộng hoà",
+        "1954",
+        "Điện Biên Phủ",
+        "1975",
+        "Hồ Chí Minh",
+        "Hình 7",
+        "Mũi tên đồng Cổ Loa",
+        "Hình 8",
+        "Phong Nặm",
+        "Cao Bằng"
+      ],
+      "nen_co": [
+        "Hiện vật, tranh ảnh",
+        "Hình 6",
+        "Hình 9",
+        "Luyện tập",
+        "Vận dụng"
+      ],
+      "ghi_chu": "Trục thời gian là loại hình đặc thù: thứ tự mốc năm phải giữ đúng khi đọc lên, vì người nghe không nhìn lại được."
+    }
+  ]
+}

@@ -20,6 +20,7 @@ async def describe_image(
     file: UploadFile = File(...),
     question: Optional[str] = Form(None),
     context: Optional[str] = Form(None),
+    textbook_page: bool = Form(False),
 ):
     """
     Mô tả ảnh bằng tiếng Việt cho học sinh khiếm thị.
@@ -39,7 +40,9 @@ async def describe_image(
             contents, file.content_type, context.strip()
         )
     else:
-        description = vlm_service.describe(contents, file.content_type)
+        description = vlm_service.describe(
+            contents, file.content_type, textbook_page=textbook_page
+        )
     if description is None:
         return error_response(
             message="Không thể mô tả ảnh. Vui lòng thử lại sau.",

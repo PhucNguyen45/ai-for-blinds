@@ -67,13 +67,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
           break;
 
         case ScanMode.describe:
-          // Use Gemini to describe the image
-          result = await _apiService.describeImage(photo);
+          // Trang sách: dùng prompt có cấu trúc, đọc theo từng khối thay vì
+          // tả tuôn một mạch.
+          result = await _apiService.describeImage(photo, textbookPage: true);
           break;
 
         case ScanMode.chart:
-          // Use Gemini to describe the chart/data
-          result = await _apiService.describeImage(photo);
+          result = await _apiService.describeImage(photo, textbookPage: true);
           // Future: add specific chart sonification via /sonify endpoint
           break;
       }

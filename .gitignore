@@ -49,3 +49,5 @@ Thumbs.db
 CLAUDE.md
 data/datasets/
 data/eval/*.json
+# Ảnh SGK có bản quyền — giữ annotations, không đẩy ảnh
+data/sgk_pages/images/

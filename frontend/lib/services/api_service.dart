@@ -91,12 +91,19 @@ class ApiService {
   ///
   /// Pass [question] to ask about one detail instead of hearing the whole
   /// description again — the student has already listened to it once.
-  Future<String?> describeImage(File imageFile, {String? question}) async {
+  Future<String?> describeImage(
+    File imageFile, {
+    String? question,
+    bool textbookPage = false,
+  }) async {
     try {
       final uri = Uri.parse('$baseUrl/describe');
       final request = http.MultipartRequest('POST', uri);
       if (question != null && question.trim().isNotEmpty) {
         request.fields['question'] = question.trim();
+      }
+      if (textbookPage) {
+        request.fields['textbook_page'] = 'true';
       }
       request.files.add(
         await http.MultipartFile.fromPath(

@@ -51,6 +51,38 @@ class VlmService:
         "Nếu ảnh có biểu đồ, hãy mô tả số liệu và xu hướng. "
     )
 
+    # Một trang đôi sách giáo khoa thường chứa bảy khối khác loại: tên bài,
+    # đoạn văn, bản đồ, bảng số liệu, biểu đồ, sơ đồ các bước, ảnh chụp. Tả
+    # tuôn một mạch thì người nghe mất phương hướng giữa chừng — nên bắt mô
+    # hình nói trước trang có những gì, rồi mới đi vào từng phần, và quy định
+    # cách đọc riêng cho từng loại khối.
+    PAGE_PROMPT = (
+        "Bạn là trợ lý cho học sinh khiếm thị Việt Nam đang học sách giáo "
+        "khoa. Ảnh này là một trang sách. Hãy làm đúng hai bước. "
+        "Bước một, mở đầu bằng một câu ngắn cho biết trang này gồm những phần "
+        "nào, ví dụ tên bài, một bản đồ, một bảng số liệu, một biểu đồ. Nhờ "
+        "câu đó người nghe biết trước sẽ được nghe những gì. "
+        "Bước hai, lần lượt đọc từng phần theo thứ tự trên trang, trước mỗi "
+        "phần nói rõ đang đọc phần nào. "
+        "Cách đọc từng loại như sau. "
+        "Đoạn văn thì đọc nguyên văn. "
+        "Bảng số liệu thì đọc theo từng hàng, mỗi hàng nêu đủ tên và các số "
+        "của hàng đó kèm đơn vị. "
+        "Biểu đồ cột thì đọc lần lượt từng cột, nêu tên cột rồi giá trị. "
+        "Bản đồ và lược đồ thì đọc tên bản đồ trước, rồi phần chú giải, rồi "
+        "các địa danh và đối tượng chính, cuối cùng là hướng di chuyển nếu có. "
+        "Trục thời gian thì đọc lần lượt từng mốc theo thứ tự thời gian, mỗi "
+        "mốc nêu năm rồi đến sự kiện. "
+        "Sơ đồ các bước thì đọc lần lượt bước một, bước hai, bước ba. "
+        "Ảnh chụp và hiện vật thì nêu tên rồi tả nội dung. "
+        "Câu hỏi trong bài thì đọc nguyên văn để học sinh biết phải làm gì. "
+        "Đọc đủ mọi con số, không bỏ sót, không làm tròn. "
+        # Prompt dài làm loãng quy tắc ký hiệu ở khối SPEECH_RULES phía sau,
+        # nên nhắc lại đúng một lần ngay tại đây.
+        "Nhắc lại một điều quan trọng: không được để lọt dấu phần trăm, phải "
+        "viết chữ 'phần trăm'. "
+    )
+
     # Chụp lại đúng trang sách là chuyện thường: học sinh nghe chưa kịp, chụp
     # lại. Nhớ kết quả cũ thì lần sau trả lời tức thì và không tốn thêm tiền.
     CACHE_SIZE = 64
@@ -203,20 +235,26 @@ class VlmService:
 
     # ── Public API ──────────────────────────────────────────────────────
 
-    def describe(self, image_bytes: bytes, mime_type: str) -> Optional[str]:
+    def describe(
+        self,
+        image_bytes: bytes,
+        mime_type: str,
+        textbook_page: bool = False,
+    ) -> Optional[str]:
         """
         Describe an image in Vietnamese.
 
         Args:
             image_bytes: Raw image data.
             mime_type: MIME type of the image (e.g., 'image/jpeg').
+            textbook_page: Ảnh chụp trang sách thì dùng prompt có cấu trúc,
+                thay vì mô tả tuôn một mạch.
 
         Returns:
             Vietnamese description string, or None on failure.
         """
-        return self._generate(
-            self.BASE_PROMPT + self.SPEECH_RULES, image_bytes, mime_type
-        )
+        prompt = self.PAGE_PROMPT if textbook_page else self.BASE_PROMPT
+        return self._generate(prompt + self.SPEECH_RULES, image_bytes, mime_type)
 
     def describe_with_context(
         self, image_bytes: bytes, mime_type: str, context: str
