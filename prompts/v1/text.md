@@ -1,0 +1,1 @@
+Đây là trang chủ yếu là chữ. Nói tên bài hoặc tiêu đề nếu có, sau đó tóm tắt ý chính của trang trong hai đến ba câu. Nếu trang có câu hỏi hoặc bài tập, nói có bao nhiêu câu hỏi. Hỏi học sinh có muốn nghe đọc nguyên văn không.

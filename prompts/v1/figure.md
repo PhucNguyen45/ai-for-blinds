@@ -1,0 +1,1 @@
+Đây là tranh, ảnh hoặc sơ đồ. Nói nội dung chính của hình trong một câu, sau đó mô tả các phần quan trọng theo thứ tự từ trên xuống dưới hoặc từ trái sang phải. Khi mô tả cảnh vật học sinh khó hình dung, như núi, đồi, cao nguyên, ruộng bậc thang, hãy so sánh với thứ học sinh có thể sờ hoặc cảm nhận được bằng cơ thể. Nếu là sơ đồ có mũi tên, nói các bước theo đúng thứ tự mũi tên.
