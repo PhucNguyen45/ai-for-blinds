@@ -7,3 +7,4 @@ backend/.env
 data/images/
 data/cache/
 data/logs/
+data/news_cache/
