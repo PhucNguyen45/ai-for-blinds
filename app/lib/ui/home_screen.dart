@@ -185,6 +185,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: DecoratedBox(
+            // Vẽ viền ĐÈ LÊN hình camera, để người thị lực kém luôn thấy ranh giới vùng chạm.
+            position: DecorationPosition.foreground,
             decoration: BoxDecoration(
               border: Border.all(color: AppTheme.accent, width: 3),
               borderRadius: BorderRadius.circular(16),
