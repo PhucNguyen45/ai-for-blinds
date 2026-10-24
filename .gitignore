@@ -37,3 +37,9 @@ Thumbs.db
 # Temporary files
 *.log
 *.tmp
+
+# Local test data
+data/local/
+
+# Temporary VLM responses
+/ai/evaluation/last_response.json
