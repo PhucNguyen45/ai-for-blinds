@@ -1,0 +1,38 @@
+{
+  "run_id": "20261024T023116_e0b6482c",
+  "rubric_version": "v1",
+  "image_id": "chart_01",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "evaluation_status": "completed",
+  "evaluator": "PhucNguyen45",
+  "criteria": {
+    "C1": {
+      "score": 2,
+      "evidence": "Đúng chủ đề, loại biểu đồ, đơn vị và các lớp."
+    },
+    "C2": {
+      "score": 2,
+      "evidence": "Đọc đúng 3A=12, 3B=18, 3C=15, 3D=9."
+    },
+    "C3": {
+      "score": 2,
+      "evidence": "Đúng thứ tự, lớn nhất, nhỏ nhất và quan hệ so sánh."
+    },
+    "C4": {
+      "score": 1,
+      "evidence": "Giải thích ý nghĩa đúng nhưng còn đơn giản."
+    },
+    "C5": {
+      "score": 2,
+      "evidence": "Không phát hiện dữ kiện hình ảnh sai hoặc bịa đặt."
+    },
+    "C6": {
+      "score": 2,
+      "evidence": "Tiếng Việt rõ ràng; chưa kiểm chứng bằng TTS."
+    }
+  },
+  "total_score": 11,
+  "notes": "Điểm sơ bộ do AI đề xuất; cần người nghiên cứu kiểm tra và xác nhận. Chưa thử nghiệm nghe TTS.",
+  "preliminary_evaluator": "assistant_preliminary",
+  "reviewed_at_utc": "2026-10-24T02:47:21.145293+00:00"
+}
