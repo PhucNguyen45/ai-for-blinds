@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -18,12 +19,92 @@ def main():
     )
 
     run_id = scorecard["run_id"]
-    run_file = EVALUATION_DIR / "runs" / f"{run_id}.json"
+    # Prefer archived research records, then fall back to local logs.
+    candidates = [
+        EVALUATION_DIR / "records" / f"{run_id}.json",
+        EVALUATION_DIR / "runs" / f"{run_id}.json",
+    ]
 
-    if not run_file.is_file():
-        raise SystemExit(f"ERROR: Experiment log not found: {run_file}")
+    run_file = next(
+        (candidate for candidate in candidates if candidate.is_file()),
+        None,
+    )
+
+    if run_file is None:
+        raise SystemExit(
+            f"ERROR: Experiment record not found for {run_id}"
+        )
 
     run = json.loads(run_file.read_text(encoding="utf-8"))
+
+    if run.get("run_id") != run_id:
+        raise SystemExit("ERROR: Run ID mismatch.")
+
+    if run_file.parent.name == "records":
+        benchmark_root = (
+            EVALUATION_DIR.parents[1] / "data" / "benchmark"
+        ).resolve()
+
+        manifest = json.loads(
+            (benchmark_root / "manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        matches = [
+            item for item in manifest["items"]
+            if item["id"] == run.get("benchmark_id")
+        ]
+
+        if len(matches) != 1:
+            raise SystemExit("ERROR: Invalid benchmark ID.")
+
+        item = matches[0]
+
+        image = (benchmark_root / item["image"]).resolve()
+
+        if not image.is_relative_to(benchmark_root):
+            raise SystemExit("ERROR: Unsafe benchmark image path.")
+
+        if not image.is_file():
+            raise SystemExit("ERROR: Benchmark image missing.")
+
+        actual_hash = hashlib.sha256(image.read_bytes()).hexdigest()
+
+        if (
+            actual_hash != item["sha256"]
+            or actual_hash != run.get("image_sha256")
+        ):
+            raise SystemExit("ERROR: Benchmark image hash mismatch.")
+
+        # Verify the ground-truth file against its manifest hash.
+        truth = (benchmark_root / item["ground_truth"]).resolve()
+
+        if not truth.is_relative_to(benchmark_root):
+            raise SystemExit("ERROR: Unsafe ground-truth path.")
+
+        if not truth.is_file():
+            raise SystemExit("ERROR: Ground-truth file missing.")
+
+        truth_hash = hashlib.sha256(truth.read_bytes()).hexdigest()
+
+        if truth_hash != item.get("ground_truth_sha256"):
+            raise SystemExit("ERROR: Ground-truth hash mismatch.")
+
+        print("Ground truth integrity: PASS")
+
+        expected_path = (
+            Path("data") / "benchmark" / item["image"]
+        ).as_posix()
+
+        if run.get("image_path") != expected_path:
+            raise SystemExit("ERROR: Benchmark image path mismatch.")
+
+        if run.get("benchmark_version") != manifest["version"]:
+            raise SystemExit("ERROR: Benchmark version mismatch.")
+
+        print("Benchmark integrity: PASS")
+
 
     if scorecard["model"] != run["model"]:
         raise SystemExit("ERROR: Model does not match experiment log.")
@@ -81,6 +162,7 @@ def main():
         raise SystemExit("ERROR: Pending scorecard must have a null total.")
 
     print("Validation: PASS")
+    print("Record source:", run_file.parent.name)
     print("Run ID:", run_id)
     print("Rubric:", scorecard["rubric_version"])
     print("Status:", status)
