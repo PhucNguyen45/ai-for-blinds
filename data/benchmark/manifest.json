@@ -1,0 +1,24 @@
+{
+  "dataset_name": "ai-for-blinds-benchmark",
+  "version": "0.1.0",
+  "items": [
+    {
+      "id": "chart_01",
+      "category": "bar_chart",
+      "source": "synthetic",
+      "image": "synthetic/chart_01.png",
+      "ground_truth": "synthetic/chart_01_truth.json",
+      "has_value_labels": true,
+      "sha256": "9a9ec13796bc19189d11dbbb50a8e4cc4751c294abf99d8171898ad928770b0a"
+    },
+    {
+      "id": "chart_02_no_labels",
+      "category": "bar_chart",
+      "source": "synthetic",
+      "image": "synthetic/chart_02_no_labels.png",
+      "ground_truth": "synthetic/chart_02_no_labels_truth.json",
+      "has_value_labels": false,
+      "sha256": "6ec721d204a7a524d99514bd45915e80888e7fddd82dc3d43309d49e9d87b375"
+    }
+  ]
+}

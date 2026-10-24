@@ -1,0 +1,38 @@
+{
+  "run_id": "20261024T013029_b172df10",
+  "rubric_version": "v1",
+  "image_id": "chart_02_no_labels",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "evaluation_status": "completed",
+  "evaluator": "PhucNguyen45",
+  "criteria": {
+    "C1": {
+      "score": 2,
+      "evidence": "Đúng chủ đề, biểu đồ cột, đơn vị số cây và bốn lớp."
+    },
+    "C2": {
+      "score": 2,
+      "evidence": "Ước lượng đúng 3A=12, 3B=18, 3C=15, 3D=9."
+    },
+    "C3": {
+      "score": 2,
+      "evidence": "Đúng lớp cao nhất, thấp nhất, chênh lệch 9 và tổng 54."
+    },
+    "C4": {
+      "score": 1,
+      "evidence": "Nhận xét đúng nhưng chủ yếu mô tả lại số liệu và thứ hạng."
+    },
+    "C5": {
+      "score": 2,
+      "evidence": "Không phát hiện dữ kiện bịa; xác định rõ các số là ước lượng."
+    },
+    "C6": {
+      "score": 2,
+      "evidence": "Tiếng Việt rõ ràng; chưa kiểm chứng bằng nghe TTS thực tế."
+    }
+  },
+  "total_score": 11,
+  "notes": "Đánh giá sơ bộ bằng AI. Cần người nghiên cứu kiểm tra và xác nhận trước khi hoàn tất.",
+  "preliminary_evaluator": "assistant_preliminary",
+  "reviewed_at_utc": "2026-10-24T02:09:11.598047+00:00"
+}

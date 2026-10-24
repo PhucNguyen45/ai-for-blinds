@@ -1,0 +1,15 @@
+{
+  "chart_type": "bar_chart",
+  "synthetic": true,
+  "title": "Số cây trồng được của các lớp",
+  "values": {
+    "3A": 12,
+    "3B": 18,
+    "3C": 15,
+    "3D": 9
+  },
+  "maximum_class": "3B",
+  "minimum_class": "3D",
+  "difference": 9,
+  "total": 54
+}
