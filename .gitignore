@@ -43,3 +43,6 @@ data/local/
 
 # Temporary VLM responses
 /ai/evaluation/last_response.json
+
+# Generated VLM experiment logs
+/ai/evaluation/runs/

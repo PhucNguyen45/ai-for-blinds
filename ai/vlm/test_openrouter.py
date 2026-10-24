@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+from datetime import datetime, timezone
+from uuid import uuid4
 import base64
 import json
 import mimetypes
@@ -110,6 +113,42 @@ def main() -> None:
     save_path = Path(args.save_json)
     save_path.parent.mkdir(parents=True, exist_ok=True)
     save_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # Automatically save a separate record for each successful experiment
+    timestamp = datetime.now(timezone.utc)
+    run_id = timestamp.strftime("%Y%m%dT%H%M%S") + "_" + uuid4().hex[:8]
+
+    image_path = Path(args.image).expanduser().resolve() if args.image else None
+
+    record = {
+        "run_id": run_id,
+        "timestamp_utc": timestamp.isoformat(),
+        "model": model,
+        "image_path": str(image_path) if image_path else None,
+        "image_sha256": (
+            hashlib.sha256(image_path.read_bytes()).hexdigest()
+            if image_path else None
+        ),
+        "prompt": args.prompt,
+        "temperature": args.temperature,
+        "max_tokens": args.max_tokens,
+        "reasoning": payload.get("reasoning"),
+        "http_status": response.status_code,
+        "latency_seconds": round(elapsed, 3),
+        "response": data,
+    }
+
+    runs_dir = Path(__file__).resolve().parents[1] / "evaluation" / "runs"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+
+    run_file = runs_dir / f"{run_id}.json"
+    run_file.write_text(
+        json.dumps(record, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    print("Experiment log saved to:", run_file)
+
 
     choice = data["choices"][0]
     answer = choice["message"]["content"]
