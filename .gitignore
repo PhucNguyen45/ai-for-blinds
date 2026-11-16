@@ -46,3 +46,9 @@ data/local/
 
 # Generated VLM experiment logs
 /ai/evaluation/runs/
+
+# Local experiment sessions
+/ai/evaluation/sessions/
+
+# Local review archive
+/foundation-review.tar.gz
