@@ -75,7 +75,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--session")
     ap.add_argument("--runs", nargs="*", default=[])
-    ap.add_argument("--records", choices=["b1", "b0e"],
+    ap.add_argument("--records",
                     help="đọc bản ghi trong evaluation/records_<method> thay vì runs của B0")
     args = ap.parse_args()
     if args.records:

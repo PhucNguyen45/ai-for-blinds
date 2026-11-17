@@ -55,6 +55,7 @@ class Meta(_Strict):
     """Thông tin tái lập: mô hình, prompt, tham số, hiệu năng."""
 
     model: str
+    provider: str | None = None
     method: Literal["B0", "B1"] = "B0"
     prompt_id: str
     prompt_sha256: str

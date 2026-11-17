@@ -175,3 +175,123 @@ def test_parse_extraction_tolerates_noise_and_bad_types():
                            '"predicate": 3, "object": "b"}], "uncertainties": "x"} hết')
     assert out["image_type"] == "other" and len(out["facts"]) == 1
     assert out["facts"][0].predicate == "3" and out["uncertainties"] == []
+
+
+# ----- Nhà cung cấp: OpenRouter / Google AI Studio -----
+from vlm.openrouter_client import build_chat_payload, post_chat_completion  # noqa: E402
+from vlm.providers import ConfigError, resolve_provider  # noqa: E402
+
+GENV = {"GOOGLE_API_KEY": "g-secret", "GOOGLE_MODEL": "gemini-2.5-flash"}
+
+
+def test_resolve_default_is_openrouter():
+    p = resolve_provider(ENV)
+    assert p.name == "openrouter" and p.model == "test/model" and p.reasoning_effort is None
+
+
+def test_resolve_google_and_model_name_normalization():
+    p = resolve_provider(GENV, provider="google")
+    assert p.name == "google" and p.model == "gemini-2.5-flash"
+    assert p.base_url == "https://generativelanguage.googleapis.com/v1beta/openai"
+    assert p.reasoning_effort == "none"
+    assert resolve_provider(GENV, "google", "google/gemini-2.5-flash-lite").model == "gemini-2.5-flash-lite"
+    assert resolve_provider({**GENV, "GOOGLE_REASONING_EFFORT": ""}, "google").reasoning_effort is None
+    assert resolve_provider({"GEMINI_API_KEY": "k", "GOOGLE_MODEL": "m"}, "google").api_key == "k"
+
+
+def test_provider_from_env_variable_and_overrides():
+    assert resolve_provider({**ENV, **GENV, "VLM_PROVIDER": "google"}).name == "google"
+    assert resolve_provider({**ENV, **GENV, "VLM_PROVIDER": "google"}, provider="openrouter").name == "openrouter"
+
+
+@pytest.mark.parametrize("cfg,prov", [({}, None), ({"GOOGLE_API_KEY": "k"}, "google"),
+                                      (ENV, "bogus"), ({"OPENROUTER_API_KEY": "k"}, None)])
+def test_resolve_errors_are_config_errors_without_secrets(cfg, prov):
+    with pytest.raises(ConfigError) as exc:
+        resolve_provider(cfg, prov)
+    assert "k" != str(exc.value) and "g-secret" not in str(exc.value)
+
+
+def test_provider_repr_hides_key():
+    assert "g-secret" not in repr(resolve_provider(GENV, "google"))
+
+
+def test_payload_differs_by_provider():
+    o = build_chat_payload("m", "p", None, 0.2, 100)
+    assert o["reasoning"] == {"enabled": False} and "reasoning_effort" not in o
+    g = build_chat_payload("m", "p", None, 0.2, 100, provider="google", reasoning_effort="none")
+    assert "reasoning" not in g and g["reasoning_effort"] == "none"
+    assert "reasoning_effort" not in build_chat_payload("m", "p", None, provider="google")
+
+
+def test_headers_only_send_app_identity_to_openrouter(monkeypatch):
+    seen = {}
+
+    class FakeClient:
+        def __init__(self, *a, **k): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def post(self, url, headers, json):
+            seen["url"], seen["headers"] = url, headers
+            return httpx.Response(200, json={})
+    monkeypatch.setattr(httpx, "Client", FakeClient)
+    post_chat_completion({}, "k", "https://openrouter.ai/api/v1")
+    assert "HTTP-Referer" in seen["headers"] and seen["url"].endswith("/chat/completions")
+    post_chat_completion({}, "k", "https://generativelanguage.googleapis.com/v1beta/openai")
+    assert "HTTP-Referer" not in seen["headers"] and "X-Title" not in seen["headers"]
+    assert seen["headers"]["Authorization"] == "Bearer k"
+
+
+def test_describe_with_google_provider_uses_google_payload(image):
+    seen = {}
+
+    def post(payload, api_key, base_url, timeout=60.0):
+        seen.update(payload=payload, key=api_key, base=base_url)
+        return httpx.Response(200, json={"choices": [{"message": {"content": B0_TEXT},
+                                                      "finish_reason": "stop"}]})
+    r = describe_image(image, env=GENV, provider="google", post=post)
+    assert r.status == "ok" and r.meta.provider == "google" and r.meta.model == "gemini-2.5-flash"
+    assert "reasoning" not in seen["payload"] and seen["payload"]["reasoning_effort"] == "none"
+    assert seen["key"] == "g-secret" and "generativelanguage" in seen["base"]
+    assert "g-secret" not in r.model_dump_json()
+
+
+def test_b1_with_google_provider(image):
+    post = seq_post((200, JSON1, "stop"), (200, B0_TEXT, "stop"))
+    r = describe_image_b1(image, env=GENV, provider="google", post=post)
+    assert r.status == "ok" and r.meta.provider == "google"
+    assert all("reasoning" not in p and p["reasoning_effort"] == "none" for p in post.seen)
+
+
+def test_missing_google_key_returns_config_error_not_exception(image):
+    r = describe_image(image, env={"OPENROUTER_API_KEY": "k"}, provider="google")
+    assert r.status == "error" and r.error.code == "config_error"
+
+
+# ----- Làm sạch Markdown + thông báo HTTP -----
+from vlm.describer import strip_markdown  # noqa: E402
+
+MD = ("**1. Chủ đề:**\nBiểu đồ cột về số sách. Câu hai.\n\n**2. Thành phần:**\n"
+      "- Tiêu đề chính: \"Số sách\"\n- Trục *đứng*: số quyển\n\n### 3. Quan hệ\n`Thứ 2` cao nhất.")
+
+
+def test_strip_markdown_removes_markup_but_keeps_text():
+    out = strip_markdown(MD)
+    assert "*" not in out and "#" not in out and "`" not in out and not out.startswith("-")
+    assert "Tiêu đề chính" in out and "Trục đứng" in out and "Thứ 2 cao nhất" in out
+
+
+def test_summary_survives_markdown_response(image):
+    r = run(image, post=fake_post(content=MD))
+    assert r.summary_vi == "Biểu đồ cột về số sách."
+    assert "**" not in r.interpretation_vi
+
+
+@pytest.mark.parametrize("status", [400, 404])
+def test_http_400_404_message_hints_model_name(image, status):
+    r = run(image, post=fake_post(status=status))
+    assert r.error.http_status == status and "tên model" in r.error.message
+
+
+def test_model_prefix_from_google_listing_is_normalized():
+    assert resolve_provider(GENV, "google", "models/gemini-3.8-flash").model == "gemini-3.8-flash"

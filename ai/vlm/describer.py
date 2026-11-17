@@ -25,6 +25,7 @@ from contract.models import (
     DescriptionResult, ErrorCode, ErrorInfo, Meta, Usage,
 )
 from vlm.openrouter_client import build_chat_payload, post_chat_completion
+from vlm.providers import ConfigError, resolve_provider
 
 AI_ROOT = Path(__file__).resolve().parents[1]
 PROMPTS_DIR = AI_ROOT / "prompts"
@@ -53,10 +54,28 @@ def _load_prompt(prompt_id: str) -> str:
     return path.read_text(encoding="utf-8").strip()
 
 
+def strip_markdown(text: str) -> str:
+    """Bỏ ký hiệu Markdown mà một số model vẫn sinh ra (in đậm, tiêu đề, gạch đầu dòng, mã)."""
+    text = re.sub(r"```[a-z]*\n?|`", "", text)
+    text = re.sub(r"(?m)^\s{0,3}#{1,6}\s*", "", text)
+    text = re.sub(r"(\*\*|__)(.+?)\1", r"\2", text, flags=re.S)
+    text = re.sub(r"(?m)^(\s*)[-*•]\s+", r"\1", text)
+    text = re.sub(r"(?<!\w)\*(\S[^*\n]*?)\*(?!\w)", r"\1", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def _http_message(status: int) -> str:
+    if status in (400, 404):
+        return (f"Dịch vụ mô hình trả về HTTP {status}: kiểm tra tên model và tham số "
+                "(model có thể không tồn tại hoặc không còn khả dụng).")
+    return f"Dịch vụ mô hình trả về HTTP {status}."
+
+
 def _extract_summary(text: str) -> str:
     """Lấy nội dung mục '1. Chủ đề' của B0; nếu không có, lấy câu đầu tiên."""
     match = re.search(r"(?m)^\s*1\.\s*[^:\n]{0,20}:\s*(.+?)(?=^\s*2\.|\Z)", text, re.S)
     summary = (match.group(1) if match else text).strip()
+    summary = re.sub(r"^\s*\d+\.\s*", "", summary)
     first = re.split(r"(?<=[.!?])\s", summary, maxsplit=1)[0]
     return re.sub(r"\s+", " ", first).strip()
 
@@ -67,6 +86,7 @@ def describe_image(
     image_id: str | None = None,
     prompt_id: str = "b0_v1",
     model: str | None = None,
+    provider: str | None = None,
     temperature: float = 0.2,
     max_tokens: int = 600,
     timeout: float = 60.0,
@@ -91,22 +111,22 @@ def describe_image(
         return _error("config_error", str(exc), False, image_id=image_id, image_sha256=sha)
 
     config = env if env is not None else {**dotenv_values(AI_ROOT / ".env"), **os.environ}
-    api_key = config.get("OPENROUTER_API_KEY")
-    base_url = config.get("OPENROUTER_BASE_URL")
-    model = model or config.get("OPENROUTER_MODEL")
-    if not (api_key and base_url and model):
-        return _error("config_error", "Thiếu cấu hình OpenRouter (khóa, địa chỉ hoặc model).",
-                      False, image_id=image_id, image_sha256=sha)
+    try:
+        prov = resolve_provider(config, provider, model)
+    except ConfigError as exc:
+        return _error("config_error", str(exc), False, image_id=image_id, image_sha256=sha)
+    api_key, base_url, model = prov.api_key, prov.base_url, prov.model
 
     created = datetime.now(timezone.utc)
     meta = Meta(
-        model=model, prompt_id=prompt_id,
+        model=model, provider=prov.name, prompt_id=prompt_id,
         prompt_sha256=hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
         temperature=temperature, max_tokens=max_tokens, created_at_utc=created,
     )
     ctx = {"image_id": image_id, "image_sha256": sha, "meta": meta}
 
-    payload = build_chat_payload(model, prompt, str(path), temperature, max_tokens)
+    payload = build_chat_payload(model, prompt, str(path), temperature, max_tokens,
+                                 provider=prov.name, reasoning_effort=prov.reasoning_effort)
     start = time.perf_counter()
     try:
         response = post(payload, api_key, base_url, timeout=timeout)
@@ -118,7 +138,7 @@ def describe_image(
 
     if response.status_code != 200:
         retryable = response.status_code in (408, 429) or response.status_code >= 500
-        return _error("http_error", f"Dịch vụ mô hình trả về HTTP {response.status_code}.",
+        return _error("http_error", _http_message(response.status_code),
                       retryable, http_status=response.status_code, **ctx)
 
     try:
@@ -137,6 +157,7 @@ def describe_image(
         return _error("empty_response", "Mô hình không trả về nội dung.", True, **ctx)
 
     truncated = meta.finish_reason == "length"
+    text = strip_markdown(text)
     return DescriptionResult(
         image_id=image_id, image_sha256=sha, image_type="unknown",
         status="partial" if truncated else "ok",
@@ -176,8 +197,7 @@ def _chat_once(payload, api_key, base_url, timeout, post):
     latency = time.perf_counter() - start
     if response.status_code != 200:
         retryable = response.status_code in (408, 429) or response.status_code >= 500
-        raise _StageFailure("http_error",
-                            f"Dịch vụ mô hình trả về HTTP {response.status_code}.",
+        raise _StageFailure("http_error", _http_message(response.status_code),
                             retryable, response.status_code)
     try:
         body = response.json()
@@ -222,6 +242,7 @@ def describe_image_b1(
     *,
     image_id: str | None = None,
     model: str | None = None,
+    provider: str | None = None,
     temperature: float = 0.2,
     extract_max_tokens: int = 1500,
     describe_max_tokens: int = 800,
@@ -250,14 +271,14 @@ def describe_image_b1(
         return _error("config_error", str(exc), False, image_id=image_id, image_sha256=sha)
 
     config = env if env is not None else {**dotenv_values(AI_ROOT / ".env"), **os.environ}
-    api_key, base_url = config.get("OPENROUTER_API_KEY"), config.get("OPENROUTER_BASE_URL")
-    model = model or config.get("OPENROUTER_MODEL")
-    if not (api_key and base_url and model):
-        return _error("config_error", "Thiếu cấu hình OpenRouter (khóa, địa chỉ hoặc model).",
-                      False, image_id=image_id, image_sha256=sha)
+    try:
+        prov = resolve_provider(config, provider, model)
+    except ConfigError as exc:
+        return _error("config_error", str(exc), False, image_id=image_id, image_sha256=sha)
+    api_key, base_url, model = prov.api_key, prov.base_url, prov.model
 
     meta = Meta(
-        model=model, method="B1", prompt_id="b1_v1",
+        model=model, provider=prov.name, method="B1", prompt_id="b1_v1",
         prompt_sha256=hashlib.sha256(
             (extract_prompt + "\n---\n" + describe_prompt).encode("utf-8")).hexdigest(),
         temperature=temperature, max_tokens=extract_max_tokens + describe_max_tokens,
@@ -273,7 +294,8 @@ def describe_image_b1(
 
     try:
         payload = build_chat_payload(model, extract_prompt, str(path), temperature,
-                                     extract_max_tokens)
+                                     extract_max_tokens, provider=prov.name,
+                                     reasoning_effort=prov.reasoning_effort)
         text1, fin1, usage1, lat1 = _chat_once(payload, api_key, base_url, timeout, post)
         total_latency += lat1
         prompt_tokens += usage1.get("prompt_tokens") or 0
@@ -303,7 +325,8 @@ def describe_image_b1(
             [f.model_dump(exclude={"evidence"}) for f in extracted["facts"]],
             ensure_ascii=False)
         payload = build_chat_payload(model, describe_prompt + "\n" + facts_json, None,
-                                     temperature, describe_max_tokens)
+                                     temperature, describe_max_tokens, provider=prov.name,
+                                     reasoning_effort=prov.reasoning_effort)
         text2, fin2, usage2, lat2 = _chat_once(payload, api_key, base_url, timeout, post)
         total_latency += lat2
         prompt_tokens += usage2.get("prompt_tokens") or 0
@@ -316,6 +339,7 @@ def describe_image_b1(
                       http_status=failure.http_status, **ctx)
 
     finish_meta(fin2)
+    text2 = strip_markdown(text2)
     truncated = fin1 == "length" or fin2 == "length"
     uncertainties = list(extracted["uncertainties"])
     if truncated:

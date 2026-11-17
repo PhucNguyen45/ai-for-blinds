@@ -14,6 +14,7 @@ Chạy từ thư mục ai/:
 import argparse
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -33,8 +34,13 @@ def main():
     ap.add_argument("--ids", nargs="*")
     ap.add_argument("--method", choices=["b1", "b0e"], default="b1",
                     help="b1: 2 bước (trích xuất -> diễn giải); b0e: B0 + dòng yêu cầu nêu đủ giá trị")
+    ap.add_argument("--provider", choices=["openrouter", "google"],
+                    help="nhà cung cấp (mặc định VLM_PROVIDER hoặc openrouter)")
+    ap.add_argument("--model", help="ghi đè model (mặc định lấy từ .env); bản ghi lưu riêng theo model")
     args = ap.parse_args()
-    out_dir = AI_ROOT / "evaluation" / f"records_{args.method}"
+    slug = lambda t: re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-")  # noqa: E731
+    suffix = "".join("__" + slug(x) for x in (args.provider, args.model) if x)
+    out_dir = AI_ROOT / "evaluation" / f"records_{args.method}{suffix}"
     per_image = 2 if args.method == "b1" else 1
 
     manifest = json.loads((BENCH / "manifest.json").read_text(encoding="utf-8"))
@@ -66,9 +72,11 @@ def main():
             raise SystemExit(f"Sai hash ảnh: {item['id']}")
         trace = {}
         if args.method == "b1":
-            result = describe_image_b1(image, image_id=item["id"], trace=trace)
+            result = describe_image_b1(image, image_id=item["id"], trace=trace, model=args.model,
+                                       provider=args.provider)
         else:
-            result = describe_image(image, image_id=item["id"], prompt_id="b0e_v1")
+            result = describe_image(image, image_id=item["id"], prompt_id="b0e_v1",
+                                    model=args.model, provider=args.provider)
         record = {"method": args.method.upper(), "benchmark_id": item["id"],
                   "image_sha256": item["sha256"], "benchmark_version": manifest["version"],
                   "result": result.model_dump(mode="json", exclude_none=True), "trace": trace}

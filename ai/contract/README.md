@@ -31,7 +31,7 @@ result.model_dump_json()     # JSON trả cho app
 | `interpretation_vi` | Diễn giải đầy đủ, không Markdown/JSON |
 | `uncertainties[]` | Điều chưa chắc chắn/thiếu |
 | `question_answering_ready` | Đủ căn cứ để hỏi đáp tiếp; chỉ có nghĩa khi `ok`/`partial` |
-| `meta` | model, method (B0/B1), prompt_id, prompt_sha256, tham số, finish_reason, độ trễ, token |
+| `meta` | provider (openrouter/google), model, method (B0/B1), prompt_id, prompt_sha256, tham số, finish_reason, độ trễ, token |
 | `error` | `code` (invalid_image, config_error, timeout, http_error, empty_response, invalid_output, unknown), `message`, `retryable`, `http_status` |
 
 Ràng buộc nhất quán được kiểm bằng Pydantic (vd `error` chỉ đi với `status="error"`).

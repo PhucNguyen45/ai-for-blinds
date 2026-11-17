@@ -53,9 +53,11 @@ def build_chat_payload(
     image_path: str | None = None,
     temperature: float = 0.2,
     max_tokens: int = 400,
+    provider: str = "openrouter",
+    reasoning_effort: str | None = None,
 ) -> dict:
-    """Build an OpenRouter chat completion request payload."""
-    return {
+    """Build a chat completion payload (OpenRouter by default; Google AI Studio supported)."""
+    payload = {
         "model": model,
         "messages": [
             {
@@ -65,8 +67,16 @@ def build_chat_payload(
         ],
         "temperature": temperature,
         "max_tokens": max_tokens,
-        "reasoning": {"enabled": False},
     }
+
+    if provider == "google":
+        # Gemini API (OpenAI-compatible) không nhận trường "reasoning" của OpenRouter.
+        if reasoning_effort:
+            payload["reasoning_effort"] = reasoning_effort
+    else:
+        payload["reasoning"] = {"enabled": False}
+
+    return payload
 
 
 def post_chat_completion(
@@ -79,9 +89,11 @@ def post_chat_completion(
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/PhucNguyen45/ai-for-blinds",
-        "X-Title": "AI for Blinds Research",
     }
+
+    if "openrouter.ai" in base_url:  # tiêu đề định danh ứng dụng chỉ dành cho OpenRouter
+        headers["HTTP-Referer"] = "https://github.com/PhucNguyen45/ai-for-blinds"
+        headers["X-Title"] = "AI for Blinds Research"
 
     url = f"{base_url.rstrip('/')}/chat/completions"
 
