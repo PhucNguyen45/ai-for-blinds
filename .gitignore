@@ -68,3 +68,6 @@ data/local/
 *.pth
 /ai/models/
 /ai/finetune/outputs/
+
+# Tập huấn luyện sinh ra (chỉ ở máy)
+/data/train/
