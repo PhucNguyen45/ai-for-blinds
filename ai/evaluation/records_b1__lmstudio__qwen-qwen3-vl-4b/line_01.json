@@ -1,0 +1,48 @@
+{
+  "method": "B1",
+  "benchmark_id": "line_01",
+  "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_01",
+    "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+    "image_type": "line_chart",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Dữ liệu về nhiệt độ trong tháng 1.",
+    "facts": [
+      {
+        "subject": "Tháng 1",
+        "predicate": "có nhiệt độ",
+        "object": "40°C",
+        "evidence": "giao điểm trên trục hoành 'Tháng 1' và trục tung '40'"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Dữ liệu về nhiệt độ trong tháng 1.\n\nThành phần: Tháng 1 có nhiệt độ 40°C.\n\nQuan hệ: Không có quan hệ vị trí, thứ tự, hướng mũi tên hay so sánh được xác định từ dữ kiện.\n\nÝ nghĩa: Nhiệt độ trong tháng 1 là 40°C.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 3.43,
+      "usage": {
+        "prompt_tokens": 1288,
+        "completion_tokens": 155
+      },
+      "created_at_utc": "2026-11-17T08:35:57.148324Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"line_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tháng 1\", \"predicate\": \"có nhiệt độ\", \"object\": \"40°C\", \"evidence\": \"giao điểm trên trục hoành 'Tháng 1' và trục tung '40'\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Dữ liệu về nhiệt độ trong tháng 1.\n\nThành phần: Tháng 1 có nhiệt độ 40°C.\n\nQuan hệ: Không có quan hệ vị trí, thứ tự, hướng mũi tên hay so sánh được xác định từ dữ kiện.\n\nÝ nghĩa: Nhiệt độ trong tháng 1 là 40°C.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "pie_03",
+  "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_03",
+    "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ hình quạt tròn thể hiện \"Cơ cấu sử dụng đất của xã\" (dòng phụ chú thích: \"Dữ liệu minh họa\").",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:\nBiểu đồ hình quạt tròn thể hiện \"Cơ cấu sử dụng đất của xã\" (dòng phụ chú thích: \"Dữ liệu minh họa\").\n\n2. Thành phần:\nBiểu đồ tròn được chia làm 4 phần tương ứng với 4 loại đất, kèm bảng chú giải ở bên phải:\nPhần màu xanh dương nhạt: nhãn chú giải \"Trồng lúa\", tỉ lệ ghi trực tiếp là 35%.\nPhần màu cam: nhãn chú giải \"Rau màu\", tỉ lệ ghi trực tiếp là 15%.\nPhần màu xanh lá cây nhạt: nhãn chú giải \"Ao hồ\", tỉ lệ ghi trực tiếp là 20%.\nPhần màu hồng nhạt: nhãn chú giải \"Đất ở\", tỉ lệ ghi trực tiếp là 30%.\n\n3. Quan hệ:\nVị trí trên hình tròn theo chiều kim đồng hồ (bắt đầu từ trục thẳng đứng góc 12 giờ):\n  + Từ 12 giờ đến khoảng hơn 4 giờ là phần Đất trồng lúa (35%).\n  + Tiếp theo đến vị trí 6 giờ là phần Đất rau màu (15%).\n  + Từ 6 giờ đến khoảng gần 8 giờ là phần Đất ao hồ (20%).\n  + Từ khoảng gần 8 giờ trở lại góc 12 giờ là phần Đất ở (30%).\nSo sánh quy mô diện tích theo thứ tự giảm dần: Đất trồng lúa (35%) lớn nhất, tiếp theo là Đất ở (30%), thứ ba là Đất ao hồ (20%), và nhỏ nhất là Đất rau màu (15%).\nTổng tỉ lệ của 4 thành phần cộng lại bằng 100% (35% + 15% + 20% + 30% = 100%).\n\n4. Ý nghĩa:\nBiểu đồ minh họa cơ cấu phân bổ các loại đất trong một xã, trong đó diện tích dành cho trồng trọt nông nghiệp và cư trú chiếm phần lớn (đất trồng lúa và đất ở cùng nhau chiếm 65% tổng diện tích), phần còn lại dành cho nuôi trồng/mặt nước ao hồ (20%) và trồng rau màu (15%).",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 11.055,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 499
+      },
+      "created_at_utc": "2026-11-17T08:05:14.825340Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

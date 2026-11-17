@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "line_01",
+  "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_01",
+    "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ đoạn thẳng thể hiện nhiệt độ trung bình các tháng đầu năm, kèm dòng phụ chú \"Dữ liệu minh họa\".",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:\nBiểu đồ đoạn thẳng thể hiện nhiệt độ trung bình các tháng đầu năm, kèm dòng phụ chú \"Dữ liệu minh họa\".\n\n2. Thành phần:\nTrục tung (trục thẳng đứng): Biểu thị nhiệt độ với đơn vị là độ C (°C). Các vạch giá trị được đánh số từ dưới lên trên gồm: 0, 5, 10, 15, 20, 25, 30, 35, 40, 45. Có các đường kẻ ngang mờ tương ứng với từng mức giá trị này.\nTrục hoành (trục nằm ngang): Biểu thị thời gian gồm 6 mốc: Tháng 1, Tháng 2, Tháng 3, Tháng 4, Tháng 5, Tháng 6.\nĐường biểu diễn: Màu xanh lam nối liền 6 điểm tròn. Giá trị nhiệt độ cụ thể được ghi trực tiếp ngay trên mỗi điểm tròn:\n  + Tháng 1: 40\n  + Tháng 2: 25\n  + Tháng 3: 15\n  + Tháng 4: 35\n  + Tháng 5: 15\n  + Tháng 6: 5\n\n3. Quan hệ:\nTừ Tháng 1 đến Tháng 3: Đường biểu diễn dốc xuống liên tục. Nhiệt độ giảm mạnh từ 40 °C xuống 25 °C ở Tháng 2, sau đó tiếp tục giảm xuống 15 °C ở Tháng 3.\nTừ Tháng 3 đến Tháng 4: Đường biểu diễn đổi chiều dốc đứng lên. Nhiệt độ tăng mạnh từ 15 °C lên 35 °C.\nTừ Tháng 4 đến Tháng 6: Đường biểu diễn dốc xuống liên tục. Nhiệt độ giảm từ 35 °C xuống 15 °C ở Tháng 5, rồi hạ tiếp xuống mức thấp nhất là 5 °C ở Tháng 6.\nSo sánh giá trị:\n  + Nhiệt độ cao nhất là 40 °C vào Tháng 1.\n  + Nhiệt độ thấp nhất là 5 °C vào Tháng 6.\n  + Tháng 3 và Tháng 5 có cùng mức nhiệt độ trung bình là 15 °C.\n\n4. Ý nghĩa:\nBiểu đồ minh họa sự biến động, tăng giảm thất thường của nhiệt độ trung bình qua 6 tháng đầu năm; cho thấy xu hướng biến thiên chung là giảm từ Tháng 1 đến Tháng 3, tăng vọt vào Tháng 4, sau đó giảm sâu đến mức thấp nhất vào Tháng 6.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 10.796,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 570
+      },
+      "created_at_utc": "2026-11-17T08:04:26.031007Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

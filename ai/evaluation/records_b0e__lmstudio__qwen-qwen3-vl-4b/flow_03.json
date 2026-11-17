@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "flow_03",
+  "image_sha256": "c1bd630ebf8ebc1aa87c1e1dc5dd33c9b128027880f24667a3eea5d493fd8109",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "flow_03",
+    "image_sha256": "c1bd630ebf8ebc1aa87c1e1dc5dd33c9b128027880f24667a3eea5d493fd8109",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Hình ảnh là sơ đồ quy trình, trình bày các bước liên tiếp trong quy trình chấm và trả bài kiểm tra.",
+    "facts": [],
+    "interpretation_vi": "Chủ đề: Hình ảnh là sơ đồ quy trình, trình bày các bước liên tiếp trong quy trình chấm và trả bài kiểm tra.\n\nThành phần: Có bốn khối chữ nhật, mỗi khối chứa một nhãn văn bản. Từ trên xuống dưới, các nhãn là: \"Học sinh nộp bài\", \"Giáo viên chấm bài\", \"Nhập điểm vào sổ\", \"Thông báo kết quả\". Mỗi khối có viền màu xanh dương đậm, nền màu xanh nhạt. Các khối được nối với nhau bằng mũi tên đen, hướng từ trên xuống dưới.\n\nQuan hệ: Các khối được sắp xếp theo chiều dọc, từ trên xuống dưới. Mũi tên đen xuất phát từ dưới viền trên của mỗi khối và chỉ hướng thẳng xuống viền trên của khối ngay dưới nó. Không có mũi tên hoặc quan hệ nào khác.\n\nÝ nghĩa: Hình ảnh mô tả quy trình tuần tự gồm bốn bước: học sinh nộp bài, giáo viên chấm bài, nhập điểm vào sổ, và thông báo kết quả. Các bước này được thực hiện theo thứ tự, không có bước nào bị bỏ qua hay lặp lại trong sơ đồ.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 4.523,
+      "usage": {
+        "prompt_tokens": 1005,
+        "completion_tokens": 247
+      },
+      "created_at_utc": "2026-11-17T08:34:17.186870Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

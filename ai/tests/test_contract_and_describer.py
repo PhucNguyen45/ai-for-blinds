@@ -295,3 +295,87 @@ def test_http_400_404_message_hints_model_name(image, status):
 
 def test_model_prefix_from_google_listing_is_normalized():
     assert resolve_provider(GENV, "google", "models/gemini-3.8-flash").model == "gemini-3.8-flash"
+
+
+# ----- LM Studio -----
+import vlm.providers as providers  # noqa: E402
+
+LENV = {"LMSTUDIO_BASE_URL": "http://172.26.160.1:1234/v1/", "LMSTUDIO_MODEL": "qwen3-vl-4b"}
+
+
+def test_lmstudio_provider_from_explicit_url():
+    p = resolve_provider(LENV, "lmstudio")
+    assert (p.name, p.base_url, p.model) == ("lmstudio", "http://172.26.160.1:1234/v1", "qwen3-vl-4b")
+    assert p.api_key == "lm-studio" and p.timeout >= 120 and p.reasoning_effort is None
+
+
+def test_lmstudio_autodetect_and_model_discovery(monkeypatch):
+    monkeypatch.setattr(providers, "find_lmstudio_url", lambda: "http://10.0.0.5:1234/v1")
+    monkeypatch.setattr(providers, "first_lmstudio_model", lambda base: "auto-model")
+    p = resolve_provider({}, "lmstudio")
+    assert p.base_url == "http://10.0.0.5:1234/v1" and p.model == "auto-model"
+
+
+def test_lmstudio_unreachable_or_no_model_gives_actionable_config_error(monkeypatch):
+    monkeypatch.setattr(providers, "find_lmstudio_url", lambda: None)
+    with pytest.raises(ConfigError, match="Serve on Local"):
+        resolve_provider({}, "lmstudio")
+    monkeypatch.setattr(providers, "first_lmstudio_model", lambda base: None)
+    with pytest.raises(ConfigError, match="chưa nạp model"):
+        resolve_provider({"LMSTUDIO_BASE_URL": "http://h:1234/v1"}, "lmstudio")
+
+
+def test_lmstudio_candidates_include_wsl_gateway(monkeypatch):
+    monkeypatch.setattr(providers, "_wsl_gateway", lambda: "172.26.160.1")
+    monkeypatch.setattr(providers, "_wsl_nameserver", lambda: "10.255.255.254")
+    assert providers.lmstudio_candidates() == [
+        "http://localhost:1234/v1", "http://172.26.160.1:1234/v1", "http://10.255.255.254:1234/v1"]
+
+
+def test_lmstudio_payload_has_no_provider_specific_reasoning_fields():
+    pl = build_chat_payload("m", "p", None, provider="lmstudio")
+    assert "reasoning" not in pl and "reasoning_effort" not in pl
+
+
+def test_lmstudio_describe_and_connection_error_message(image):
+    seen = {}
+
+    def ok(payload, api_key, base_url, timeout=60.0):
+        seen.update(base=base_url, timeout=timeout, key=api_key)
+        return httpx.Response(200, json={"choices": [{"message": {"content": B0_TEXT},
+                                                      "finish_reason": "stop"}]})
+    r = describe_image(image, env=LENV, provider="lmstudio", post=ok)
+    assert r.status == "ok" and r.meta.provider == "lmstudio" and seen["timeout"] >= 120
+    assert seen["base"] == "http://172.26.160.1:1234/v1"
+    r = describe_image(image, env=LENV, provider="lmstudio",
+                       post=fake_post(raises=httpx.ConnectError("refused")))
+    assert r.error.code == "http_error" and "LM Studio" in r.error.message and r.error.retryable
+    r = describe_image_b1(image, env=LENV, provider="lmstudio",
+                          post=seq_post(httpx.ConnectError("refused")))
+    assert "LM Studio" in r.error.message
+
+
+# ----- Khôi phục JSON hỏng của bước trích xuất -----
+BROKEN = ('{"image_type": "flow_diagram", "status": "ok", "facts": ['
+          '{"subject": "A", "predicate": "đi đến", "object": "B", '
+          '"evidence": "mũi tên từ "A" đến "B""}, '
+          '{"subject": "B", "predicate": "đi đến", "object": "C", "evidence": "mũi tên từ "B" đến "C""}], '
+          '"uncertainties": []}')
+
+
+def test_parse_extraction_salvages_unescaped_quotes():
+    out = parse_extraction(BROKEN)
+    assert out["salvaged"] is True and out["image_type"] == "flow_diagram"
+    assert [(f.subject, f.object) for f in out["facts"]] == [("A", "B"), ("B", "C")]
+    assert parse_extraction(JSON1)["salvaged"] is False
+
+
+def test_b1_with_salvaged_json_is_ok_and_flagged(image):
+    r = describe_image_b1(image, env=ENV, post=seq_post((200, BROKEN, "stop"), (200, B0_TEXT, "stop")))
+    assert r.status == "ok" and len(r.facts) == 2
+    assert any("khôi phục" in u for u in r.uncertainties)
+
+
+def test_unrecoverable_json_still_invalid_output(image):
+    r = describe_image_b1(image, env=ENV, post=seq_post((200, '{"facts": [oops', "stop")))
+    assert r.error.code == "invalid_output"

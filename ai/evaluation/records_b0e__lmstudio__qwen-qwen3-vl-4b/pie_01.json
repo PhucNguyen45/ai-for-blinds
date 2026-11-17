@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "pie_01",
+  "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_01",
+    "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là biểu đồ tròn (pie chart) minh họa phân bố phần trăm các phương tiện học sinh sử dụng để đi đến trường.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:  \nHình ảnh là biểu đồ tròn (pie chart) minh họa phân bố phần trăm các phương tiện học sinh sử dụng để đi đến trường. Tiêu đề chính là “Phương tiện học sinh đến trường”, và dưới tiêu đề có ghi chú “Dữ liệu minh họa”.\n\n2. Thành phần:  \nBiểu đồ tròn có bốn phần, mỗi phần có màu và nhãn phần trăm:  \n  Phần màu xanh lam: 35%  \n  Phần màu vàng: 25%  \n  Phần màu xanh nhạt: 25%  \n  Phần màu hồng: 15%  \nBên phải biểu đồ có bảng chú thích màu sắc:  \n  Xanh lam: “Đi bộ”  \n  Vàng: “Xe đạp”  \n  Xanh nhạt: “Xe máy”  \n  Hồng: “Xe buýt”\n\n3. Quan hệ:  \nCác phần của biểu đồ tròn được chia đều theo góc, không có mũi tên hoặc đường nối chỉ dẫn giữa các phần.  \nPhần “Đi bộ” (xanh lam) chiếm diện tích lớn nhất, nằm ở vị trí trên cùng, gần trục ngang.  \nPhần “Xe đạp” (vàng) và “Xe máy” (xanh nhạt) có cùng kích thước, nằm ở hai bên dưới, đối xứng với nhau.  \nPhần “Xe buýt” (hồng) có kích thước nhỏ nhất, nằm ở phía trên bên trái, giữa phần “Đi bộ” và “Xe máy”.\n\n4. Ý nghĩa:  \nBiểu đồ cho thấy:  \n35% học sinh đi bộ đến trường.  \n25% học sinh sử dụng xe đạp.  \n25% học sinh sử dụng xe máy.  \n15% học sinh sử dụng xe buýt.  \nTổng phần trăm bằng 100%, phù hợp với đặc điểm của biểu đồ tròn. Dữ liệu được ghi chú là “minh họa”, nên không phải là dữ liệu thực tế.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 7.808,
+      "usage": {
+        "prompt_tokens": 1005,
+        "completion_tokens": 469
+      },
+      "created_at_utc": "2026-11-17T08:33:44.806717Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

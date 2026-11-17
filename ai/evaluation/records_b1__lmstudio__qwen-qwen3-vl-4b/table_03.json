@@ -1,0 +1,84 @@
+{
+  "method": "B1",
+  "benchmark_id": "table_03",
+  "image_sha256": "243f7a220bb23885442f4ba347b1a8304a68bccb87a28254796e8b8fab53d029",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "table_03",
+    "image_sha256": "243f7a220bb23885442f4ba347b1a8304a68bccb87a28254796e8b8fab53d029",
+    "image_type": "table",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Bảng thống kê số ngày có mưa trong tháng, chia theo miền.",
+    "facts": [
+      {
+        "subject": "Tiêu đề bảng",
+        "predicate": "là",
+        "object": "Số ngày có mưa trong tháng",
+        "evidence": "trên đầu bảng"
+      },
+      {
+        "subject": "Cột tiêu đề",
+        "predicate": "gồm",
+        "object": "['Tháng', 'Miền Bắc', 'Miền Trung', 'Miền Nam']",
+        "evidence": "ngang hàng trên hàng đầu bảng"
+      },
+      {
+        "subject": "Dòng Tháng 5",
+        "predicate": "có giá trị",
+        "object": "['23', '10', '25']",
+        "evidence": "dòng thứ hai, cột thứ hai đến thứ tư"
+      },
+      {
+        "subject": "Dòng Tháng 6",
+        "predicate": "có giá trị",
+        "object": "['18', '12', '9']",
+        "evidence": "dòng thứ ba, cột thứ hai đến thứ tư"
+      },
+      {
+        "subject": "Dòng Tháng 7",
+        "predicate": "có giá trị",
+        "object": "['7', '11', '16']",
+        "evidence": "dòng thứ tư, cột thứ hai đến thứ tư"
+      },
+      {
+        "subject": "Dòng Tháng 8",
+        "predicate": "có giá trị",
+        "object": "['15', '22', '16']",
+        "evidence": "dòng thứ năm, cột thứ hai đến thứ tư"
+      },
+      {
+        "subject": "Dòng Tháng 9",
+        "predicate": "có giá trị",
+        "object": "['18', '18', '17']",
+        "evidence": "dòng thứ sáu, cột thứ hai đến thứ tư"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Bảng thống kê số ngày có mưa trong tháng, chia theo miền.\n\nThành phần: Cột tiêu đề gồm ba phần: Tháng, Miền Bắc, Miền Trung, Miền Nam. Dòng Tháng 5 có giá trị 23, 10, 25. Dòng Tháng 6 có giá trị 18, 12, 9. Dòng Tháng 7 có giá trị 7, 11, 16. Dòng Tháng 8 có giá trị 15, 22, 16. Dòng Tháng 9 có giá trị 18, 18, 17.\n\nQuan hệ: Các dòng được sắp xếp theo thứ tự tháng, từ Tháng 5 đến Tháng 9. Mỗi dòng tương ứng với một cột tiêu đề, giá trị được đặt ở vị trí tương ứng theo cột. Không có mũi tên hoặc hướng nào được chỉ rõ trong dữ liệu.\n\nÝ nghĩa: Bảng này cung cấp số ngày có mưa trong từng tháng, phân biệt theo ba miền: Miền Bắc, Miền Trung, Miền Nam. Có thể dùng để so sánh lượng mưa giữa các tháng và các miền.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 11.172,
+      "usage": {
+        "prompt_tokens": 1505,
+        "completion_tokens": 633
+      },
+      "created_at_utc": "2026-11-17T08:36:53.299385Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"table\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề bảng\", \"predicate\": \"là\", \"object\": \"Số ngày có mưa trong tháng\", \"evidence\": \"trên đầu bảng\"}, {\"subject\": \"Cột tiêu đề\", \"predicate\": \"gồm\", \"object\": [\"Tháng\", \"Miền Bắc\", \"Miền Trung\", \"Miền Nam\"], \"evidence\": \"ngang hàng trên hàng đầu bảng\"}, {\"subject\": \"Dòng Tháng 5\", \"predicate\": \"có giá trị\", \"object\": [\"23\", \"10\", \"25\"], \"evidence\": \"dòng thứ hai, cột thứ hai đến thứ tư\"}, {\"subject\": \"Dòng Tháng 6\", \"predicate\": \"có giá trị\", \"object\": [\"18\", \"12\", \"9\"], \"evidence\": \"dòng thứ ba, cột thứ hai đến thứ tư\"}, {\"subject\": \"Dòng Tháng 7\", \"predicate\": \"có giá trị\", \"object\": [\"7\", \"11\", \"16\"], \"evidence\": \"dòng thứ tư, cột thứ hai đến thứ tư\"}, {\"subject\": \"Dòng Tháng 8\", \"predicate\": \"có giá trị\", \"object\": [\"15\", \"22\", \"16\"], \"evidence\": \"dòng thứ năm, cột thứ hai đến thứ tư\"}, {\"subject\": \"Dòng Tháng 9\", \"predicate\": \"có giá trị\", \"object\": [\"18\", \"18\", \"17\"], \"evidence\": \"dòng thứ sáu, cột thứ hai đến thứ tư\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Bảng thống kê số ngày có mưa trong tháng, chia theo miền.\n\nThành phần: Cột tiêu đề gồm ba phần: Tháng, Miền Bắc, Miền Trung, Miền Nam. Dòng Tháng 5 có giá trị 23, 10, 25. Dòng Tháng 6 có giá trị 18, 12, 9. Dòng Tháng 7 có giá trị 7, 11, 16. Dòng Tháng 8 có giá trị 15, 22, 16. Dòng Tháng 9 có giá trị 18, 18, 17.\n\nQuan hệ: Các dòng được sắp xếp theo thứ tự tháng, từ Tháng 5 đến Tháng 9. Mỗi dòng tương ứng với một cột tiêu đề, giá trị được đặt ở vị trí tương ứng theo cột. Không có mũi tên hoặc hướng nào được chỉ rõ trong dữ liệu.\n\nÝ nghĩa: Bảng này cung cấp số ngày có mưa trong từng tháng, phân biệt theo ba miền: Miền Bắc, Miền Trung, Miền Nam. Có thể dùng để so sánh lượng mưa giữa các tháng và các miền.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}

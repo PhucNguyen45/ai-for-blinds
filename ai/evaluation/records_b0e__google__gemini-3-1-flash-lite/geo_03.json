@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "geo_03",
+  "image_sha256": "edac83b31a6d863eba1e57efbe829581c53d939178e9cb2c2c8b650846dcfa7e",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "geo_03",
+    "image_sha256": "edac83b31a6d863eba1e57efbe829581c53d939178e9cb2c2c8b650846dcfa7e",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình học phẳng, cụ thể là hình chữ nhật ABCD.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Hình học phẳng, cụ thể là hình chữ nhật ABCD.\n\n2. Thành phần:\nMột hình chữ nhật có bốn đỉnh được ký hiệu theo thứ tự ngược chiều kim đồng hồ là A (góc dưới bên trái), B (góc dưới bên phải), C (góc trên bên phải) và D (góc trên bên trái).\nCác ký hiệu góc vuông được đặt tại cả bốn đỉnh A, B, C, D.\nĐộ dài các cạnh:\n    Cạnh AB (cạnh đáy) có giá trị là 8 cm.\n    Cạnh BC (cạnh bên) có giá trị là 5 cm.\n\n3. Quan hệ:\nHình chữ nhật có cạnh AB nằm ngang và cạnh BC nằm dọc.\nCác góc tại A, B, C, D đều là góc vuông (90 độ).\nTheo tính chất hình chữ nhật, cạnh AB song song và bằng cạnh DC, cạnh BC song song và bằng cạnh AD.\n\n4. Ý nghĩa: Hình ảnh minh họa các thông số cơ bản của một hình chữ nhật với chiều dài là 8 cm và chiều rộng là 5 cm, đồng thời khẳng định tính chất vuông góc tại các đỉnh của hình.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 2.824,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 258
+      },
+      "created_at_utc": "2026-11-17T08:14:15.913912Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

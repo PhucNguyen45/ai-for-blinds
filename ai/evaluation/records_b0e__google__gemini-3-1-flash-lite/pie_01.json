@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "pie_01",
+  "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_01",
+    "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ hình tròn thể hiện tỷ lệ phần trăm các phương tiện học sinh sử dụng để đến trường.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ hình tròn thể hiện tỷ lệ phần trăm các phương tiện học sinh sử dụng để đến trường.\n\n2. Thành phần:\nBiểu đồ bao gồm 4 phần tương ứng với 4 loại phương tiện, được chú giải bằng màu sắc ở bên phải:\nMàu xanh dương: Đi bộ, chiếm 35%.\nMàu vàng: Xe đạp, chiếm 25%.\nMàu xanh lá nhạt: Xe máy, chiếm 25%.\nMàu hồng nhạt: Xe buýt, chiếm 15%.\n\n3. Quan hệ:\nCác phần được sắp xếp theo chiều kim đồng hồ, bắt đầu từ vị trí 12 giờ:\n  Phần màu xanh dương (Đi bộ) chiếm diện tích lớn nhất, nằm ở góc phần tư phía trên bên phải.\n  Tiếp theo là phần màu hồng nhạt (Xe buýt) nằm ở góc phần tư phía trên bên trái.\n  Tiếp đến là phần màu xanh lá nhạt (Xe máy) nằm ở góc phần tư phía dưới bên trái.\n  Cuối cùng là phần màu vàng (Xe đạp) nằm ở góc phần tư phía dưới bên phải.\nSo sánh: Đi bộ là phương tiện phổ biến nhất (35%), trong khi xe buýt là phương tiện ít được sử dụng nhất (15%). Xe đạp và xe máy có tỷ lệ bằng nhau (mỗi loại 25%).\n\n4. Ý nghĩa: Hình ảnh cung cấp cái nhìn tổng quan về cơ cấu phương tiện đến trường của học sinh, cho thấy đa số học sinh chọn cách đi bộ, tiếp theo là xe đạp và xe máy, và một phần nhỏ sử dụng xe buýt.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 5.214,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 359
+      },
+      "created_at_utc": "2026-11-17T08:12:29.940658Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

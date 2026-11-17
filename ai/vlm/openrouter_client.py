@@ -69,7 +69,9 @@ def build_chat_payload(
         "max_tokens": max_tokens,
     }
 
-    if provider == "google":
+    if provider == "lmstudio":
+        pass  # LM Studio (OpenAI-compatible): không gửi tham số reasoning riêng của nhà cung cấp khác
+    elif provider == "google":
         # Gemini API (OpenAI-compatible) không nhận trường "reasoning" của OpenRouter.
         if reasoning_effort:
             payload["reasoning_effort"] = reasoning_effort

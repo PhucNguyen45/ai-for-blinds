@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "table_01",
+  "image_sha256": "31ed6205f71f76c9cdbbe83e1e88e0f20325c5400e69b122693e3aed2c2d41da",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "table_01",
+    "image_sha256": "31ed6205f71f76c9cdbbe83e1e88e0f20325c5400e69b122693e3aed2c2d41da",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Bảng thống kê số liệu về kết quả điểm kiểm tra giữa kì các môn học của bốn học sinh.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Bảng thống kê số liệu về kết quả điểm kiểm tra giữa kì các môn học của bốn học sinh.\n\n2. Thành phần:\nTiêu đề phía trên bảng: \"Điểm kiểm tra giữa kì\".\nBảng gồm 5 hàng và 4 cột:\n  Hàng tiêu đề gồm các ô: \"Học sinh\", \"Toán\", \"Ngữ văn\", \"Tiếng Anh\". Cả hàng này có nền màu xám nhạt.\n  Cột đầu tiên (tính từ trái sang) ghi tên các đối tượng, nền màu xám nhạt: \"Học sinh\", \"Học sinh A\", \"Học sinh B\", \"Học sinh C\", \"Học sinh D\".\n  Các ô dữ liệu còn lại có nền màu trắng, hiển thị điểm số cụ thể:\n    Hàng của Học sinh A: Toán là 8,5; Ngữ văn là 8,0; Tiếng Anh là 7,5.\n    Hàng của Học sinh B: Toán là 8,0; Ngữ văn là 5,0; Tiếng Anh là 6,5.\n    Hàng của Học sinh C: Toán là 6,0; Ngữ văn là 9,0; Tiếng Anh là 10,0.\n    Hàng của Học sinh D: Toán là 7,5; Ngữ văn là 6,5; Tiếng Anh là 7,5.\n\n3. Quan hệ:\nMỗi hàng tương ứng với điểm số của một học sinh cụ thể qua ba môn học: Toán, Ngữ văn, Tiếng Anh.\nMôn Toán: Điểm cao nhất là 8,5 (Học sinh A), thấp nhất là 6,0 (Học sinh C).\nMôn Ngữ văn: Điểm cao nhất là 9,0 (Học sinh C), thấp nhất là 5,0 (Học sinh B).\nMôn Tiếng Anh: Điểm cao nhất là 10,0 (Học sinh C), thấp nhất là 6,5 (Học sinh B). Hai học sinh A và D có cùng mức điểm là 7,5.\n\n4. Ý nghĩa: Bảng biểu giúp trình bày và theo dõi một cách có hệ thống kết quả học tập giữa kì của từng cá nhân theo môn học, thuận tiện cho việc đối chiếu và so sánh kết quả giữa các học sinh.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 14.529,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 532
+      },
+      "created_at_utc": "2026-11-17T08:05:33.883661Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

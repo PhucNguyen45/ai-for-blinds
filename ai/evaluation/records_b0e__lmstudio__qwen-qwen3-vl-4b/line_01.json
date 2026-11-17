@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "line_01",
+  "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_01",
+    "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là biểu đồ đường thể hiện nhiệt độ trung bình các tháng đầu năm, với trục hoành ghi tháng và trục tung ghi nhiệt độ (đơn vị °C).",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:  \nHình ảnh là biểu đồ đường thể hiện nhiệt độ trung bình các tháng đầu năm, với trục hoành ghi tháng và trục tung ghi nhiệt độ (đơn vị °C).\n\n2. Thành phần:  \nTrục tung (thang đo nhiệt độ): ghi các giá trị từ 0 đến 45, với các vạch chia 5 đơn vị (0, 5, 10, 15, 20, 25, 30, 35, 40, 45).  \nTrục hoành (thang đo thời gian): ghi các tháng đầu năm: Tháng 1, Tháng 2, Tháng 3, Tháng 4, Tháng 5, Tháng 6.  \nBiểu đồ đường: gồm một đường màu xanh dương nối các điểm dữ liệu.  \nCác điểm dữ liệu có nhãn ghi giá trị số:  \n  Tháng 1: 40  \n  Tháng 2: 25  \n  Tháng 3: 15  \n  Tháng 4: 35  \n  Tháng 5: 15  \n  Tháng 6: 5  \nTiêu đề: “Nhiệt độ trung bình các tháng đầu năm”.  \nGhi chú nhỏ: “Dữ liệu minh họa” nằm ngay dưới tiêu đề.\n\n3. Quan hệ:  \nCác điểm dữ liệu được nối với nhau bằng đường thẳng màu xanh dương, thể hiện sự thay đổi nhiệt độ theo thời gian.  \nThứ tự các điểm theo trục hoành: Tháng 1 → Tháng 2 → Tháng 3 → Tháng 4 → Tháng 5 → Tháng 6.  \nĐường đi từ Tháng 1 (40) xuống Tháng 2 (25), tiếp tục xuống Tháng 3 (15), rồi tăng lên Tháng 4 (35), sau đó giảm xuống Tháng 5 (15), và tiếp tục giảm xuống Tháng 6 (5).\n\n4. Ý nghĩa:  \nBiểu đồ thể hiện xu hướng thay đổi nhiệt độ trung bình trong sáu tháng đầu năm. Nhiệt độ bắt đầu ở mức cao nhất (40°C) vào tháng 1, sau đó giảm dần đến tháng 3 (15°C), rồi tăng đột ngột lên mức cao nhất trong sáu tháng (35°C) vào tháng 4, sau đó giảm mạnh xuống mức thấp nhất (5°C) vào tháng 6. Dữ liệu được ghi chú là “minh họa”, không đại diện cho dữ liệu thực tế.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 9.316,
+      "usage": {
+        "prompt_tokens": 1005,
+        "completion_tokens": 574
+      },
+      "created_at_utc": "2026-11-17T08:33:27.858832Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

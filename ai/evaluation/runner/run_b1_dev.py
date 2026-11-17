@@ -16,6 +16,7 @@ import hashlib
 import json
 import re
 import sys
+import time
 from pathlib import Path
 
 AI_ROOT = Path(__file__).resolve().parents[2]
@@ -34,8 +35,12 @@ def main():
     ap.add_argument("--ids", nargs="*")
     ap.add_argument("--method", choices=["b1", "b0e"], default="b1",
                     help="b1: 2 bước (trích xuất -> diễn giải); b0e: B0 + dòng yêu cầu nêu đủ giá trị")
-    ap.add_argument("--provider", choices=["openrouter", "google"],
+    ap.add_argument("--provider", choices=["openrouter", "google", "lmstudio"],
                     help="nhà cung cấp (mặc định VLM_PROVIDER hoặc openrouter)")
+    ap.add_argument("--sleep", type=float, default=0.0,
+                    help="giây chờ giữa các ảnh (gói miễn phí hay bị giới hạn tần suất)")
+    ap.add_argument("--retry-429", type=int, default=0,
+                    help="số lần thử lại CHỈ khi gặp HTTP 429 (chờ 20s, 40s, ...)")
     ap.add_argument("--model", help="ghi đè model (mặc định lấy từ .env); bản ghi lưu riêng theo model")
     args = ap.parse_args()
     slug = lambda t: re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-")  # noqa: E731
@@ -70,13 +75,24 @@ def main():
             raise SystemExit("Đường dẫn ảnh không an toàn.")
         if hashlib.sha256(image.read_bytes()).hexdigest() != item["sha256"]:
             raise SystemExit(f"Sai hash ảnh: {item['id']}")
-        trace = {}
-        if args.method == "b1":
-            result = describe_image_b1(image, image_id=item["id"], trace=trace, model=args.model,
-                                       provider=args.provider)
-        else:
-            result = describe_image(image, image_id=item["id"], prompt_id="b0e_v1",
-                                    model=args.model, provider=args.provider)
+        attempts = 0
+        while True:
+            attempts += 1
+            trace = {}
+            if args.method == "b1":
+                result = describe_image_b1(image, image_id=item["id"], trace=trace,
+                                           model=args.model, provider=args.provider)
+            else:
+                result = describe_image(image, image_id=item["id"], prompt_id="b0e_v1",
+                                        model=args.model, provider=args.provider)
+            rate_limited = bool(result.error and result.error.http_status == 429)
+            if not (rate_limited and attempts <= args.retry_429):
+                break
+            wait = 20 * attempts
+            print(f"    429 ở {item['id']}, chờ {wait}s rồi thử lại ({attempts}/{args.retry_429})",
+                  flush=True)
+            time.sleep(wait)
+        trace["attempts"] = attempts
         record = {"method": args.method.upper(), "benchmark_id": item["id"],
                   "image_sha256": item["sha256"], "benchmark_version": manifest["version"],
                   "result": result.model_dump(mode="json", exclude_none=True), "trace": trace}
@@ -88,6 +104,8 @@ def main():
                              if code in ("timeout", "http_error", "config_error") else 0)
         if consecutive_infra >= 3:
             raise SystemExit("Dừng: 3 lỗi hạ tầng liên tiếp.")
+        if args.sleep and n < len(todo):
+            time.sleep(args.sleep)
 
 
 if __name__ == "__main__":

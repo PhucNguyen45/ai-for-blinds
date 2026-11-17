@@ -64,6 +64,13 @@ def strip_markdown(text: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
+def _conn_message(provider_name: str) -> str:
+    if provider_name == "lmstudio":
+        return ("Không kết nối được LM Studio: kiểm tra server đang chạy, đã bật 'Serve on Local "
+                "Network' và tường lửa Windows cho phép cổng 1234.")
+    return "Lỗi kết nối tới dịch vụ mô hình."
+
+
 def _http_message(status: int) -> str:
     if status in (400, 404):
         return (f"Dịch vụ mô hình trả về HTTP {status}: kiểm tra tên model và tham số "
@@ -89,7 +96,7 @@ def describe_image(
     provider: str | None = None,
     temperature: float = 0.2,
     max_tokens: int = 600,
-    timeout: float = 60.0,
+    timeout: float | None = None,
     post: PostFn = post_chat_completion,
     env: dict | None = None,
 ) -> DescriptionResult:
@@ -116,6 +123,7 @@ def describe_image(
     except ConfigError as exc:
         return _error("config_error", str(exc), False, image_id=image_id, image_sha256=sha)
     api_key, base_url, model = prov.api_key, prov.base_url, prov.model
+    timeout = timeout or prov.timeout
 
     created = datetime.now(timezone.utc)
     meta = Meta(
@@ -133,7 +141,7 @@ def describe_image(
     except httpx.TimeoutException:
         return _error("timeout", "Hết thời gian chờ mô hình.", True, **ctx)
     except httpx.HTTPError:
-        return _error("http_error", "Lỗi kết nối tới dịch vụ mô hình.", True, **ctx)
+        return _error("http_error", _conn_message(prov.name), True, **ctx)
     meta.latency_seconds = round(time.perf_counter() - start, 3)
 
     if response.status_code != 200:
@@ -185,7 +193,7 @@ class _StageFailure(Exception):
         self.retryable, self.http_status = retryable, http_status
 
 
-def _chat_once(payload, api_key, base_url, timeout, post):
+def _chat_once(payload, api_key, base_url, timeout, post, provider_name=""):
     """Gọi một lần; trả (text, finish_reason, usage_dict, latency) hoặc ném _StageFailure."""
     start = time.perf_counter()
     try:
@@ -193,7 +201,7 @@ def _chat_once(payload, api_key, base_url, timeout, post):
     except httpx.TimeoutException:
         raise _StageFailure("timeout", "Hết thời gian chờ mô hình.", True)
     except httpx.HTTPError:
-        raise _StageFailure("http_error", "Lỗi kết nối tới dịch vụ mô hình.", True)
+        raise _StageFailure("http_error", _conn_message(provider_name), True)
     latency = time.perf_counter() - start
     if response.status_code != 200:
         retryable = response.status_code in (408, 429) or response.status_code >= 500
@@ -210,13 +218,36 @@ def _chat_once(payload, api_key, base_url, timeout, post):
     return text, choice.get("finish_reason"), body.get("usage") or {}, latency
 
 
+_TRIPLE_RE = re.compile(
+    r'"subject"\s*:\s*"(.*?)"\s*,\s*"predicate"\s*:\s*"(.*?)"\s*,\s*"object"\s*:\s*"(.*?)"'
+    r'\s*(?=,\s*"evidence"|\})', re.S)
+
+
+def _salvage(cleaned: str) -> dict:
+    """Khôi phục facts khi JSON hỏng (thường do dấu nháy kép không escape trong 'evidence')."""
+    triples = _TRIPLE_RE.findall(cleaned)
+    if not triples:
+        raise ValueError("JSON hỏng và không khôi phục được dữ kiện")
+    facts = [{"subject": a, "predicate": b, "object": c} for a, b, c in triples]
+    kind = re.search(r'"image_type"\s*:\s*"([a-z_]+)"', cleaned)
+    unread = re.search(r'"status"\s*:\s*"unreadable"', cleaned)
+    return {"image_type": kind.group(1) if kind else "other",
+            "status": "unreadable" if unread else "ok", "facts": facts,
+            "uncertainties": [], "_salvaged": True}
+
+
 def parse_extraction(text: str) -> dict:
-    """Parse JSON của bước trích xuất; chấp nhận khung ```json và văn bản thừa quanh JSON."""
+    """Parse JSON của bước trích xuất; chấp nhận khung ```json và văn bản thừa quanh JSON.
+
+    Nếu JSON hỏng, thử khôi phục các bộ ba chủ thể/quan hệ/đối tượng (cờ `salvaged` = True)."""
     cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip(), flags=re.I)
     start, end = cleaned.find("{"), cleaned.rfind("}")
     if start < 0 or end <= start:
         raise ValueError("không tìm thấy đối tượng JSON")
-    data = _json.loads(cleaned[start:end + 1])
+    try:
+        data = _json.loads(cleaned[start:end + 1])
+    except _json.JSONDecodeError:
+        data = _salvage(cleaned[start:end + 1])
     if not isinstance(data, dict) or not isinstance(data.get("facts"), list):
         raise ValueError("thiếu danh sách facts")
     facts = []
@@ -234,7 +265,7 @@ def parse_extraction(text: str) -> dict:
     image_type = data.get("image_type") if data.get("image_type") in _IMAGE_TYPES else "other"
     status = "unreadable" if data.get("status") == "unreadable" else "ok"
     return {"image_type": image_type, "status": status, "facts": facts,
-            "uncertainties": uncertainties}
+            "uncertainties": uncertainties, "salvaged": bool(data.get("_salvaged"))}
 
 
 def describe_image_b1(
@@ -246,7 +277,7 @@ def describe_image_b1(
     temperature: float = 0.2,
     extract_max_tokens: int = 1500,
     describe_max_tokens: int = 800,
-    timeout: float = 90.0,
+    timeout: float | None = None,
     post: PostFn = post_chat_completion,
     env: dict | None = None,
     trace: dict | None = None,
@@ -276,6 +307,7 @@ def describe_image_b1(
     except ConfigError as exc:
         return _error("config_error", str(exc), False, image_id=image_id, image_sha256=sha)
     api_key, base_url, model = prov.api_key, prov.base_url, prov.model
+    timeout = timeout or max(prov.timeout, 90.0)
 
     meta = Meta(
         model=model, provider=prov.name, method="B1", prompt_id="b1_v1",
@@ -296,7 +328,7 @@ def describe_image_b1(
         payload = build_chat_payload(model, extract_prompt, str(path), temperature,
                                      extract_max_tokens, provider=prov.name,
                                      reasoning_effort=prov.reasoning_effort)
-        text1, fin1, usage1, lat1 = _chat_once(payload, api_key, base_url, timeout, post)
+        text1, fin1, usage1, lat1 = _chat_once(payload, api_key, base_url, timeout, post, prov.name)
         total_latency += lat1
         prompt_tokens += usage1.get("prompt_tokens") or 0
         completion_tokens += usage1.get("completion_tokens") or 0
@@ -327,7 +359,7 @@ def describe_image_b1(
         payload = build_chat_payload(model, describe_prompt + "\n" + facts_json, None,
                                      temperature, describe_max_tokens, provider=prov.name,
                                      reasoning_effort=prov.reasoning_effort)
-        text2, fin2, usage2, lat2 = _chat_once(payload, api_key, base_url, timeout, post)
+        text2, fin2, usage2, lat2 = _chat_once(payload, api_key, base_url, timeout, post, prov.name)
         total_latency += lat2
         prompt_tokens += usage2.get("prompt_tokens") or 0
         completion_tokens += usage2.get("completion_tokens") or 0
@@ -342,6 +374,8 @@ def describe_image_b1(
     text2 = strip_markdown(text2)
     truncated = fin1 == "length" or fin2 == "length"
     uncertainties = list(extracted["uncertainties"])
+    if extracted.get("salvaged"):
+        uncertainties.append("Bước trích xuất trả JSON lỗi; dữ kiện được khôi phục (bỏ trường evidence).")
     if truncated:
         uncertainties.append("Một bước bị cắt do giới hạn độ dài; dữ kiện có thể chưa đầy đủ.")
     return DescriptionResult(

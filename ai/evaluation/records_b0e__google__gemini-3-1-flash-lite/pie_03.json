@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "pie_03",
+  "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_03",
+    "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ hình tròn thể hiện cơ cấu sử dụng đất của một xã (dữ liệu minh họa).",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ hình tròn thể hiện cơ cấu sử dụng đất của một xã (dữ liệu minh họa).\n\n2. Thành phần: Biểu đồ bao gồm 4 phần tương ứng với 4 loại hình sử dụng đất, được chú giải bằng màu sắc như sau:\nMàu xanh dương nhạt: Trồng lúa, chiếm 35%.\nMàu vàng: Rau màu, chiếm 15%.\nMàu xanh lá nhạt: Ao hồ, chiếm 20%.\nMàu hồng nhạt: Đất ở, chiếm 30%.\n\n3. Quan hệ:\nCác phần được sắp xếp theo chiều kim đồng hồ bắt đầu từ vị trí 12 giờ:\n    Phần \"Trồng lúa\" (35%) chiếm diện tích lớn nhất, nằm ở góc phần tư phía trên bên phải.\n    Phần \"Rau màu\" (15%) chiếm diện tích nhỏ nhất, nằm ở góc dưới bên phải.\n    Phần \"Ao hồ\" (20%) nằm ở góc dưới bên trái.\n    Phần \"Đất ở\" (30%) nằm ở góc trên bên trái.\nTổng các giá trị phần trăm là 35% + 15% + 20% + 30% = 100%.\n\n4. Ý nghĩa: Hình ảnh minh họa tỷ trọng phân bổ các loại hình sử dụng đất trong xã. Trong đó, đất trồng lúa chiếm tỷ lệ cao nhất (35%), tiếp theo là đất ở (30%), ao hồ (20%) và thấp nhất là đất trồng rau màu (15%).",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 2.972,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 347
+      },
+      "created_at_utc": "2026-11-17T08:12:43.155603Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

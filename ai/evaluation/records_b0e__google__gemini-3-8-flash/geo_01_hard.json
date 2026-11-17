@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "geo_01_hard",
+  "image_sha256": "efb31939cd7bd56b6ab91ee304cf58e594447d32aa087caba91ae089d7b02afe",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "geo_01_hard",
+    "image_sha256": "efb31939cd7bd56b6ab91ee304cf58e594447d32aa087caba91ae089d7b02afe",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình vẽ hình học minh họa tam giác vuông ABC với các kích thước cho trước của hai cạnh góc vuông.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:\nHình vẽ hình học minh họa tam giác vuông ABC với các kích thước cho trước của hai cạnh góc vuông.\n\n2. Thành phần:\nTiêu đề phía trên: \"Tam giác ABC vuông tại A\".\nHình tam giác $ABC$ có phần bên trong được tô màu xám.\nBa đỉnh gồm: đỉnh $A$, đỉnh $B$ và đỉnh $C$.\nKý hiệu góc vuông (hình ô vuông nhỏ) tại đỉnh $A$.\nNhãn kích thước cạnh $AB$: \"AB = 3 cm\" (ghi bằng chữ màu nâu đỏ ở bên trái cạnh $AB$).\nNhãn kích thước cạnh $AC$: \"AC = 4 cm\" (ghi bằng chữ màu nâu đỏ ở phía dưới cạnh $AC$).\nCạnh huyền $BC$ nối từ đỉnh $B$ đến đỉnh $C$, không có số đo đi kèm trên hình.\n\n3. Quan hệ:\nĐỉnh $A$ nằm ở góc dưới bên trái, là đỉnh của góc vuông ($90^\\circ$).\nĐỉnh $B$ nằm ở phía trên đỉnh $A$; đoạn thẳng $AB$ là cạnh góc vuông dựng đứng với độ dài 3 cm.\nĐỉnh $C$ nằm ở phía bên phải đỉnh $A$; đoạn thẳng $AC$ là cạnh góc vuông nằm ngang (hơi nghiêng theo góc chụp) với độ dài 4 cm.\nĐoạn thẳng $BC$ là cạnh huyền đối diện với góc vuông $A$.\n\n4. Ý nghĩa:\nHình ảnh cung cấp dữ liệu hình học trực quan về một tam giác vuông có độ dài hai cạnh góc vuông là $AB = 3\\text{ cm}$ và $AC = 4\\text{ cm}$, thường được sử dụng làm đề bài để tính độ dài cạnh huyền $BC$ (áp dụng định lý Pythagore: $BC = \\sqrt{3^2 + 4^2} = 5\\text{ cm}$) hoặc tính diện tích tam giác vuông.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 7.629,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 431
+      },
+      "created_at_utc": "2026-11-17T08:08:38.613636Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

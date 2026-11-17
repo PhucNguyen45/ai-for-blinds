@@ -1,0 +1,90 @@
+{
+  "method": "B1",
+  "benchmark_id": "pie_01",
+  "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_01",
+    "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+    "image_type": "pie_chart",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Biểu đồ phân bố phần trăm các phương tiện giao thông.",
+    "facts": [
+      {
+        "subject": "Phần biểu đồ",
+        "predicate": "có giá trị phần trăm",
+        "object": "35%",
+        "evidence": "Phần lớn nhất trong biểu đồ, màu xanh lam"
+      },
+      {
+        "subject": "Phần biểu đồ",
+        "predicate": "có giá trị phần trăm",
+        "object": "25%",
+        "evidence": "Phần thứ hai, màu vàng"
+      },
+      {
+        "subject": "Phần biểu đồ",
+        "predicate": "có giá trị phần trăm",
+        "object": "25%",
+        "evidence": "Phần thứ ba, màu xanh nhạt"
+      },
+      {
+        "subject": "Phần biểu đồ",
+        "predicate": "có giá trị phần trăm",
+        "object": "15%",
+        "evidence": "Phần nhỏ nhất, màu hồng"
+      },
+      {
+        "subject": "Biểu đồ",
+        "predicate": "có nhãn",
+        "object": "Đi bộ",
+        "evidence": "Màu xanh lam trong bảng màu"
+      },
+      {
+        "subject": "Biểu đồ",
+        "predicate": "có nhãn",
+        "object": "Xe đạp",
+        "evidence": "Màu vàng trong bảng màu"
+      },
+      {
+        "subject": "Biểu đồ",
+        "predicate": "có nhãn",
+        "object": "Xe máy",
+        "evidence": "Màu xanh nhạt trong bảng màu"
+      },
+      {
+        "subject": "Biểu đồ",
+        "predicate": "có nhãn",
+        "object": "Xe buýt",
+        "evidence": "Màu hồng trong bảng màu"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Biểu đồ phân bố phần trăm các phương tiện giao thông.\n\nThành phần: Biểu đồ có bốn phần, mỗi phần có giá trị phần trăm là 35%, 25%, 25%, 15%. Mỗi phần có nhãn tương ứng là Đi bộ, Xe đạp, Xe máy, Xe buýt.\n\nQuan hệ: Các phần trăm được gán cho từng phần của biểu đồ theo thứ tự từ trái sang phải. Không có mũi tên chỉ hướng, không có so sánh trực tiếp giữa các phần.\n\nÝ nghĩa: Hình ảnh thể hiện tỷ lệ phần trăm sử dụng các phương tiện giao thông, trong đó đi bộ chiếm 35%, xe đạp 25%, xe máy 25%, xe buýt 15%.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 9.158,
+      "usage": {
+        "prompt_tokens": 1465,
+        "completion_tokens": 512
+      },
+      "created_at_utc": "2026-11-17T08:36:14.885145Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"pie_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Phần biểu đồ\", \"predicate\": \"có giá trị phần trăm\", \"object\": \"35%\", \"evidence\": \"Phần lớn nhất trong biểu đồ, màu xanh lam\"}, {\"subject\": \"Phần biểu đồ\", \"predicate\": \"có giá trị phần trăm\", \"object\": \"25%\", \"evidence\": \"Phần thứ hai, màu vàng\"}, {\"subject\": \"Phần biểu đồ\", \"predicate\": \"có giá trị phần trăm\", \"object\": \"25%\", \"evidence\": \"Phần thứ ba, màu xanh nhạt\"}, {\"subject\": \"Phần biểu đồ\", \"predicate\": \"có giá trị phần trăm\", \"object\": \"15%\", \"evidence\": \"Phần nhỏ nhất, màu hồng\"}, {\"subject\": \"Biểu đồ\", \"predicate\": \"có nhãn\", \"object\": \"Đi bộ\", \"evidence\": \"Màu xanh lam trong bảng màu\"}, {\"subject\": \"Biểu đồ\", \"predicate\": \"có nhãn\", \"object\": \"Xe đạp\", \"evidence\": \"Màu vàng trong bảng màu\"}, {\"subject\": \"Biểu đồ\", \"predicate\": \"có nhãn\", \"object\": \"Xe máy\", \"evidence\": \"Màu xanh nhạt trong bảng màu\"}, {\"subject\": \"Biểu đồ\", \"predicate\": \"có nhãn\", \"object\": \"Xe buýt\", \"evidence\": \"Màu hồng trong bảng màu\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Biểu đồ phân bố phần trăm các phương tiện giao thông.\n\nThành phần: Biểu đồ có bốn phần, mỗi phần có giá trị phần trăm là 35%, 25%, 25%, 15%. Mỗi phần có nhãn tương ứng là Đi bộ, Xe đạp, Xe máy, Xe buýt.\n\nQuan hệ: Các phần trăm được gán cho từng phần của biểu đồ theo thứ tự từ trái sang phải. Không có mũi tên chỉ hướng, không có so sánh trực tiếp giữa các phần.\n\nÝ nghĩa: Hình ảnh thể hiện tỷ lệ phần trăm sử dụng các phương tiện giao thông, trong đó đi bộ chiếm 35%, xe đạp 25%, xe máy 25%, xe buýt 15%.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}

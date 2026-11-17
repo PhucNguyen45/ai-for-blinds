@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "map_03",
+  "image_sha256": "ab868668b10930748917e056b3d2756c86b0108926cfc51de0a825ab20a4f330",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "map_03",
+    "image_sha256": "ab868668b10930748917e056b3d2756c86b0108926cfc51de0a825ab20a4f330",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Sơ đồ khu phố, mô tả vị trí của các công trình công cộng trong một khu vực được chia thành lưới ô vuông bởi các con đường.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Sơ đồ khu phố, mô tả vị trí của các công trình công cộng trong một khu vực được chia thành lưới ô vuông bởi các con đường.\n\n2. Thành phần:\nCác con đường: Hai đường dọc và hai đường ngang cắt nhau tạo thành một lưới 9 ô (3 hàng, 3 cột).\nCác công trình:\n  Trường học: Nằm ở ô góc trên bên trái.\n  Bưu điện: Nằm ở ô giữa bên trái.\n  Nhà văn hóa: Nằm ở ô dưới bên trái.\n  Sân vận động: Nằm ở ô dưới giữa.\n  Thư viện: Nằm ở ô dưới bên phải.\nHướng: Một mũi tên chỉ hướng Bắc nằm ở góc trên bên phải, hướng lên phía trên của sơ đồ.\n\n3. Quan hệ:\nVề vị trí theo hàng ngang (từ trái sang phải):\n  Hàng trên cùng: Trường học nằm ở cột trái, hai ô còn lại trống.\n  Hàng giữa: Bưu điện nằm ở cột trái, hai ô còn lại trống.\n  Hàng dưới cùng: Nhà văn hóa nằm ở cột trái, Sân vận động nằm ở cột giữa, Thư viện nằm ở cột phải.\nVề vị trí theo cột dọc (từ trên xuống dưới):\n  Cột trái: Trường học (trên), Bưu điện (giữa), Nhà văn hóa (dưới).\n  Cột giữa: Trống (trên), Trống (giữa), Sân vận động (dưới).\n  Cột phải: Trống (trên), Trống (giữa), Thư viện (dưới).\nHướng Bắc chỉ lên phía trên của sơ đồ, nghĩa là các công trình ở hàng trên cùng nằm ở phía Bắc so với các công trình ở hàng dưới.\n\n4. Ý nghĩa: Hình ảnh cung cấp cái nhìn tổng quan về vị trí địa lý tương đối của các địa điểm trong khu phố, giúp người xem xác định hướng di chuyển và vị trí của các công trình so với nhau.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 4.378,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 455
+      },
+      "created_at_utc": "2026-11-17T08:14:48.777927Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

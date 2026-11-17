@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "bar_01",
+  "image_sha256": "6b1b99ae06efee6571c29fb7df99d0af6403c508ac8cd8a91bbab2479f8ebe69",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_01",
+    "image_sha256": "6b1b99ae06efee6571c29fb7df99d0af6403c508ac8cd8a91bbab2479f8ebe69",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là biểu đồ cột dọc, thể hiện số sách thư viện được cho mượn trong tuần, theo từng ngày từ Thứ Hai đến Thứ Sáu.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:  \nHình ảnh là biểu đồ cột dọc, thể hiện số sách thư viện được cho mượn trong tuần, theo từng ngày từ Thứ Hai đến Thứ Sáu.\n\n2. Thành phần:  \nTrục dọc (trục y) có nhãn “Số quyển”, với các giá trị ghi rõ: 0, 5, 10, 15, 20, 25, 30, 35, 40, 45.  \nTrục ngang (trục x) có các nhãn: “Thứ 2”, “Thứ 3”, “Thứ 4”, “Thứ 5”, “Thứ 6”.  \nMỗi cột có giá trị số ghi trực tiếp trên đỉnh cột: 40, 35, 5, 19, 6.  \nCó nhãn phụ trên trục ngang: “Dữ liệu minh họa”.\n\n3. Quan hệ:  \nCột thứ nhất (Thứ 2) cao nhất, đạt 40 quyển.  \nCột thứ hai (Thứ 3) thấp hơn cột thứ nhất, đạt 35 quyển.  \nCột thứ ba (Thứ 4) thấp nhất trong biểu đồ, đạt 5 quyển.  \nCột thứ tư (Thứ 5) cao hơn cột thứ ba, đạt 19 quyển.  \nCột thứ năm (Thứ 6) thấp hơn cột thứ tư, đạt 6 quyển.  \nCác cột được sắp xếp theo thứ tự ngày trong tuần, từ trái sang phải.\n\n4. Ý nghĩa:  \nBiểu đồ cho thấy số sách được cho mượn tăng vào Thứ Hai và Thứ Ba, giảm mạnh vào Thứ Tư, sau đó tăng nhẹ vào Thứ Năm và giảm xuống thấp vào Thứ Sáu. Giá trị số ghi trực tiếp trên đỉnh cột là dữ liệu chính, không có giá trị ước lượng.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 7.35,
+      "usage": {
+        "prompt_tokens": 1005,
+        "completion_tokens": 442
+      },
+      "created_at_utc": "2026-11-17T08:33:04.071395Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

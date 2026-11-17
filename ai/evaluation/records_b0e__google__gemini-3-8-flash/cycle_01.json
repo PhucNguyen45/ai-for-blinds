@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "cycle_01",
+  "image_sha256": "bfa682434f8d99b28c0534039cf5fe827ded6cf41e0fd3b938d07ab4f579883e",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "cycle_01",
+    "image_sha256": "bfa682434f8d99b28c0534039cf5fe827ded6cf41e0fd3b938d07ab4f579883e",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Sơ đồ khối mô tả quá trình vòng tuần hoàn của nước trong tự nhiên.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Sơ đồ khối mô tả quá trình vòng tuần hoàn của nước trong tự nhiên. Tiêu đề ở phía trên cùng của hình là: \"Vòng tuần hoàn của nước\".\n\n2. Thành phần: Sơ đồ gồm 4 ô hình chữ nhật bo góc màu xanh lam nhạt, viền xanh đậm, được bố trí thành hình thoi:\nÔ phía trên có nhãn: \"Nước bốc hơi\".\nÔ bên phải có nhãn: \"Hơi nước ngưng tụ thành mây\".\nÔ phía dưới có nhãn: \"Mưa rơi xuống\".\nÔ bên trái có nhãn: \"Nước chảy về sông, biển\".\n\n3. Quan hệ: Các ô được kết nối với nhau bằng 4 mũi tên màu đen chỉ theo một chiều kim đồng hồ, tạo thành một chu trình khép kín:\nMũi tên từ ô \"Nước bốc hơi\" (phía trên) chỉ xuống ô \"Hơi nước ngưng tụ thành mây\" (bên phải).\nMũi tên từ ô \"Hơi nước ngưng tụ thành mây\" (bên phải) chỉ xuống ô \"Mưa rơi xuống\" (phía dưới).\nMũi tên từ ô \"Mưa rơi xuống\" (phía dưới) chỉ lên ô \"Nước chảy về sông, biển\" (bên trái).\nMũi tên từ ô \"Nước chảy về sông, biển\" (bên trái) chỉ lên ô \"Nước bốc hơi\" (phía trên).\n\n4. Ý nghĩa: Hình ảnh diễn giải 4 giai đoạn cơ bản và liên tục của vòng tuần hoàn nước: nước từ các nguồn sông, biển bốc hơi lên cao, ngưng tụ lại tạo thành các đám mây, sau đó tạo thành mưa rơi xuống mặt đất và nguồn nước, rồi tiếp tục chảy về sông, biển để lặp lại chu trình.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 7.025,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 411
+      },
+      "created_at_utc": "2026-11-17T08:06:35.991606Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

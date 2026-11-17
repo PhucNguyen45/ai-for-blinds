@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "map_01",
+  "image_sha256": "cca117cdb8d2a5068b53149c648550c2f77910799f76db1ff23b602936aaecb5",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "map_01",
+    "image_sha256": "cca117cdb8d2a5068b53149c648550c2f77910799f76db1ff23b602936aaecb5",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Sơ đồ khu phố, thể hiện bố cục không gian với các điểm quan trọng.",
+    "facts": [],
+    "interpretation_vi": "Chủ đề: Sơ đồ khu phố, thể hiện bố cục không gian với các điểm quan trọng.\n\nThành phần: Có bốn đường giao nhau tạo thành lưới, chia không gian thành bốn ô. Mỗi ô chứa một hình chữ nhật có nhãn: “Sân vận động” ở ô trên cùng bên trái; “Công viên” ở ô giữa bên trái; “Trường học” ở ô trên cùng bên phải; “Bưu điện” ở ô dưới cùng bên trái; “Chợ” ở ô dưới cùng bên phải. Có một mũi tên chỉ hướng Bắc ở phía trên bên phải, kèm nhãn “Bắc”. Có chú thích “Hướng Bắc ở phía trên của sơ đồ” ngay dưới tiêu đề.\n\nQuan hệ: “Sân vận động” nằm ở giao điểm đường ngang và đường dọc bên trái, ở góc trên cùng bên trái. “Công viên” nằm ở giao điểm đường ngang và đường dọc giữa, ở vị trí trung tâm. “Trường học” nằm ở giao điểm đường ngang và đường dọc bên phải, ở góc trên cùng bên phải. “Bưu điện” nằm ở giao điểm đường ngang và đường dọc dưới, ở góc dưới cùng bên trái. “Chợ” nằm ở giao điểm đường ngang và đường dọc dưới, ở góc dưới cùng bên phải. Mũi tên chỉ hướng Bắc đứng thẳng ở phía trên bên phải, hướng lên.\n\nÝ nghĩa: Sơ đồ thể hiện bố cục không gian của khu phố với các điểm quan trọng, xác định hướng Bắc để định vị. Các điểm như “Sân vận động”, “Công viên”, “Trường học”, “Bưu điện”, “Chợ” được đặt tại các vị trí giao nhau của đường phố, giúp xác định vị trí tương đối giữa các điểm trong khu vực.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 6.894,
+      "usage": {
+        "prompt_tokens": 1005,
+        "completion_tokens": 400
+      },
+      "created_at_utc": "2026-11-17T08:34:49.912364Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

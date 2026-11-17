@@ -1,0 +1,90 @@
+{
+  "method": "B1",
+  "benchmark_id": "pie_03",
+  "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_03",
+    "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+    "image_type": "pie_chart",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Biểu đồ phân bố phần trăm các loại cây trồng trên một vùng đất.",
+    "facts": [
+      {
+        "subject": "phần bánh",
+        "predicate": "bằng",
+        "object": "35%",
+        "evidence": "phần bánh màu xanh lam"
+      },
+      {
+        "subject": "phần bánh",
+        "predicate": "bằng",
+        "object": "30%",
+        "evidence": "phần bánh màu hồng"
+      },
+      {
+        "subject": "phần bánh",
+        "predicate": "bằng",
+        "object": "20%",
+        "evidence": "phần bánh màu xanh lá nhạt"
+      },
+      {
+        "subject": "phần bánh",
+        "predicate": "bằng",
+        "object": "15%",
+        "evidence": "phần bánh màu vàng"
+      },
+      {
+        "subject": "màu xanh lam",
+        "predicate": "đại diện cho",
+        "object": "Trống lúa",
+        "evidence": "bảng chú thích bên phải"
+      },
+      {
+        "subject": "màu vàng",
+        "predicate": "đại diện cho",
+        "object": "Rau màu",
+        "evidence": "bảng chú thích bên phải"
+      },
+      {
+        "subject": "màu xanh lá nhạt",
+        "predicate": "đại diện cho",
+        "object": "Ao hồ",
+        "evidence": "bảng chú thích bên phải"
+      },
+      {
+        "subject": "màu hồng",
+        "predicate": "đại diện cho",
+        "object": "Đất ơ",
+        "evidence": "bảng chú thích bên phải"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Biểu đồ phân bố phần trăm các loại cây trồng trên một vùng đất.\n\nThành phần: Phần bánh chiếm 35%, phần bánh chiếm 30%, phần bánh chiếm 20%, phần bánh chiếm 15%. Màu xanh lam đại diện cho Trống lúa. Màu vàng đại diện cho Rau màu. Màu xanh lá nhạt đại diện cho Ao hồ. Màu hồng đại diện cho Đất ơ.\n\nQuan hệ: Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh giữa các thành phần. Các phần bánh không có mối quan hệ vị trí với nhau. Các màu sắc đại diện không có mối quan hệ vị trí với nhau.\n\nÝ nghĩa: Hình ảnh truyền đạt kiến thức về tỷ lệ phần trăm các loại cây trồng và môi trường sống trong một vùng đất, với Trống lúa chiếm 35%, Rau màu chiếm 30%, Ao hồ chiếm 20%, Đất ơ chiếm 15%.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 9.508,
+      "usage": {
+        "prompt_tokens": 1466,
+        "completion_tokens": 543
+      },
+      "created_at_utc": "2026-11-17T08:36:24.045488Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"pie_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"phần bánh\", \"predicate\": \"bằng\", \"object\": \"35%\", \"evidence\": \"phần bánh màu xanh lam\"}, {\"subject\": \"phần bánh\", \"predicate\": \"bằng\", \"object\": \"30%\", \"evidence\": \"phần bánh màu hồng\"}, {\"subject\": \"phần bánh\", \"predicate\": \"bằng\", \"object\": \"20%\", \"evidence\": \"phần bánh màu xanh lá nhạt\"}, {\"subject\": \"phần bánh\", \"predicate\": \"bằng\", \"object\": \"15%\", \"evidence\": \"phần bánh màu vàng\"}, {\"subject\": \"màu xanh lam\", \"predicate\": \"đại diện cho\", \"object\": \"Trống lúa\", \"evidence\": \"bảng chú thích bên phải\"}, {\"subject\": \"màu vàng\", \"predicate\": \"đại diện cho\", \"object\": \"Rau màu\", \"evidence\": \"bảng chú thích bên phải\"}, {\"subject\": \"màu xanh lá nhạt\", \"predicate\": \"đại diện cho\", \"object\": \"Ao hồ\", \"evidence\": \"bảng chú thích bên phải\"}, {\"subject\": \"màu hồng\", \"predicate\": \"đại diện cho\", \"object\": \"Đất ơ\", \"evidence\": \"bảng chú thích bên phải\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Biểu đồ phân bố phần trăm các loại cây trồng trên một vùng đất.\n\nThành phần: Phần bánh chiếm 35%, phần bánh chiếm 30%, phần bánh chiếm 20%, phần bánh chiếm 15%. Màu xanh lam đại diện cho Trống lúa. Màu vàng đại diện cho Rau màu. Màu xanh lá nhạt đại diện cho Ao hồ. Màu hồng đại diện cho Đất ơ.\n\nQuan hệ: Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh giữa các thành phần. Các phần bánh không có mối quan hệ vị trí với nhau. Các màu sắc đại diện không có mối quan hệ vị trí với nhau.\n\nÝ nghĩa: Hình ảnh truyền đạt kiến thức về tỷ lệ phần trăm các loại cây trồng và môi trường sống trong một vùng đất, với Trống lúa chiếm 35%, Rau màu chiếm 30%, Ao hồ chiếm 20%, Đất ơ chiếm 15%.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}

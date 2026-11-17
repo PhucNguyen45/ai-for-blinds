@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "table_03",
+  "image_sha256": "243f7a220bb23885442f4ba347b1a8304a68bccb87a28254796e8b8fab53d029",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "table_03",
+    "image_sha256": "243f7a220bb23885442f4ba347b1a8304a68bccb87a28254796e8b8fab53d029",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Bảng thống kê số liệu về số ngày có mưa trong tháng tại ba miền: Miền Bắc, Miền Trung và Miền Nam.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:  \nBảng thống kê số liệu về số ngày có mưa trong tháng tại ba miền: Miền Bắc, Miền Trung và Miền Nam.\n\n2. Thành phần:  \nTiêu đề phía trên bảng: \"Số ngày có mưa trong tháng\".  \nBảng số liệu gồm 6 hàng và 4 cột:  \n  Hàng tiêu đề gồm các cột: \"Tháng\", \"Miền Bắc\", \"Miền Trung\", \"Miền Nam\".  \n  Cột đầu tiên (cột \"Tháng\") có nền màu xám nhạt, liệt kê các tháng từ Tháng 5 đến Tháng 9.  \n  Các số liệu cụ thể theo từng hàng:  \n    Hàng Tháng 5: Miền Bắc là 23, Miền Trung là 10, Miền Nam là 25.  \n    Hàng Tháng 6: Miền Bắc là 18, Miền Trung là 12, Miền Nam là 9.  \n    Hàng Tháng 7: Miền Bắc là 7, Miền Trung là 11, Miền Nam là 16.  \n    Hàng Tháng 8: Miền Bắc là 15, Miền Trung là 22, Miền Nam là 16.  \n    Hàng Tháng 9: Miền Bắc là 18, Miền Trung là 18, Miền Nam là 17.\n\n3. Quan hệ:  \nBảng đối chiếu số ngày có mưa theo hai chiều: chiều dọc theo các mốc thời gian từ Tháng 5 đến Tháng 9, chiều ngang theo ba khu vực địa lý gồm Miền Bắc, Miền Trung và Miền Nam.  \nGiá trị số ngày mưa cao nhất trong toàn bảng là 25 ngày (Miền Nam, Tháng 5).  \nGiá trị số ngày mưa thấp nhất trong toàn bảng là 7 ngày (Miền Bắc, Tháng 7).  \nỞ Tháng 9, số ngày mưa tương đương nhau ở cả ba miền: Miền Bắc và Miền Trung đều là 18 ngày, Miền Nam là 17 ngày.\n\n4. Ý nghĩa:  \nBảng số liệu cung cấp thông tin so sánh sự phân bố số ngày mưa giữa các tháng từ Tháng 5 đến Tháng 9 qua ba miền đất nước, phục vụ cho việc học tập kỹ năng đọc và phân tích bảng số liệu thống kê.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 5.728,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 541
+      },
+      "created_at_utc": "2026-11-17T08:05:56.688824Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

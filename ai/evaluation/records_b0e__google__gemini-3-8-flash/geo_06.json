@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "geo_06",
+  "image_sha256": "697195c9fdb5f567ce2808c7c602daf661ac36fe596a54bbe4e30f2cf0cf2096",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "geo_06",
+    "image_sha256": "697195c9fdb5f567ce2808c7c602daf661ac36fe596a54bbe4e30f2cf0cf2096",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình vẽ hình học minh họa một tam giác có tên là ABC, đi kèm tiêu đề phía trên: \"Tam giác ABC với hai góc cho trước\".",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:\nHình vẽ hình học minh họa một tam giác có tên là ABC, đi kèm tiêu đề phía trên: \"Tam giác ABC với hai góc cho trước\".\n\n2. Thành phần:\nTiêu đề: Nằm ở phía trên cùng với dòng chữ in đậm \"Tam giác ABC với hai góc cho trước\".\nHình tam giác: Một tam giác có nền màu xanh lam rất nhạt, viền màu xanh lam đậm.\nBa đỉnh:\n  + Đỉnh A: Nằm ở góc dưới bên trái, bên cạnh có chữ in hoa \"A\".\n  + Đỉnh B: Nằm ở góc dưới bên phải, bên cạnh có chữ in hoa \"B\".\n  + Đỉnh C: Nằm ở đỉnh trên cùng, hơi lệch về phía bên phải, bên cạnh có chữ in hoa \"C\".\nSố đo các góc (được viết bằng chữ số màu đỏ nâu phía trong tam giác):\n  + Góc tại đỉnh A: Có ghi số đo \"45°\".\n  + Góc tại đỉnh B: Có ghi số đo \"75°\".\n  + Góc tại đỉnh C: Có dấu hỏi chấm \"?\".\n\n3. Quan hệ:\nCạnh AB nằm ngang ở phía dưới cùng, nối đỉnh A và đỉnh B.\nCạnh AC dốc lên từ đỉnh A đến đỉnh C.\nCạnh BC dốc xuống từ đỉnh C đến đỉnh B.\nHai góc ở đáy của tam giác đã biết giá trị cụ thể là góc A bằng 45 độ và góc B bằng 75 độ. Góc ở đỉnh C chưa biết giá trị và được đánh dấu hỏi chấm cần tìm.\n\n4. Ý nghĩa:\nHình ảnh biểu diễn một bài toán hình học cơ bản: Tìm số đo góc còn lại (góc C) của tam giác ABC khi đã biết số đo của hai góc A và B, dựa trên định lý tổng ba góc trong một tam giác bằng 180 độ.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 7.769,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 418
+      },
+      "created_at_utc": "2026-11-17T08:07:35.923604Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

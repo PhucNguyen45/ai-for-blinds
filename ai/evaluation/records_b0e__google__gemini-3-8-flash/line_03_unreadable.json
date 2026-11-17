@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "line_03_unreadable",
+  "image_sha256": "101a01102fd588f6b394c90f45c11feaa0b38accabafe22f754d6bf72211428e",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_03_unreadable",
+    "image_sha256": "101a01102fd588f6b394c90f45c11feaa0b38accabafe22f754d6bf72211428e",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ đường thể hiện một xu hướng biến động theo thời gian hoặc theo các mốc quan sát.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ đường thể hiện một xu hướng biến động theo thời gian hoặc theo các mốc quan sát.\n\n2. Thành phần: \nHình ảnh bị mờ và có độ phân giải rất thấp, khiến toàn bộ các chữ viết và con số đều không thể đọc được trực tiếp.\nPhía trên cùng có một dòng tiêu đề chính nhưng hoàn toàn bị nhòe nét.\nTrục tung nằm ở bên trái, các vạch chia và nhãn đơn vị đo không rõ nét.\nTrục hoành nằm ở phía dưới, có khoảng 5 mốc dữ liệu tương ứng với 5 vị trí dưới các điểm dữ liệu, nhưng toàn bộ nhãn mốc đều không nhận dạng được chữ số hay ký tự.\nĐường biểu diễn chính là một đường gấp khúc màu xám xanh nối liền 5 điểm dữ liệu. Bên cạnh hoặc phía trên mỗi điểm đều có các cụm số liệu mờ, không thể đọc chính xác giá trị thực tế.\n\n3. Quan hệ:\nTheo chiều từ trái sang phải qua 5 mốc quan sát:\n  + Điểm thứ nhất nằm ở mức thấp nhất, sát phía dưới bên trái.\n  + Đường biểu diễn đi lên mốc thứ hai.\n  + Đường tiếp tục dốc lên mốc thứ ba.\n  + Đường tiếp tục tăng mạnh lên đỉnh cao nhất tại mốc thứ tư.\n  + Từ mốc thứ tư, đường biểu diễn chuyển hướng đi xuống rõ rệt về mốc thứ năm ở phía ngoài cùng bên phải (vẫn cao hơn ba mốc đầu tiên).\n\n4. Ý nghĩa: Biểu đồ minh họa quy luật biến động của một chỉ số với xu hướng tăng liên tục qua 4 giai đoạn đầu, đạt mức cực đại tại giai đoạn thứ tư, sau đó suy giảm ở giai đoạn thứ năm. Do hình ảnh quá mờ, không thể xác định đối tượng cụ thể và các số liệu định lượng chính xác.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 5.504,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 414
+      },
+      "created_at_utc": "2026-11-17T08:09:14.762517Z"
+    }
+  },
+  "trace": {
+    "attempts": 2
+  }
+}

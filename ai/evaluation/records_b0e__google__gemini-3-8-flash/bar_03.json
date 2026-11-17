@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "bar_03",
+  "image_sha256": "380d8e20a718fa543faa467c1b8fa9d42df3e8839d4c519b13aa3f2914f6b2a1",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_03",
+    "image_sha256": "380d8e20a718fa543faa467c1b8fa9d42df3e8839d4c519b13aa3f2914f6b2a1",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ cột đơn biểu diễn số học sinh tham gia các câu lạc bộ khác nhau, kèm dòng phụ đề \"Dữ liệu minh họa\".",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ cột đơn biểu diễn số học sinh tham gia các câu lạc bộ khác nhau, kèm dòng phụ đề \"Dữ liệu minh họa\".\n\n2. Thành phần:\nTiêu đề chính: \"Số học sinh tham gia các câu lạc bộ\". Phía dưới tiêu đề có dòng chữ nhỏ: \"Dữ liệu minh họa\".\nTrục thẳng đứng (trục tung): Nhãn là \"Số học sinh\", có các vạch chia số từ 0 đến 40, bước nhảy là 5 đơn vị gồm: 0, 5, 10, 15, 20, 25, 30, 35, 40.\nTrục nằm ngang (trục hoành): Liệt kê 5 câu lạc bộ theo thứ tự từ trái sang phải, mỗi câu lạc bộ tương ứng với một cột màu xanh dương có số liệu ghi trực tiếp trên đỉnh cột:\n  + Cột 1: \"Bóng đá\", số liệu trên đỉnh cột là 18.\n  + Cột 2: \"Cờ vua\", số liệu trên đỉnh cột là 21.\n  + Cột 3: \"Vẽ\", số liệu trên đỉnh cột là 12.\n  + Cột 4: \"Âm nhạc\", số liệu trên đỉnh cột là 37.\n  + Cột 5: \"Tin học\", số liệu trên đỉnh cột là 13.\n\n3. Quan hệ:\nSo sánh chiều cao giữa các cột: Cột \"Âm nhạc\" cao nhất (37 học sinh), tiếp theo là \"Cờ vua\" (21 học sinh), thứ ba là \"Bóng đá\" (18 học sinh), thứ tư là \"Tin học\" (13 học sinh), và cột thấp nhất là \"Vẽ\" (12 học sinh).\nSự chênh lệch: Số lượng học sinh tham gia câu lạc bộ Âm nhạc vượt trội hơn hẳn so với các câu lạc bộ còn lại. Câu lạc bộ Tin học (13) và Vẽ (12) có số lượng học sinh tham gia gần tương đương nhau và ở mức thấp nhất.\n\n4. Ý nghĩa:\nBiểu đồ phản ánh sự phân bố và mức độ quan tâm của học sinh đối với 5 câu lạc bộ ngoại khóa khác nhau, trong đó câu lạc bộ Âm nhạc thu hút đông học sinh nhất và câu lạc bộ Vẽ có ít học sinh tham gia nhất.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 21.279,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 528
+      },
+      "created_at_utc": "2026-11-17T08:03:40.410830Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

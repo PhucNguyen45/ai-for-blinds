@@ -1,0 +1,72 @@
+{
+  "method": "B1",
+  "benchmark_id": "bar_03",
+  "image_sha256": "380d8e20a718fa543faa467c1b8fa9d42df3e8839d4c519b13aa3f2914f6b2a1",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_03",
+    "image_sha256": "380d8e20a718fa543faa467c1b8fa9d42df3e8839d4c519b13aa3f2914f6b2a1",
+    "image_type": "bar_chart",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Các môn học và số lượng học sinh tham gia.",
+    "facts": [
+      {
+        "subject": "Bóng đá",
+        "predicate": "có số học sinh",
+        "object": "18",
+        "evidence": "dưới cột Bóng đá"
+      },
+      {
+        "subject": "Cờ vua",
+        "predicate": "có số học sinh",
+        "object": "21",
+        "evidence": "dưới cột Cờ vua"
+      },
+      {
+        "subject": "Vẽ",
+        "predicate": "có số học sinh",
+        "object": "12",
+        "evidence": "dưới cột Vẽ"
+      },
+      {
+        "subject": "Âm nhạc",
+        "predicate": "có số học sinh",
+        "object": "37",
+        "evidence": "dưới cột Âm nhạc"
+      },
+      {
+        "subject": "Tin học",
+        "predicate": "có số học sinh",
+        "object": "13",
+        "evidence": "dưới cột Tin học"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Các môn học và số lượng học sinh tham gia.\n\nThành phần: Bóng đá có số học sinh là 18; Cờ vua có số học sinh là 21; Vẽ có số học sinh là 12; Âm nhạc có số học sinh là 37; Tin học có số học sinh là 13.\n\nQuan hệ: Không có mối quan hệ vị trí, thứ tự, hướng mũi tên hay so sánh giữa các thành phần được nêu trong dữ kiện.\n\nÝ nghĩa: Hình ảnh truyền đạt số lượng học sinh tham gia từng môn học cụ thể.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 6.532,
+      "usage": {
+        "prompt_tokens": 1383,
+        "completion_tokens": 344
+      },
+      "created_at_utc": "2026-11-17T08:35:40.774707Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"bar_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Bóng đá\", \"predicate\": \"có số học sinh\", \"object\": \"18\", \"evidence\": \"dưới cột Bóng đá\"}, {\"subject\": \"Cờ vua\", \"predicate\": \"có số học sinh\", \"object\": \"21\", \"evidence\": \"dưới cột Cờ vua\"}, {\"subject\": \"Vẽ\", \"predicate\": \"có số học sinh\", \"object\": \"12\", \"evidence\": \"dưới cột Vẽ\"}, {\"subject\": \"Âm nhạc\", \"predicate\": \"có số học sinh\", \"object\": \"37\", \"evidence\": \"dưới cột Âm nhạc\"}, {\"subject\": \"Tin học\", \"predicate\": \"có số học sinh\", \"object\": \"13\", \"evidence\": \"dưới cột Tin học\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Các môn học và số lượng học sinh tham gia.\n\nThành phần: Bóng đá có số học sinh là 18; Cờ vua có số học sinh là 21; Vẽ có số học sinh là 12; Âm nhạc có số học sinh là 37; Tin học có số học sinh là 13.\n\nQuan hệ: Không có mối quan hệ vị trí, thứ tự, hướng mũi tên hay so sánh giữa các thành phần được nêu trong dữ kiện.\n\nÝ nghĩa: Hình ảnh truyền đạt số lượng học sinh tham gia từng môn học cụ thể.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}

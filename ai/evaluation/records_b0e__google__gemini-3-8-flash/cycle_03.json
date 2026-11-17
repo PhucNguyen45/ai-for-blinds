@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "cycle_03",
+  "image_sha256": "4752cafb9b000896cd6562d6f0fb7ffd3356d0aad8abd9ff698c78a7244feee7",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "cycle_03",
+    "image_sha256": "4752cafb9b000896cd6562d6f0fb7ffd3356d0aad8abd9ff698c78a7244feee7",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Sơ đồ chu trình sinh học khép kín thể hiện các giai đoạn trong \"Vòng đời của cây đậu\".",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề:\nSơ đồ chu trình sinh học khép kín thể hiện các giai đoạn trong \"Vòng đời của cây đậu\".\n\n2. Thành phần:\nTiêu đề ở trên cùng: \"Vòng đời của cây đậu\".\n5 ô hình chữ nhật bo góc, màu xanh nhạt với viền xanh đậm, chứa các nhãn văn bản:\n  + Ô 1 (vị trí trên cùng chính giữa): \"Gieo hạt\"\n  + Ô 2 (vị trí phía trên bên phải): \"Hạt nảy mầm\"\n  + Ô 3 (vị trí phía dưới bên phải): \"Cây con\"\n  + Ô 4 (vị trí phía dưới bên trái): \"Ra hoa, kết quả\"\n  + Ô 5 (vị trí phía trên bên trái): \"Hạt mới\"\n5 mũi tên màu đen nối giữa các ô theo vòng tròn khép kín.\n\n3. Quan hệ:\nCác mũi tên liên kết 5 giai đoạn theo chiều kim đồng hồ tạo thành một vòng tuần hoàn liên tục:\nTừ ô \"Gieo hạt\", mũi tên chỉ sang phải xuống ô \"Hạt nảy mầm\".\nTừ ô \"Hạt nảy mầm\", mũi tên chỉ xuống ô \"Cây con\".\nTừ ô \"Cây con\", mũi tên chỉ sang ngang bên trái đến ô \"Ra hoa, kết quả\".\nTừ ô \"Ra hoa, kết quả\", mũi tên chỉ chéo lên trên bên trái đến ô \"Hạt mới\".\nTừ ô \"Hạt mới\", mũi tên chỉ chéo lên trên sang phải quay trở lại ô \"Gieo hạt\".\n\n4. Ý nghĩa:\nSơ đồ mô tả quy trình sinh trưởng và phát triển khép kín của cây đậu từ khi gieo hạt, nảy mầm, phát triển thành cây con, ra hoa kết quả để tạo ra hạt mới, và hạt mới lại có thể tiếp tục được gieo để bắt đầu một vòng đời mới.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.8-flash",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 5.36,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 436
+      },
+      "created_at_utc": "2026-11-17T08:06:51.018682Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

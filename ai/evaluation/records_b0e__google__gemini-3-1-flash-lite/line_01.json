@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "line_01",
+  "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_01",
+    "image_sha256": "ed78a78b27bee359d6cb6e9fa394a5734fd27d867c9064d152efc171e0461768",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ đường thể hiện sự thay đổi nhiệt độ trung bình trong 6 tháng đầu năm.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ đường thể hiện sự thay đổi nhiệt độ trung bình trong 6 tháng đầu năm.\n\n2. Thành phần:\nTrục tung (trục đứng): Biểu thị nhiệt độ tính bằng độ C, chia các mốc từ 0 đến 45, mỗi khoảng cách là 5 đơn vị.\nTrục hoành (trục ngang): Biểu thị thời gian gồm 6 tháng, từ Tháng 1 đến Tháng 6.\nCác điểm dữ liệu tương ứng với từng tháng:\n  Tháng 1: 40 độ C.\n  Tháng 2: 25 độ C.\n  Tháng 3: 15 độ C.\n  Tháng 4: 35 độ C.\n  Tháng 5: 15 độ C.\n  Tháng 6: 5 độ C.\n\n3. Quan hệ:\nCác điểm dữ liệu được nối với nhau bằng một đường gấp khúc liên tục.\nXu hướng thay đổi:\n  Từ Tháng 1 đến Tháng 3: Nhiệt độ giảm dần (từ 40 xuống 25, rồi xuống 15).\n  Từ Tháng 3 đến Tháng 4: Nhiệt độ tăng mạnh (từ 15 lên 35).\n  Từ Tháng 4 đến Tháng 6: Nhiệt độ giảm dần (từ 35 xuống 15, rồi xuống 5).\nTháng 1 có nhiệt độ cao nhất (40 độ C), Tháng 6 có nhiệt độ thấp nhất (5 độ C).\n\n4. Ý nghĩa: Hình ảnh mô tả sự biến động không ổn định của nhiệt độ trong nửa đầu năm, với hai đợt giảm nhiệt liên tiếp bị ngắt quãng bởi sự tăng nhiệt đột ngột vào Tháng 4.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 3.512,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 395
+      },
+      "created_at_utc": "2026-11-17T08:12:06.661803Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

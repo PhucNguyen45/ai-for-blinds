@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "line_03",
+  "image_sha256": "4839dd8c6073c9f5e9c0e78dbb08274c1cfb633e421c45f0d54a86ea82d5ff3d",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_03",
+    "image_sha256": "4839dd8c6073c9f5e9c0e78dbb08274c1cfb633e421c45f0d54a86ea82d5ff3d",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Đây là biểu đồ đường thể hiện số lượng sách đọc được qua các tuần.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Đây là biểu đồ đường thể hiện số lượng sách đọc được qua các tuần.\n\n2. Thành phần:\nTrục tung (trục đứng) biểu thị \"Số cuốn\", với các mốc giá trị từ 0 đến 45, mỗi khoảng cách là 5 đơn vị.\nTrục hoành (trục ngang) biểu thị thời gian theo tuần, gồm 5 mốc: Tuần 1, Tuần 2, Tuần 3, Tuần 4, Tuần 5.\nCác điểm dữ liệu được đánh dấu bằng hình tròn màu xanh dương tại mỗi tuần, tương ứng với các giá trị cụ thể:\n    Tuần 1: 5 cuốn.\n    Tuần 2: 15 cuốn.\n    Tuần 3: 25 cuốn.\n    Tuần 4: 40 cuốn.\n    Tuần 5: 30 cuốn.\n\n3. Quan hệ:\nCác điểm dữ liệu được nối với nhau bằng một đường gấp khúc màu xanh dương, thể hiện xu hướng thay đổi theo thời gian.\nTừ Tuần 1 đến Tuần 4, đường biểu đồ đi lên, cho thấy số lượng sách đọc được tăng dần qua từng tuần.\nTừ Tuần 4 đến Tuần 5, đường biểu đồ đi xuống, cho thấy số lượng sách đọc được giảm đi.\nĐộ dốc của đường nối giữa Tuần 3 và Tuần 4 là lớn nhất, cho thấy tốc độ tăng trưởng số sách đọc được nhanh nhất trong giai đoạn này.\n\n4. Ý nghĩa: Biểu đồ cho thấy sự biến động về số lượng sách đọc được trong 5 tuần. Người đọc đạt đỉnh cao nhất vào Tuần 4 với 40 cuốn, sau đó giảm xuống còn 30 cuốn vào Tuần 5.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 3.763,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 399
+      },
+      "created_at_utc": "2026-11-17T08:12:18.175826Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

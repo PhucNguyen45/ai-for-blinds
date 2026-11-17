@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "cycle_03",
+  "image_sha256": "4752cafb9b000896cd6562d6f0fb7ffd3356d0aad8abd9ff698c78a7244feee7",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "cycle_03",
+    "image_sha256": "4752cafb9b000896cd6562d6f0fb7ffd3356d0aad8abd9ff698c78a7244feee7",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là một sơ đồ dạng vòng tròn mô tả các giai đoạn trong vòng đời của cây đậu.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là một sơ đồ dạng vòng tròn mô tả các giai đoạn trong vòng đời của cây đậu.\n\n2. Thành phần: Sơ đồ bao gồm 5 hộp chữ nhật chứa nội dung các giai đoạn, được sắp xếp theo hình ngũ giác. Các nhãn theo thứ tự từ trên cùng theo chiều kim đồng hồ là:\nGieo hạt\nHạt nảy mầm\nCây con\nRa hoa, kết quả\nHạt mới\n\n3. Quan hệ: Các hộp được kết nối với nhau bằng các mũi tên một chiều, chỉ hướng đi từ giai đoạn này sang giai đoạn tiếp theo, tạo thành một chu trình khép kín. Cụ thể:\nTừ \"Gieo hạt\" dẫn đến \"Hạt nảy mầm\".\nTừ \"Hạt nảy mầm\" dẫn đến \"Cây con\".\nTừ \"Cây con\" dẫn đến \"Ra hoa, kết quả\".\nTừ \"Ra hoa, kết quả\" dẫn đến \"Hạt mới\".\nTừ \"Hạt mới\" quay trở lại \"Gieo hạt\".\n\n4. Ý nghĩa: Hình ảnh minh họa quá trình phát triển liên tục và tuần hoàn của cây đậu, bắt đầu từ việc gieo hạt cho đến khi cây trưởng thành, tạo ra hạt mới để tiếp tục vòng đời tiếp theo.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 3.358,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 288
+      },
+      "created_at_utc": "2026-11-17T08:13:53.555414Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

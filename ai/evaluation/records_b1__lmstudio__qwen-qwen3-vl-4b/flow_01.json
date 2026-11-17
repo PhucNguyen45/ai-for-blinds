@@ -1,0 +1,72 @@
+{
+  "method": "B1",
+  "benchmark_id": "flow_01",
+  "image_sha256": "cd79c32726b4185afca53f3643e29ecc3d6c5584997419045be182d7bef1c8a9",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "flow_01",
+    "image_sha256": "cd79c32726b4185afca53f3643e29ecc3d6c5584997419045be182d7bef1c8a9",
+    "image_type": "flow_diagram",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Quy trình xử lý rác tái chế Thành phần: Thu gom rác, Phân loại rác, Làm sạch, Tái chế, Sản phẩm mới, flow_diagram Quan hệ: Thu gom rác được nối tiếp bởi Phân loại rác.",
+    "facts": [
+      {
+        "subject": "Quy trình xử lý rác tái chế",
+        "predicate": "là",
+        "object": "flow_diagram",
+        "evidence": "tiêu đề ở trên cùng"
+      },
+      {
+        "subject": "Thu gom rác",
+        "predicate": "được nối tiếp bởi",
+        "object": "Phân loại rác",
+        "evidence": "mũi tên từ trái sang phải giữa hai ô"
+      },
+      {
+        "subject": "Phân loại rác",
+        "predicate": "được nối tiếp bởi",
+        "object": "Làm sạch",
+        "evidence": "mũi tên từ trái sang phải giữa hai ô"
+      },
+      {
+        "subject": "Làm sạch",
+        "predicate": "được nối tiếp bởi",
+        "object": "Tái chế",
+        "evidence": "mũi tên từ trái sang phải giữa hai ô"
+      },
+      {
+        "subject": "Tái chế",
+        "predicate": "được nối tiếp bởi",
+        "object": "Sản phẩm mới",
+        "evidence": "mũi tên từ trái sang phải giữa hai ô"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Quy trình xử lý rác tái chế\n\nThành phần: Thu gom rác, Phân loại rác, Làm sạch, Tái chế, Sản phẩm mới, flow_diagram\n\nQuan hệ: Thu gom rác được nối tiếp bởi Phân loại rác. Phân loại rác được nối tiếp bởi Làm sạch. Làm sạch được nối tiếp bởi Tái chế. Tái chế được nối tiếp bởi Sản phẩm mới.\n\nÝ nghĩa: Quy trình xử lý rác tái chế bao gồm các bước: thu gom rác, phân loại rác, làm sạch, tái chế, và tạo ra sản phẩm mới.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 7.26,
+      "usage": {
+        "prompt_tokens": 1404,
+        "completion_tokens": 388
+      },
+      "created_at_utc": "2026-11-17T08:37:04.473263Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"flow_diagram\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Quy trình xử lý rác tái chế\", \"predicate\": \"là\", \"object\": \"flow_diagram\", \"evidence\": \"tiêu đề ở trên cùng\"}, {\"subject\": \"Thu gom rác\", \"predicate\": \"được nối tiếp bởi\", \"object\": \"Phân loại rác\", \"evidence\": \"mũi tên từ trái sang phải giữa hai ô\"}, {\"subject\": \"Phân loại rác\", \"predicate\": \"được nối tiếp bởi\", \"object\": \"Làm sạch\", \"evidence\": \"mũi tên từ trái sang phải giữa hai ô\"}, {\"subject\": \"Làm sạch\", \"predicate\": \"được nối tiếp bởi\", \"object\": \"Tái chế\", \"evidence\": \"mũi tên từ trái sang phải giữa hai ô\"}, {\"subject\": \"Tái chế\", \"predicate\": \"được nối tiếp bởi\", \"object\": \"Sản phẩm mới\", \"evidence\": \"mũi tên từ trái sang phải giữa hai ô\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Quy trình xử lý rác tái chế\n\nThành phần: Thu gom rác, Phân loại rác, Làm sạch, Tái chế, Sản phẩm mới, flow_diagram\n\nQuan hệ: Thu gom rác được nối tiếp bởi Phân loại rác. Phân loại rác được nối tiếp bởi Làm sạch. Làm sạch được nối tiếp bởi Tái chế. Tái chế được nối tiếp bởi Sản phẩm mới.\n\nÝ nghĩa: Quy trình xử lý rác tái chế bao gồm các bước: thu gom rác, phân loại rác, làm sạch, tái chế, và tạo ra sản phẩm mới.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}

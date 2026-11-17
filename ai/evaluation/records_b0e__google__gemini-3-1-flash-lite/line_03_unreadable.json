@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "line_03_unreadable",
+  "image_sha256": "101a01102fd588f6b394c90f45c11feaa0b38accabafe22f754d6bf72211428e",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_03_unreadable",
+    "image_sha256": "101a01102fd588f6b394c90f45c11feaa0b38accabafe22f754d6bf72211428e",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ đường thể hiện sự thay đổi của một chỉ số (không rõ tên) theo thời gian từ năm 2010 đến năm 2020.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ đường thể hiện sự thay đổi của một chỉ số (không rõ tên) theo thời gian từ năm 2010 đến năm 2020.\n\n2. Thành phần:\nTrục hoành (trục ngang) biểu thị các mốc thời gian: 2010, 2012, 2014, 2016, 2018, 2020.\nTrục tung (trục dọc) biểu thị giá trị, với các mốc số: 0, 20, 40, 60, 80, 100.\nCác điểm dữ liệu trên biểu đồ có ghi số cụ thể:\n  Năm 2010: 15\n  Năm 2012: 25\n  Năm 2014: 40\n  Năm 2016: 50\n  Năm 2018: 85\n  Năm 2020: 65\n\n3. Quan hệ:\nCác điểm dữ liệu được nối với nhau bằng một đường gấp khúc màu xanh dương.\nTừ năm 2010 đến năm 2018, đường biểu đồ có xu hướng đi lên liên tục.\nTừ năm 2018 đến năm 2020, đường biểu đồ có xu hướng đi xuống.\nGiá trị tăng mạnh nhất là khoảng thời gian từ 2016 đến 2018 (tăng 35 đơn vị).\nGiá trị giảm từ 2018 đến 2020 là 20 đơn vị.\n\n4. Ý nghĩa: Biểu đồ cho thấy sự tăng trưởng của chỉ số này trong giai đoạn 8 năm đầu (2010-2018), đạt đỉnh điểm vào năm 2018 với giá trị 85, sau đó có sự sụt giảm vào năm 2020.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 2.635,
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 443
+      },
+      "created_at_utc": "2026-11-17T08:15:30.294728Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

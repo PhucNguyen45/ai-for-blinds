@@ -1,0 +1,144 @@
+{
+  "method": "B1",
+  "benchmark_id": "table_01",
+  "image_sha256": "31ed6205f71f76c9cdbbe83e1e88e0f20325c5400e69b122693e3aed2c2d41da",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "table_01",
+    "image_sha256": "31ed6205f71f76c9cdbbe83e1e88e0f20325c5400e69b122693e3aed2c2d41da",
+    "image_type": "table",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Bảng điểm kiểm tra giữa kì gồm ba môn Toán, Ngữ văn, Tiếng Anh và bốn học sinh A, B, C, D.",
+    "facts": [
+      {
+        "subject": "Tiêu đề bảng",
+        "predicate": "là",
+        "object": "Điểm kiểm tra giữa kì",
+        "evidence": "trên đầu bảng"
+      },
+      {
+        "subject": "cột đầu tiên",
+        "predicate": "gọi là",
+        "object": "Học sinh",
+        "evidence": "ngang hàng đầu tiên, cột đầu tiên"
+      },
+      {
+        "subject": "cột thứ hai",
+        "predicate": "gọi là",
+        "object": "Toán",
+        "evidence": "ngang hàng đầu tiên, cột thứ hai"
+      },
+      {
+        "subject": "cột thứ ba",
+        "predicate": "gọi là",
+        "object": "Ngữ văn",
+        "evidence": "ngang hàng đầu tiên, cột thứ ba"
+      },
+      {
+        "subject": "cột thứ tư",
+        "predicate": "gọi là",
+        "object": "Tiếng Anh",
+        "evidence": "ngang hàng đầu tiên, cột thứ tư"
+      },
+      {
+        "subject": "học sinh A",
+        "predicate": "có điểm Toán",
+        "object": "8,5",
+        "evidence": "hàng thứ hai, cột Toán"
+      },
+      {
+        "subject": "học sinh A",
+        "predicate": "có điểm Ngữ văn",
+        "object": "8,0",
+        "evidence": "hàng thứ hai, cột Ngữ văn"
+      },
+      {
+        "subject": "học sinh A",
+        "predicate": "có điểm Tiếng Anh",
+        "object": "7,5",
+        "evidence": "hàng thứ hai, cột Tiếng Anh"
+      },
+      {
+        "subject": "học sinh B",
+        "predicate": "có điểm Toán",
+        "object": "8,0",
+        "evidence": "hàng thứ ba, cột Toán"
+      },
+      {
+        "subject": "học sinh B",
+        "predicate": "có điểm Ngữ văn",
+        "object": "5,0",
+        "evidence": "hàng thứ ba, cột Ngữ văn"
+      },
+      {
+        "subject": "học sinh B",
+        "predicate": "có điểm Tiếng Anh",
+        "object": "6,5",
+        "evidence": "hàng thứ ba, cột Tiếng Anh"
+      },
+      {
+        "subject": "học sinh C",
+        "predicate": "có điểm Toán",
+        "object": "6,0",
+        "evidence": "hàng thứ tư, cột Toán"
+      },
+      {
+        "subject": "học sinh C",
+        "predicate": "có điểm Ngữ văn",
+        "object": "9,0",
+        "evidence": "hàng thứ tư, cột Ngữ văn"
+      },
+      {
+        "subject": "học sinh C",
+        "predicate": "có điểm Tiếng Anh",
+        "object": "10,0",
+        "evidence": "hàng thứ tư, cột Tiếng Anh"
+      },
+      {
+        "subject": "học sinh D",
+        "predicate": "có điểm Toán",
+        "object": "7,5",
+        "evidence": "hàng thứ năm, cột Toán"
+      },
+      {
+        "subject": "học sinh D",
+        "predicate": "có điểm Ngữ văn",
+        "object": "6,5",
+        "evidence": "hàng thứ năm, cột Ngữ văn"
+      },
+      {
+        "subject": "học sinh D",
+        "predicate": "có điểm Tiếng Anh",
+        "object": "7,5",
+        "evidence": "hàng thứ năm, cột Tiếng Anh"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Bảng điểm kiểm tra giữa kì gồm ba môn Toán, Ngữ văn, Tiếng Anh và bốn học sinh A, B, C, D.\n\nThành phần: Tiêu đề bảng là Điểm kiểm tra giữa kì. Cột đầu tiên gọi là Học sinh. Cột thứ hai gọi là Toán. Cột thứ ba gọi là Ngữ văn. Cột thứ tư gọi là Tiếng Anh. Học sinh A có điểm Toán là 8,5, có điểm Ngữ văn là 8,0, có điểm Tiếng Anh là 7,5. Học sinh B có điểm Toán là 8,0, có điểm Ngữ văn là 5,0, có điểm Tiếng Anh là 6,5. Học sinh C có điểm Toán là 6,0, có điểm Ngữ văn là 9,0, có điểm Tiếng Anh là 10,0. Học sinh D có điểm Toán là 7,5, có điểm Ngữ văn là 6,5, có điểm Tiếng Anh là 7,5.\n\nQuan hệ: Học sinh A nằm ở cột đầu tiên, học sinh B ở cột thứ hai, học sinh C ở cột thứ ba, học sinh D ở cột thứ tư. Các điểm của mỗi học sinh được ghi trong cột tương ứng môn học. Không có mũi tên chỉ hướng, không có thứ tự rõ ràng giữa các học sinh ngoài việc liệt kê theo tên. Không có so sánh trực tiếp giữa các học sinh trong dữ liệu.\n\nÝ nghĩa: Bảng này cung cấp điểm số của bốn học sinh trong ba môn Toán, Ngữ văn, Tiếng Anh trong kỳ kiểm tra giữa kì. Có thể dùng để so sánh điểm số giữa các học sinh và các môn học.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 19.741,
+      "usage": {
+        "prompt_tokens": 1720,
+        "completion_tokens": 1150
+      },
+      "created_at_utc": "2026-11-17T08:36:33.555935Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"table\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề bảng\", \"predicate\": \"là\", \"object\": \"Điểm kiểm tra giữa kì\", \"evidence\": \"trên đầu bảng\"}, {\"subject\": \"cột đầu tiên\", \"predicate\": \"gọi là\", \"object\": \"Học sinh\", \"evidence\": \"ngang hàng đầu tiên, cột đầu tiên\"}, {\"subject\": \"cột thứ hai\", \"predicate\": \"gọi là\", \"object\": \"Toán\", \"evidence\": \"ngang hàng đầu tiên, cột thứ hai\"}, {\"subject\": \"cột thứ ba\", \"predicate\": \"gọi là\", \"object\": \"Ngữ văn\", \"evidence\": \"ngang hàng đầu tiên, cột thứ ba\"}, {\"subject\": \"cột thứ tư\", \"predicate\": \"gọi là\", \"object\": \"Tiếng Anh\", \"evidence\": \"ngang hàng đầu tiên, cột thứ tư\"}, {\"subject\": \"học sinh A\", \"predicate\": \"có điểm Toán\", \"object\": \"8,5\", \"evidence\": \"hàng thứ hai, cột Toán\"}, {\"subject\": \"học sinh A\", \"predicate\": \"có điểm Ngữ văn\", \"object\": \"8,0\", \"evidence\": \"hàng thứ hai, cột Ngữ văn\"}, {\"subject\": \"học sinh A\", \"predicate\": \"có điểm Tiếng Anh\", \"object\": \"7,5\", \"evidence\": \"hàng thứ hai, cột Tiếng Anh\"}, {\"subject\": \"học sinh B\", \"predicate\": \"có điểm Toán\", \"object\": \"8,0\", \"evidence\": \"hàng thứ ba, cột Toán\"}, {\"subject\": \"học sinh B\", \"predicate\": \"có điểm Ngữ văn\", \"object\": \"5,0\", \"evidence\": \"hàng thứ ba, cột Ngữ văn\"}, {\"subject\": \"học sinh B\", \"predicate\": \"có điểm Tiếng Anh\", \"object\": \"6,5\", \"evidence\": \"hàng thứ ba, cột Tiếng Anh\"}, {\"subject\": \"học sinh C\", \"predicate\": \"có điểm Toán\", \"object\": \"6,0\", \"evidence\": \"hàng thứ tư, cột Toán\"}, {\"subject\": \"học sinh C\", \"predicate\": \"có điểm Ngữ văn\", \"object\": \"9,0\", \"evidence\": \"hàng thứ tư, cột Ngữ văn\"}, {\"subject\": \"học sinh C\", \"predicate\": \"có điểm Tiếng Anh\", \"object\": \"10,0\", \"evidence\": \"hàng thứ tư, cột Tiếng Anh\"}, {\"subject\": \"học sinh D\", \"predicate\": \"có điểm Toán\", \"object\": \"7,5\", \"evidence\": \"hàng thứ năm, cột Toán\"}, {\"subject\": \"học sinh D\", \"predicate\": \"có điểm Ngữ văn\", \"object\": \"6,5\", \"evidence\": \"hàng thứ năm, cột Ngữ văn\"}, {\"subject\": \"học sinh D\", \"predicate\": \"có điểm Tiếng Anh\", \"object\": \"7,5\", \"evidence\": \"hàng thứ năm, cột Tiếng Anh\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Bảng điểm kiểm tra giữa kì gồm ba môn Toán, Ngữ văn, Tiếng Anh và bốn học sinh A, B, C, D.\n\nThành phần: Tiêu đề bảng là Điểm kiểm tra giữa kì. Cột đầu tiên gọi là Học sinh. Cột thứ hai gọi là Toán. Cột thứ ba gọi là Ngữ văn. Cột thứ tư gọi là Tiếng Anh. Học sinh A có điểm Toán là 8,5, có điểm Ngữ văn là 8,0, có điểm Tiếng Anh là 7,5. Học sinh B có điểm Toán là 8,0, có điểm Ngữ văn là 5,0, có điểm Tiếng Anh là 6,5. Học sinh C có điểm Toán là 6,0, có điểm Ngữ văn là 9,0, có điểm Tiếng Anh là 10,0. Học sinh D có điểm Toán là 7,5, có điểm Ngữ văn là 6,5, có điểm Tiếng Anh là 7,5.\n\nQuan hệ: Học sinh A nằm ở cột đầu tiên, học sinh B ở cột thứ hai, học sinh C ở cột thứ ba, học sinh D ở cột thứ tư. Các điểm của mỗi học sinh được ghi trong cột tương ứng môn học. Không có mũi tên chỉ hướng, không có thứ tự rõ ràng giữa các học sinh ngoài việc liệt kê theo tên. Không có so sánh trực tiếp giữa các học sinh trong dữ liệu.\n\nÝ nghĩa: Bảng này cung cấp điểm số của bốn học sinh trong ba môn Toán, Ngữ văn, Tiếng Anh trong kỳ kiểm tra giữa kì. Có thể dùng để so sánh điểm số giữa các học sinh và các môn học.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}

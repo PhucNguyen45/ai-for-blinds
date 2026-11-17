@@ -1,0 +1,37 @@
+{
+  "method": "B0E",
+  "benchmark_id": "cycle_01",
+  "image_sha256": "bfa682434f8d99b28c0534039cf5fe827ded6cf41e0fd3b938d07ab4f579883e",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "cycle_01",
+    "image_sha256": "bfa682434f8d99b28c0534039cf5fe827ded6cf41e0fd3b938d07ab4f579883e",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là sơ đồ quy trình, minh họa cho vòng tuần hoàn của nước.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là sơ đồ quy trình, minh họa cho vòng tuần hoàn của nước. Nội dung chính là mô tả chu trình nước tự nhiên qua bốn giai đoạn chính.\n\n2. Thành phần: Hình ảnh chứa bốn ô chữ nhật có viền xanh đậm, nền xanh nhạt, mỗi ô chứa một nhãn mô tả giai đoạn. Các nhãn là: \"Nước bốc hơi\", \"Nước chảy về sông, biển\", \"Hơi nước ngưng tụ thành mây\", \"Mưa rơi xuống\". Các ô được sắp xếp thành hình vuông, tạo thành một vòng kín.\n\n3. Quan hệ: Các ô được nối với nhau bằng các mũi tên đen, chỉ hướng tuần tự. Mũi tên bắt đầu từ \"Nước bốc hơi\" và chỉ đến \"Nước chảy về sông, biển\". Mũi tên từ \"Nước chảy về sông, biển\" chỉ đến \"Mưa rơi xuống\". Mũi tên từ \"Mưa rơi xuống\" chỉ đến \"Hơi nước ngưng tụ thành mây\". Mũi tên từ \"Hơi nước ngưng tụ thành mây\" chỉ đến \"Nước bốc hơi\", tạo thành vòng tuần hoàn kín.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về chu trình nước tự nhiên, trong đó nước trải qua bốn giai đoạn: bốc hơi, chảy về sông biển, ngưng tụ thành mây, và rơi xuống dưới dạng mưa, rồi lặp lại. Đây là một chu trình tuần hoàn, không có giai đoạn dừng lại, thể hiện sự liên kết và tái sinh của nước trong tự nhiên.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 6.131,
+      "usage": {
+        "prompt_tokens": 1005,
+        "completion_tokens": 352
+      },
+      "created_at_utc": "2026-11-17T08:34:21.711672Z"
+    }
+  },
+  "trace": {
+    "attempts": 1
+  }
+}

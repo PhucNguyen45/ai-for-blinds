@@ -1,0 +1,72 @@
+{
+  "method": "B1",
+  "benchmark_id": "bar_01_hard",
+  "image_sha256": "5fcdfcdc189aa1447fbb04f64477afd94c430aee364551b503231aa0c70d9b6b",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_01_hard",
+    "image_sha256": "5fcdfcdc189aa1447fbb04f64477afd94c430aee364551b503231aa0c70d9b6b",
+    "image_type": "bar_chart",
+    "status": "ok",
+    "summary_vi": "Chủ đề: Bảng thống kê số lượng sách thu viện theo thứ trong tuần.",
+    "facts": [
+      {
+        "subject": "Thứ 2",
+        "predicate": "có số sách thu viện",
+        "object": "40",
+        "evidence": "dưới cột thứ 2"
+      },
+      {
+        "subject": "Thứ 3",
+        "predicate": "có số sách thu viện",
+        "object": "35",
+        "evidence": "dưới cột thứ 3"
+      },
+      {
+        "subject": "Thứ 4",
+        "predicate": "có số sách thu viện",
+        "object": "5",
+        "evidence": "dưới cột thứ 4"
+      },
+      {
+        "subject": "Thứ 5",
+        "predicate": "có số sách thu viện",
+        "object": "19",
+        "evidence": "dưới cột thứ 5"
+      },
+      {
+        "subject": "Thứ 6",
+        "predicate": "có số sách thu viện",
+        "object": "6",
+        "evidence": "dưới cột thứ 6"
+      }
+    ],
+    "interpretation_vi": "Chủ đề: Bảng thống kê số lượng sách thu viện theo thứ trong tuần.\n\nThành phần: Thứ 2 có số sách thu viện là 40; Thứ 3 có số sách thu viện là 35; Thứ 4 có số sách thu viện là 5; Thứ 5 có số sách thu viện là 19; Thứ 6 có số sách thu viện là 6.\n\nQuan hệ: Mỗi mục ghi số sách thu viện tương ứng với một thứ trong tuần, không có hướng mũi tên hay thứ tự rõ ràng giữa các mục, không có so sánh trực tiếp giữa các mục.\n\nÝ nghĩa: Hình ảnh cung cấp dữ liệu số lượng sách thu viện theo từng ngày trong tuần, giúp nhận biết mức độ hoạt động thu viện ở các ngày khác nhau.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "qwen/qwen3-vl-4b",
+      "provider": "lmstudio",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 7.091,
+      "usage": {
+        "prompt_tokens": 1391,
+        "completion_tokens": 389
+      },
+      "created_at_utc": "2026-11-17T08:37:54.444732Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"bar_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Thứ 2\", \"predicate\": \"có số sách thu viện\", \"object\": \"40\", \"evidence\": \"dưới cột thứ 2\"}, {\"subject\": \"Thứ 3\", \"predicate\": \"có số sách thu viện\", \"object\": \"35\", \"evidence\": \"dưới cột thứ 3\"}, {\"subject\": \"Thứ 4\", \"predicate\": \"có số sách thu viện\", \"object\": \"5\", \"evidence\": \"dưới cột thứ 4\"}, {\"subject\": \"Thứ 5\", \"predicate\": \"có số sách thu viện\", \"object\": \"19\", \"evidence\": \"dưới cột thứ 5\"}, {\"subject\": \"Thứ 6\", \"predicate\": \"có số sách thu viện\", \"object\": \"6\", \"evidence\": \"dưới cột thứ 6\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "Chủ đề: Bảng thống kê số lượng sách thu viện theo thứ trong tuần.\n\nThành phần: Thứ 2 có số sách thu viện là 40; Thứ 3 có số sách thu viện là 35; Thứ 4 có số sách thu viện là 5; Thứ 5 có số sách thu viện là 19; Thứ 6 có số sách thu viện là 6.\n\nQuan hệ: Mỗi mục ghi số sách thu viện tương ứng với một thứ trong tuần, không có hướng mũi tên hay thứ tự rõ ràng giữa các mục, không có so sánh trực tiếp giữa các mục.\n\nÝ nghĩa: Hình ảnh cung cấp dữ liệu số lượng sách thu viện theo từng ngày trong tuần, giúp nhận biết mức độ hoạt động thu viện ở các ngày khác nhau.",
+    "stage2_finish": "stop",
+    "attempts": 1
+  }
+}
