@@ -1,0 +1,94 @@
+{
+  "method": "B1",
+  "benchmark_id": "bar_01_hard",
+  "image_sha256": "5fcdfcdc189aa1447fbb04f64477afd94c430aee364551b503231aa0c70d9b6b",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_01_hard",
+    "image_sha256": "5fcdfcdc189aa1447fbb04f64477afd94c430aee364551b503231aa0c70d9b6b",
+    "image_type": "bar_chart",
+    "status": "ok",
+    "summary_vi": "Biểu đồ cột minh họa số sách thư viện cho mượn trong tuần.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Số sách thư viện cho mượn trong tuần",
+        "evidence": "đầu hình ảnh"
+      },
+      {
+        "subject": "Nguồn",
+        "predicate": "là",
+        "object": "Dữ liệu minh họa",
+        "evidence": "góc trên phải"
+      },
+      {
+        "subject": "Trục tung",
+        "predicate": "là",
+        "object": "Số quyển",
+        "evidence": "trục y bên trái"
+      },
+      {
+        "subject": "Trục hoành",
+        "predicate": "là",
+        "object": "Thứ 2, Thứ 3, Thứ 4, Thứ 5, Thứ 6",
+        "evidence": "nhãn dưới các cột"
+      },
+      {
+        "subject": "Thứ 2",
+        "predicate": "có số quyển",
+        "object": "40",
+        "evidence": "trên cột Thứ 2"
+      },
+      {
+        "subject": "Thứ 3",
+        "predicate": "có số quyển",
+        "object": "35",
+        "evidence": "trên cột Thứ 3"
+      },
+      {
+        "subject": "Thứ 4",
+        "predicate": "có số quyển",
+        "object": "5",
+        "evidence": "trên cột Thứ 4"
+      },
+      {
+        "subject": "Thứ 5",
+        "predicate": "có số quyển",
+        "object": "19",
+        "evidence": "trên cột Thứ 5"
+      },
+      {
+        "subject": "Thứ 6",
+        "predicate": "có số quyển",
+        "object": "6",
+        "evidence": "trên cột Thứ 6"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ cột minh họa số sách thư viện cho mượn trong tuần.\n\n2. Thành phần: Tiêu đề là Số sách thư viện cho mượn trong tuần. Nguồn là Dữ liệu minh họa. Trục tung là Số quyển. Trục hoành là Thứ 2, Thứ 3, Thứ 4, Thứ 5, Thứ 6. Số quyển theo từng ngày: Thứ 2 có 40 quyển, Thứ 3 có 35 quyển, Thứ 4 có 5 quyển, Thứ 5 có 19 quyển, Thứ 6 có 6 quyển.\n\n3. Quan hệ: Các ngày được sắp xếp từ Thứ 2 đến Thứ 6 theo chiều ngang. Số lượng sách cho mượn giảm mạnh từ Thứ 2 xuống Thứ 4, tăng lại ở Thứ 5, rồi giảm thấp nhất ở Thứ 6. Thứ 2 có số quyển nhiều nhất, Thứ 4 và Thứ 6 có số quyển ít nhất.\n\n4. Ý nghĩa: Hình ảnh truyền đạt thông tin về sự biến động số lượng sách thư viện được cho mượn trong các ngày trong tuần, giúp quan tâm đến ngày có nhu cầu mượn sách cao và thấp.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 12.272,
+      "usage": {
+        "prompt_tokens": 1623,
+        "completion_tokens": 691
+      },
+      "created_at_utc": "2026-11-17T06:49:46.880520Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"bar_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Số sách thư viện cho mượn trong tuần\", \"evidence\": \"đầu hình ảnh\"}, {\"subject\": \"Nguồn\", \"predicate\": \"là\", \"object\": \"Dữ liệu minh họa\", \"evidence\": \"góc trên phải\"}, {\"subject\": \"Trục tung\", \"predicate\": \"là\", \"object\": \"Số quyển\", \"evidence\": \"trục y bên trái\"}, {\"subject\": \"Trục hoành\", \"predicate\": \"là\", \"object\": \"Thứ 2, Thứ 3, Thứ 4, Thứ 5, Thứ 6\", \"evidence\": \"nhãn dưới các cột\"}, {\"subject\": \"Thứ 2\", \"predicate\": \"có số quyển\", \"object\": \"40\", \"evidence\": \"trên cột Thứ 2\"}, {\"subject\": \"Thứ 3\", \"predicate\": \"có số quyển\", \"object\": \"35\", \"evidence\": \"trên cột Thứ 3\"}, {\"subject\": \"Thứ 4\", \"predicate\": \"có số quyển\", \"object\": \"5\", \"evidence\": \"trên cột Thứ 4\"}, {\"subject\": \"Thứ 5\", \"predicate\": \"có số quyển\", \"object\": \"19\", \"evidence\": \"trên cột Thứ 5\"}, {\"subject\": \"Thứ 6\", \"predicate\": \"có số quyển\", \"object\": \"6\", \"evidence\": \"trên cột Thứ 6\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Biểu đồ cột minh họa số sách thư viện cho mượn trong tuần.\n\n2. Thành phần: Tiêu đề là Số sách thư viện cho mượn trong tuần. Nguồn là Dữ liệu minh họa. Trục tung là Số quyển. Trục hoành là Thứ 2, Thứ 3, Thứ 4, Thứ 5, Thứ 6. Số quyển theo từng ngày: Thứ 2 có 40 quyển, Thứ 3 có 35 quyển, Thứ 4 có 5 quyển, Thứ 5 có 19 quyển, Thứ 6 có 6 quyển.\n\n3. Quan hệ: Các ngày được sắp xếp từ Thứ 2 đến Thứ 6 theo chiều ngang. Số lượng sách cho mượn giảm mạnh từ Thứ 2 xuống Thứ 4, tăng lại ở Thứ 5, rồi giảm thấp nhất ở Thứ 6. Thứ 2 có số quyển nhiều nhất, Thứ 4 và Thứ 6 có số quyển ít nhất.\n\n4. Ý nghĩa: Hình ảnh truyền đạt thông tin về sự biến động số lượng sách thư viện được cho mượn trong các ngày trong tuần, giúp quan tâm đến ngày có nhu cầu mượn sách cao và thấp.",
+    "stage2_finish": "stop"
+  }
+}

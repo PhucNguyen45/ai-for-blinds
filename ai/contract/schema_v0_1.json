@@ -11,6 +11,7 @@
             "timeout",
             "http_error",
             "empty_response",
+            "invalid_output",
             "unknown"
           ],
           "title": "Code",
@@ -89,6 +90,15 @@
       "properties": {
         "model": {
           "title": "Model",
+          "type": "string"
+        },
+        "method": {
+          "default": "B0",
+          "enum": [
+            "B0",
+            "B1"
+          ],
+          "title": "Method",
           "type": "string"
         },
         "prompt_id": {

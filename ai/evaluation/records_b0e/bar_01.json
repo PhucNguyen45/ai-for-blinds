@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "bar_01",
+  "image_sha256": "6b1b99ae06efee6571c29fb7df99d0af6403c508ac8cd8a91bbab2479f8ebe69",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_01",
+    "image_sha256": "6b1b99ae06efee6571c29fb7df99d0af6403c508ac8cd8a91bbab2479f8ebe69",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ cột thể hiện số sách thư viện cho mượn trong tuần, dữ liệu minh họa.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ cột thể hiện số sách thư viện cho mượn trong tuần, dữ liệu minh họa.\n\n2. Thành phần:\n- Trục hoành: các ngày trong tuần từ Thứ 2 đến Thứ 6.\n- Trục tung: số quyển, thang đo từ 0 đến 45, cách mỗi 5 đơn vị.\n- Các cột và giá trị ghi trên cột:\n  - Thứ 2: 40\n  - Thứ 3: 35\n  - Thứ 4: 5\n  - Thứ 5: 19\n  - Thứ 6: 6\n\n3. Quan hệ: Các cột được sắp xếp theo thứ tự ngày từ Thứ 2 đến Thứ 6. Không có mũi tên hay đường nối giữa các cột. Số sách mượn cao nhất là Thứ 2, thấp nhất là Thứ 4.\n\n4. Ý nghĩa: Hình ảnh truyền đạt thông tin về số lượng sách được mượn từ thư viện trong 5 ngày của tuần, cho thấy sự thay đổi theo từng ngày.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 3.234,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 249
+      },
+      "created_at_utc": "2026-11-17T06:50:50.068297Z"
+    }
+  },
+  "trace": {}
+}

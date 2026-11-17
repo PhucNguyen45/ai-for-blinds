@@ -1,0 +1,112 @@
+{
+  "method": "B1",
+  "benchmark_id": "bar_03",
+  "image_sha256": "380d8e20a718fa543faa467c1b8fa9d42df3e8839d4c519b13aa3f2914f6b2a1",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_03",
+    "image_sha256": "380d8e20a718fa543faa467c1b8fa9d42df3e8839d4c519b13aa3f2914f6b2a1",
+    "image_type": "bar_chart",
+    "status": "ok",
+    "summary_vi": "Biểu đồ cột, nội dung là số học sinh tham gia các câu lạc bộ.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Số học sinh tham gia các câu lạc bộ",
+        "evidence": "phần trên cùng của ảnh"
+      },
+      {
+        "subject": "Chú thích",
+        "predicate": "là",
+        "object": "Dữ liệu minh họa",
+        "evidence": "dưới tiêu đề chính"
+      },
+      {
+        "subject": "Trục tung",
+        "predicate": "có nhãn",
+        "object": "Số học sinh",
+        "evidence": "bên trái biểu đồ"
+      },
+      {
+        "subject": "Trục tung",
+        "predicate": "có thang giá",
+        "object": "0, 5, 10, 15, 20, 25, 30, 35, 40",
+        "evidence": "các vạch ngang bên trái"
+      },
+      {
+        "subject": "Câu lạc bộ Bóng đá",
+        "predicate": "có số học sinh",
+        "object": "18",
+        "evidence": "trên cột đầu tiên"
+      },
+      {
+        "subject": "Câu lạc bộ Cờ vua",
+        "predicate": "có số học sinh",
+        "object": "21",
+        "evidence": "trên cột thứ hai"
+      },
+      {
+        "subject": "Câu lạc bộ Vẽ",
+        "predicate": "có số học sinh",
+        "object": "12",
+        "evidence": "trên cột thứ ba"
+      },
+      {
+        "subject": "Câu lạc bộ Âm nhạc",
+        "predicate": "có số học sinh",
+        "object": "37",
+        "evidence": "trên cột thứ tư"
+      },
+      {
+        "subject": "Câu lạc bộ Tin học",
+        "predicate": "có số học sinh",
+        "object": "13",
+        "evidence": "trên cột thứ năm"
+      },
+      {
+        "subject": "Trục hoành",
+        "predicate": "liệt kê",
+        "object": "Bóng đá, Cờ vua, Vẽ, Âm nhạc, Tin học",
+        "evidence": "dưới các cột biểu đồ"
+      },
+      {
+        "subject": "Câu lạc bộ Âm nhạc",
+        "predicate": "là",
+        "object": "câu lạc bộ có nhiều học sinh nhất",
+        "evidence": "cột cao nhất với giá trị 37"
+      },
+      {
+        "subject": "Câu lạc bộ Vẽ",
+        "predicate": "là",
+        "object": "câu lạc bộ có ít học sinh nhất",
+        "evidence": "cột thấp nhất với giá trị 12"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ cột, nội dung là số học sinh tham gia các câu lạc bộ.\n\n2. Thành phần: Tiêu đề: Số học sinh tham gia các câu lạc bộ. Chú thích: Dữ liệu minh họa. Trục tung: Số học sinh, thang giá 0, 5, 10, 15, 20, 25, 30, 35, 40. Trục hoành: Bóng đá, Cờ vua, Vẽ, Âm nhạc, Tin học. Số liệu: Câu lạc bộ Bóng đá 18, Câu lạc bộ Cờ vua 21, Câu lạc bộ Vẽ 12, Câu lạc bộ Âm nhạc 37, Câu lạc bộ Tin học 13.\n\n3. Quan hệ: Trục hoành liệt kê theo thứ tự Bóng đá, Cờ vua, Vẽ, Âm nhạc, Tin học. Không có thông tin về hướng mũi tên. Câu lạc bộ Âm nhạc có nhiều học sinh nhất. Câu lạc bộ Vẽ có ít học sinh nhất.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về số lượng học sinh tham gia từng câu lạc bộ, từ đó xác định câu lạc bộ có nhiều và ít học sinh nhất.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 8.671,
+      "usage": {
+        "prompt_tokens": 1755,
+        "completion_tokens": 858
+      },
+      "created_at_utc": "2026-11-17T06:47:25.127842Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"bar_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Số học sinh tham gia các câu lạc bộ\", \"evidence\": \"phần trên cùng của ảnh\"}, {\"subject\": \"Chú thích\", \"predicate\": \"là\", \"object\": \"Dữ liệu minh họa\", \"evidence\": \"dưới tiêu đề chính\"}, {\"subject\": \"Trục tung\", \"predicate\": \"có nhãn\", \"object\": \"Số học sinh\", \"evidence\": \"bên trái biểu đồ\"}, {\"subject\": \"Trục tung\", \"predicate\": \"có thang giá\", \"object\": \"0, 5, 10, 15, 20, 25, 30, 35, 40\", \"evidence\": \"các vạch ngang bên trái\"}, {\"subject\": \"Câu lạc bộ Bóng đá\", \"predicate\": \"có số học sinh\", \"object\": \"18\", \"evidence\": \"trên cột đầu tiên\"}, {\"subject\": \"Câu lạc bộ Cờ vua\", \"predicate\": \"có số học sinh\", \"object\": \"21\", \"evidence\": \"trên cột thứ hai\"}, {\"subject\": \"Câu lạc bộ Vẽ\", \"predicate\": \"có số học sinh\", \"object\": \"12\", \"evidence\": \"trên cột thứ ba\"}, {\"subject\": \"Câu lạc bộ Âm nhạc\", \"predicate\": \"có số học sinh\", \"object\": \"37\", \"evidence\": \"trên cột thứ tư\"}, {\"subject\": \"Câu lạc bộ Tin học\", \"predicate\": \"có số học sinh\", \"object\": \"13\", \"evidence\": \"trên cột thứ năm\"}, {\"subject\": \"Trục hoành\", \"predicate\": \"liệt kê\", \"object\": \"Bóng đá, Cờ vua, Vẽ, Âm nhạc, Tin học\", \"evidence\": \"dưới các cột biểu đồ\"}, {\"subject\": \"Câu lạc bộ Âm nhạc\", \"predicate\": \"là\", \"object\": \"câu lạc bộ có nhiều học sinh nhất\", \"evidence\": \"cột cao nhất với giá trị 37\"}, {\"subject\": \"Câu lạc bộ Vẽ\", \"predicate\": \"là\", \"object\": \"câu lạc bộ có ít học sinh nhất\", \"evidence\": \"cột thấp nhất với giá trị 12\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Biểu đồ cột, nội dung là số học sinh tham gia các câu lạc bộ.\n\n2. Thành phần: Tiêu đề: Số học sinh tham gia các câu lạc bộ. Chú thích: Dữ liệu minh họa. Trục tung: Số học sinh, thang giá 0, 5, 10, 15, 20, 25, 30, 35, 40. Trục hoành: Bóng đá, Cờ vua, Vẽ, Âm nhạc, Tin học. Số liệu: Câu lạc bộ Bóng đá 18, Câu lạc bộ Cờ vua 21, Câu lạc bộ Vẽ 12, Câu lạc bộ Âm nhạc 37, Câu lạc bộ Tin học 13.\n\n3. Quan hệ: Trục hoành liệt kê theo thứ tự Bóng đá, Cờ vua, Vẽ, Âm nhạc, Tin học. Không có thông tin về hướng mũi tên. Câu lạc bộ Âm nhạc có nhiều học sinh nhất. Câu lạc bộ Vẽ có ít học sinh nhất.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về số lượng học sinh tham gia từng câu lạc bộ, từ đó xác định câu lạc bộ có nhiều và ít học sinh nhất.",
+    "stage2_finish": "stop"
+  }
+}

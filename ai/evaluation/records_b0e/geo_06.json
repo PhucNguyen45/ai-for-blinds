@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "geo_06",
+  "image_sha256": "697195c9fdb5f567ce2808c7c602daf661ac36fe596a54bbe4e30f2cf0cf2096",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "geo_06",
+    "image_sha256": "697195c9fdb5f567ce2808c7c602daf661ac36fe596a54bbe4e30f2cf0cf2096",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là một tam giác có nhãn các đỉnh A, B, C.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là một tam giác có nhãn các đỉnh A, B, C. Tiêu đề viết là “Tam giác ABC với hai góc cho trước”. Nội dung chính là tìm giá trị góc còn lại tại đỉnh C.\n\n2. Thành phần:\n- Đỉnh A, góc tại A bằng 45 độ.\n- Đỉnh B, góc tại B bằng 75 độ.\n- Đỉnh C, góc tại C được ký hiệu bằng dấu hỏi chấm (?), chưa có giá trị số.\n- Ba cạnh AB, BC, CA tạo thành tam giác.\n\n3. Quan hệ:\n- Góc A và góc B nằm ở hai đầu của cạnh AB.\n- Góc C là góc còn lại của tam giác ABC, nằm đối diện với cạnh AB.\n- Không có mũi tên hay đường nối bổ sung trong hình.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về tính chất tổng ba góc của tam giác bằng 180 độ, dùng để tính góc C khi đã biết góc A là 45 độ và góc B là 75 độ. Giá trị 45 độ và 75 độ là số liệu đọc trực tiếp từ hình. Giá trị góc C chưa được cho trong hình, cần tính toán.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 5.463,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 290
+      },
+      "created_at_utc": "2026-11-17T06:51:38.531212Z"
+    }
+  },
+  "trace": {}
+}

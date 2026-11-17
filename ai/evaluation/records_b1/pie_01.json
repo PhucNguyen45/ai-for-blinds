@@ -1,0 +1,76 @@
+{
+  "method": "B1",
+  "benchmark_id": "pie_01",
+  "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_01",
+    "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+    "image_type": "pie_chart",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là biểu đồ dữ liệu minh họa về phương tiện học sinh đến trường.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Phương tiện học sinh đến trường",
+        "evidence": "đầu hình"
+      },
+      {
+        "subject": "Chú thích",
+        "predicate": "là",
+        "object": "Dữ liệu minh họa",
+        "evidence": "dưới tiêu đề"
+      },
+      {
+        "subject": "Đi bộ",
+        "predicate": "tỷ lệ",
+        "object": "35%",
+        "evidence": "phần màu xanh dương và chú thích"
+      },
+      {
+        "subject": "Xe đạp",
+        "predicate": "tỷ lệ",
+        "object": "25%",
+        "evidence": "phần màu vàng và chú thích"
+      },
+      {
+        "subject": "Xe máy",
+        "predicate": "tỷ lệ",
+        "object": "25%",
+        "evidence": "phần màu xanh nhạt và chú thích"
+      },
+      {
+        "subject": "Xe buýt",
+        "predicate": "tỷ lệ",
+        "object": "15%",
+        "evidence": "phần màu hồng và chú thích"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là biểu đồ dữ liệu minh họa về phương tiện học sinh đến trường.\n\n2. Thành phần: Tiêu đề là Phương tiện học sinh đến trường. Chú thích là Dữ liệu minh họa. Các nhãn và số liệu: Đi bộ 35%, Xe đạp 25%, Xe máy 25%, Xe buýt 15%.\n\n3. Quan hệ: Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh trong dữ kiện.\n\n4. Ý nghĩa: Hình ảnh truyền đạt tỷ lệ sử dụng các phương tiện đi học của học sinh. Không rõ loại biểu đồ cụ thể và không có tổng số học sinh.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 4.702,
+      "usage": {
+        "prompt_tokens": 1524,
+        "completion_tokens": 418
+      },
+      "created_at_utc": "2026-11-17T06:48:01.751444Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"pie_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Phương tiện học sinh đến trường\", \"evidence\": \"đầu hình\"}, {\"subject\": \"Chú thích\", \"predicate\": \"là\", \"object\": \"Dữ liệu minh họa\", \"evidence\": \"dưới tiêu đề\"}, {\"subject\": \"Đi bộ\", \"predicate\": \"tỷ lệ\", \"object\": \"35%\", \"evidence\": \"phần màu xanh dương và chú thích\"}, {\"subject\": \"Xe đạp\", \"predicate\": \"tỷ lệ\", \"object\": \"25%\", \"evidence\": \"phần màu vàng và chú thích\"}, {\"subject\": \"Xe máy\", \"predicate\": \"tỷ lệ\", \"object\": \"25%\", \"evidence\": \"phần màu xanh nhạt và chú thích\"}, {\"subject\": \"Xe buýt\", \"predicate\": \"tỷ lệ\", \"object\": \"15%\", \"evidence\": \"phần màu hồng và chú thích\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Hình ảnh là biểu đồ dữ liệu minh họa về phương tiện học sinh đến trường.\n\n2. Thành phần: Tiêu đề là Phương tiện học sinh đến trường. Chú thích là Dữ liệu minh họa. Các nhãn và số liệu: Đi bộ 35%, Xe đạp 25%, Xe máy 25%, Xe buýt 15%.\n\n3. Quan hệ: Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh trong dữ kiện.\n\n4. Ý nghĩa: Hình ảnh truyền đạt tỷ lệ sử dụng các phương tiện đi học của học sinh. Không rõ loại biểu đồ cụ thể và không có tổng số học sinh.",
+    "stage2_finish": "stop"
+  }
+}

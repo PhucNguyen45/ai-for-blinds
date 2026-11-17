@@ -1,0 +1,82 @@
+{
+  "method": "B1",
+  "benchmark_id": "geo_03",
+  "image_sha256": "edac83b31a6d863eba1e57efbe829581c53d939178e9cb2c2c8b650846dcfa7e",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "geo_03",
+    "image_sha256": "edac83b31a6d863eba1e57efbe829581c53d939178e9cb2c2c8b650846dcfa7e",
+    "image_type": "geometry",
+    "status": "ok",
+    "summary_vi": "Hình chữ nhật ABCD, mô tả hình chữ nhật và các đặc điểm của nó.",
+    "facts": [
+      {
+        "subject": "Hình",
+        "predicate": "tên",
+        "object": "Hình chữ nhật ABCD",
+        "evidence": "Tiêu đề trên cùng"
+      },
+      {
+        "subject": "Đỉnh",
+        "predicate": "tên",
+        "object": "A, B, C, D",
+        "evidence": "Nhãn ở bốn góc hình"
+      },
+      {
+        "subject": "Góc",
+        "predicate": "đặc điểm",
+        "object": "góc vuông",
+        "evidence": "Ký hiệu vuông góc tại A, B, C, D"
+      },
+      {
+        "subject": "AB",
+        "predicate": "độ dài",
+        "object": "8 cm",
+        "evidence": "Nhãn dưới cạnh AB"
+      },
+      {
+        "subject": "BC",
+        "predicate": "độ dài",
+        "object": "5 cm",
+        "evidence": "Nhãn bên cạnh BC"
+      },
+      {
+        "subject": "CD",
+        "predicate": "độ dài",
+        "object": "8 cm",
+        "evidence": "Đối diện với AB trong hình chữ nhật"
+      },
+      {
+        "subject": "DA",
+        "predicate": "độ dài",
+        "object": "5 cm",
+        "evidence": "Đối diện với BC trong hình chữ nhật"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Hình chữ nhật ABCD, mô tả hình chữ nhật và các đặc điểm của nó.\n\n2. Thành phần:\n- Tên hình: Hình chữ nhật ABCD\n- Tên các đỉnh: A, B, C, D\n- Đặc điểm góc: góc vuông\n- Độ dài cạnh AB: 8 cm\n- Độ dài cạnh BC: 5 cm\n- Độ dài cạnh CD: 8 cm\n- Độ dài cạnh DA: 5 cm\n\n3. Quan hệ: Các đỉnh A, B, C, D tạo thành hình chữ nhật ABCD. Tất cả các góc của hình là góc vuông. Cạnh AB bằng cạnh CD, đều dài 8 cm. Cạnh BC bằng cạnh DA, đều dài 5 cm. Dữ kiện không cung cấp thông tin về vị trí, thứ tự, hướng mũi tên.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về hình chữ nhật, bao gồm tên các đỉnh, đặc điểm các góc là góc vuông, và tính chất các cạnh đối nhau bằng nhau.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 4.961,
+      "usage": {
+        "prompt_tokens": 1534,
+        "completion_tokens": 535
+      },
+      "created_at_utc": "2026-11-17T06:49:09.103475Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"geometry\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Hình\", \"predicate\": \"tên\", \"object\": \"Hình chữ nhật ABCD\", \"evidence\": \"Tiêu đề trên cùng\"}, {\"subject\": \"Đỉnh\", \"predicate\": \"tên\", \"object\": \"A, B, C, D\", \"evidence\": \"Nhãn ở bốn góc hình\"}, {\"subject\": \"Góc\", \"predicate\": \"đặc điểm\", \"object\": \"góc vuông\", \"evidence\": \"Ký hiệu vuông góc tại A, B, C, D\"}, {\"subject\": \"AB\", \"predicate\": \"độ dài\", \"object\": \"8 cm\", \"evidence\": \"Nhãn dưới cạnh AB\"}, {\"subject\": \"BC\", \"predicate\": \"độ dài\", \"object\": \"5 cm\", \"evidence\": \"Nhãn bên cạnh BC\"}, {\"subject\": \"CD\", \"predicate\": \"độ dài\", \"object\": \"8 cm\", \"evidence\": \"Đối diện với AB trong hình chữ nhật\"}, {\"subject\": \"DA\", \"predicate\": \"độ dài\", \"object\": \"5 cm\", \"evidence\": \"Đối diện với BC trong hình chữ nhật\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Hình chữ nhật ABCD, mô tả hình chữ nhật và các đặc điểm của nó.\n\n2. Thành phần:\n- Tên hình: Hình chữ nhật ABCD\n- Tên các đỉnh: A, B, C, D\n- Đặc điểm góc: góc vuông\n- Độ dài cạnh AB: 8 cm\n- Độ dài cạnh BC: 5 cm\n- Độ dài cạnh CD: 8 cm\n- Độ dài cạnh DA: 5 cm\n\n3. Quan hệ: Các đỉnh A, B, C, D tạo thành hình chữ nhật ABCD. Tất cả các góc của hình là góc vuông. Cạnh AB bằng cạnh CD, đều dài 8 cm. Cạnh BC bằng cạnh DA, đều dài 5 cm. Dữ kiện không cung cấp thông tin về vị trí, thứ tự, hướng mũi tên.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về hình chữ nhật, bao gồm tên các đỉnh, đặc điểm các góc là góc vuông, và tính chất các cạnh đối nhau bằng nhau.",
+    "stage2_finish": "stop"
+  }
+}

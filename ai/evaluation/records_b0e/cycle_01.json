@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "cycle_01",
+  "image_sha256": "bfa682434f8d99b28c0534039cf5fe827ded6cf41e0fd3b938d07ab4f579883e",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "cycle_01",
+    "image_sha256": "bfa682434f8d99b28c0534039cf5fe827ded6cf41e0fd3b938d07ab4f579883e",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Đồ thị tuần hoàn của nước, mô tả chu trình nước trong tự nhiên.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Đồ thị tuần hoàn của nước, mô tả chu trình nước trong tự nhiên.\n\n2. Thành phần: Có bốn ô chứa văn bản, bao gồm:\n- Ô trên: Nước bốc hơi\n- Ô trái: Nước chảy về sông, biển\n- Ô phải: Hơi nước ngưng tụ thành mây\n- Ô dưới: Mưa rơi xuống\n\n3. Quan hệ: Các ô được nối bằng mũi tạo thành một vòng tròn theo chiều kim đồng hồ:\n- Từ \"Nước bốc hơi\" có mũi chỉ xuống \"Hơi nước ngưng tụ thành mây\".\n- Từ \"Hơi nước ngưng tụ thành mây\" có mũi chỉ xuống \"Mưa rơi xuống\".\n- Từ \"Mưa rơi xuống\" có mũi chỉ lên \"Nước chảy về sông, biển\".\n- Từ \"Nước chảy về sông, biển\" có mũi chỉ lên \"Nước bốc hơi\".\n\n4. Ý nghĩa: Hình ảnh giải thích chu trình nước bao gồm bốc hơi, ngưng tụ thành mây, mưa rơi và nước chảy về sông biển, sau đó tiếp tục bốc hơi.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 5.711,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 263
+      },
+      "created_at_utc": "2026-11-17T06:51:24.088472Z"
+    }
+  },
+  "trace": {}
+}

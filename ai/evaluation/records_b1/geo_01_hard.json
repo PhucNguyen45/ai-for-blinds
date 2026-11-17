@@ -1,0 +1,70 @@
+{
+  "method": "B1",
+  "benchmark_id": "geo_01_hard",
+  "image_sha256": "efb31939cd7bd56b6ab91ee304cf58e594447d32aa087caba91ae089d7b02afe",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "geo_01_hard",
+    "image_sha256": "efb31939cd7bd56b6ab91ee304cf58e594447d32aa087caba91ae089d7b02afe",
+    "image_type": "geometry",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là sơ đồ hình học, nội dung chính là tam giác ABC vuông tại A.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Tam giác ABC vuông tại A",
+        "evidence": "đầu hình"
+      },
+      {
+        "subject": "Đỉnh",
+        "predicate": "có",
+        "object": "A, B, C",
+        "evidence": "nhãn đỉnh tam giác"
+      },
+      {
+        "subject": "Góc A",
+        "predicate": "là",
+        "object": "góc vuông",
+        "evidence": "ký hiệu vuông góc tại A"
+      },
+      {
+        "subject": "Cạnh AB",
+        "predicate": "có độ dài",
+        "object": "3 cm",
+        "evidence": "nhãn bên cạnh AB"
+      },
+      {
+        "subject": "Cạnh AC",
+        "predicate": "có độ dài",
+        "object": "4 cm",
+        "evidence": "nhãn bên cạnh AC"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là sơ đồ hình học, nội dung chính là tam giác ABC vuông tại A.\n\n2. Thành phần: Các đỉnh là A, B, C. Góc A là góc vuông. Cạnh AB có độ dài 3 cm. Cạnh AC có độ dài 4 cm.\n\n3. Quan hệ: Tam giác có ba đỉnh A, B, C. Góc vuông nằm ở đỉnh A. Cạnh AB và cạnh AC là hai cạnh tạo thành góc A. Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh số liệu trong dữ kiện.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về tam giác vuông ABC với góc vuông tại A và độ dài hai cạnh kề AB là 3 cm, AC là 4 cm. Không chắc chắn về độ dài cạnh BC hay các thông số khác không được nêu trong dữ kiện.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 11.747,
+      "usage": {
+        "prompt_tokens": 1493,
+        "completion_tokens": 421
+      },
+      "created_at_utc": "2026-11-17T06:49:59.163187Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"geometry\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Tam giác ABC vuông tại A\", \"evidence\": \"đầu hình\"}, {\"subject\": \"Đỉnh\", \"predicate\": \"có\", \"object\": \"A, B, C\", \"evidence\": \"nhãn đỉnh tam giác\"}, {\"subject\": \"Góc A\", \"predicate\": \"là\", \"object\": \"góc vuông\", \"evidence\": \"ký hiệu vuông góc tại A\"}, {\"subject\": \"Cạnh AB\", \"predicate\": \"có độ dài\", \"object\": \"3 cm\", \"evidence\": \"nhãn bên cạnh AB\"}, {\"subject\": \"Cạnh AC\", \"predicate\": \"có độ dài\", \"object\": \"4 cm\", \"evidence\": \"nhãn bên cạnh AC\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Hình ảnh là sơ đồ hình học, nội dung chính là tam giác ABC vuông tại A.\n\n2. Thành phần: Các đỉnh là A, B, C. Góc A là góc vuông. Cạnh AB có độ dài 3 cm. Cạnh AC có độ dài 4 cm.\n\n3. Quan hệ: Tam giác có ba đỉnh A, B, C. Góc vuông nằm ở đỉnh A. Cạnh AB và cạnh AC là hai cạnh tạo thành góc A. Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh số liệu trong dữ kiện.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về tam giác vuông ABC với góc vuông tại A và độ dài hai cạnh kề AB là 3 cm, AC là 4 cm. Không chắc chắn về độ dài cạnh BC hay các thông số khác không được nêu trong dữ kiện.",
+    "stage2_finish": "stop"
+  }
+}

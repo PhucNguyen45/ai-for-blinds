@@ -13,6 +13,7 @@
   "question_answering_ready": false,
   "meta": {
     "model": "example/model",
+    "method": "B0",
     "prompt_id": "b0_v1",
     "prompt_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
     "temperature": 0.2,

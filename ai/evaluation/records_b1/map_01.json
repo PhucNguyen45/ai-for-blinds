@@ -1,0 +1,88 @@
+{
+  "method": "B1",
+  "benchmark_id": "map_01",
+  "image_sha256": "cca117cdb8d2a5068b53149c648550c2f77910799f76db1ff23b602936aaecb5",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "map_01",
+    "image_sha256": "cca117cdb8d2a5068b53149c648550c2f77910799f76db1ff23b602936aaecb5",
+    "image_type": "map",
+    "status": "ok",
+    "summary_vi": "Sơ đồ khu phố, mô tả vị trí các công trình và không gian công cộng trong khu phố.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Sơ đồ khu phố",
+        "evidence": "phần trên cùng của ảnh"
+      },
+      {
+        "subject": "Chú thích",
+        "predicate": "là",
+        "object": "Hướng Bắc ở phía trên của sơ đồ",
+        "evidence": "dưới tiêu đề"
+      },
+      {
+        "subject": "Vị trí hướng Bắc",
+        "predicate": "chỉ bởi mũi tên",
+        "object": "trên cùng bên phải",
+        "evidence": "mũi tên và nhãn Bắc"
+      },
+      {
+        "subject": "Sân vận động",
+        "predicate": "vị trí",
+        "object": "trên cùng bên trái",
+        "evidence": "hộp văn bản màu xanh nhạt"
+      },
+      {
+        "subject": "Công viên",
+        "predicate": "vị trí",
+        "object": "giữa giữa khu phố",
+        "evidence": "hộp văn bản màu xanh nhạt"
+      },
+      {
+        "subject": "Trường học",
+        "predicate": "vị trí",
+        "object": "giữa bên phải",
+        "evidence": "hộp văn bản màu vàng"
+      },
+      {
+        "subject": "Bưu điện",
+        "predicate": "vị trí",
+        "object": "dưới cùng giữa",
+        "evidence": "hộp văn bản màu xanh nhạt"
+      },
+      {
+        "subject": "Chợ",
+        "predicate": "vị trí",
+        "object": "dưới cùng bên phải",
+        "evidence": "hộp văn bản màu xanh nhạt"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Sơ đồ khu phố, mô tả vị trí các công trình và không gian công cộng trong khu phố.\n\n2. Thành phần: Tiêu đề là Sơ đồ khu phố; Chú thích là Hướng Bắc ở phía trên của sơ đồ; Vị trí hướng Bắc chỉ bởi mũi tên trên cùng bên phải; Sân vận động; Công viên; Trường học; Bưu điện; Chợ.\n\n3. Quan hệ: Sân vận động nằm trên cùng bên trái; Công viên nằm giữa giữa khu phố; Trường học nằm giữa bên phải; Bưu điện nằm dưới cùng giữa; Chợ nằm dưới cùng bên phải; Mũi tên chỉ hướng Bắc ở trên cùng bên phải.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về cách xác định vị trí và hướng trên sơ đồ khu phố, bao gồm việc sử dụng mũi tên chỉ hướng Bắc và vị trí tương đối của các công trình.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 5.017,
+      "usage": {
+        "prompt_tokens": 1592,
+        "completion_tokens": 562
+      },
+      "created_at_utc": "2026-11-17T06:49:18.233653Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"map\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Sơ đồ khu phố\", \"evidence\": \"phần trên cùng của ảnh\"}, {\"subject\": \"Chú thích\", \"predicate\": \"là\", \"object\": \"Hướng Bắc ở phía trên của sơ đồ\", \"evidence\": \"dưới tiêu đề\"}, {\"subject\": \"Vị trí hướng Bắc\", \"predicate\": \"chỉ bởi mũi tên\", \"object\": \"trên cùng bên phải\", \"evidence\": \"mũi tên và nhãn Bắc\"}, {\"subject\": \"Sân vận động\", \"predicate\": \"vị trí\", \"object\": \"trên cùng bên trái\", \"evidence\": \"hộp văn bản màu xanh nhạt\"}, {\"subject\": \"Công viên\", \"predicate\": \"vị trí\", \"object\": \"giữa giữa khu phố\", \"evidence\": \"hộp văn bản màu xanh nhạt\"}, {\"subject\": \"Trường học\", \"predicate\": \"vị trí\", \"object\": \"giữa bên phải\", \"evidence\": \"hộp văn bản màu vàng\"}, {\"subject\": \"Bưu điện\", \"predicate\": \"vị trí\", \"object\": \"dưới cùng giữa\", \"evidence\": \"hộp văn bản màu xanh nhạt\"}, {\"subject\": \"Chợ\", \"predicate\": \"vị trí\", \"object\": \"dưới cùng bên phải\", \"evidence\": \"hộp văn bản màu xanh nhạt\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Sơ đồ khu phố, mô tả vị trí các công trình và không gian công cộng trong khu phố.\n\n2. Thành phần: Tiêu đề là Sơ đồ khu phố; Chú thích là Hướng Bắc ở phía trên của sơ đồ; Vị trí hướng Bắc chỉ bởi mũi tên trên cùng bên phải; Sân vận động; Công viên; Trường học; Bưu điện; Chợ.\n\n3. Quan hệ: Sân vận động nằm trên cùng bên trái; Công viên nằm giữa giữa khu phố; Trường học nằm giữa bên phải; Bưu điện nằm dưới cùng giữa; Chợ nằm dưới cùng bên phải; Mũi tên chỉ hướng Bắc ở trên cùng bên phải.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về cách xác định vị trí và hướng trên sơ đồ khu phố, bao gồm việc sử dụng mũi tên chỉ hướng Bắc và vị trí tương đối của các công trình.",
+    "stage2_finish": "stop"
+  }
+}

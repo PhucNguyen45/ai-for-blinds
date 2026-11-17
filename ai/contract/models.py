@@ -26,7 +26,7 @@ ImageType = Literal[
 
 ErrorCode = Literal[
     "invalid_image", "config_error", "timeout", "http_error",
-    "empty_response", "unknown",
+    "empty_response", "invalid_output", "unknown",
 ]
 
 
@@ -55,6 +55,7 @@ class Meta(_Strict):
     """Thông tin tái lập: mô hình, prompt, tham số, hiệu năng."""
 
     model: str
+    method: Literal["B0", "B1"] = "B0"
     prompt_id: str
     prompt_sha256: str
     temperature: float

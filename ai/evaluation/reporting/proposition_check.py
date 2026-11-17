@@ -75,7 +75,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--session")
     ap.add_argument("--runs", nargs="*", default=[])
+    ap.add_argument("--records", choices=["b1", "b0e"],
+                    help="đọc bản ghi trong evaluation/records_<method> thay vì runs của B0")
     args = ap.parse_args()
+    if args.records:
+        return main_records(args.records)
     manifest = json.loads((BENCH / "manifest.json").read_text(encoding="utf-8"))
     by_sha = {i["sha256"]: i for i in manifest["items"]}
     total_hit = total = total_len = 0
@@ -100,6 +104,34 @@ def main():
         print(f"\nTổng: {total_hit}/{total} = {total_hit / total:.0%} chặt; "
               f"{total_len}/{total} = {total_len / total:.0%} khi bỏ qua dấu "
               "(chỉ số thô, chưa phải điểm rubric)")
+
+
+def main_records(method):
+    """So sánh B1: (a) chỉ phần diễn giải, (b) diễn giải + facts đã trích xuất."""
+    manifest = json.loads((BENCH / "manifest.json").read_text(encoding="utf-8"))
+    by_id = {i["id"]: i for i in manifest["items"]}
+    tot = {"crit": 0, "interp": 0, "both": 0}
+    for path in sorted((AI_ROOT / "evaluation" / f"records_{method}").glob("*.json")):
+        rec = json.loads(path.read_text(encoding="utf-8"))
+        item = by_id[rec["benchmark_id"]]
+        truth = json.loads((BENCH / item["ground_truth"]).read_text(encoding="utf-8"))
+        res = rec["result"]
+        crit = [p for p in truth["propositions"] if p["critical"]]
+        if res["status"] not in ("ok", "partial"):
+            print(f"{item['id']:<22}   -    status={res['status']}"
+                  f"{' ' + res['error']['code'] if res.get('error') else ''}")
+            continue
+        interp = res.get("interpretation_vi", "")
+        facts = " ".join(f"{f['subject']} {f['predicate']} {f['object']}"
+                         for f in res.get("facts", []))
+        a, _ = count(crit, interp)
+        b, _ = count(crit, interp + " " + facts)
+        tot["crit"] += len(crit); tot["interp"] += len(a); tot["both"] += len(b)
+        print(f"{item['id']:<22}{len(a):>3}/{len(crit):<3} diễn giải | {len(b):>3}/{len(crit):<3} "
+              f"diễn giải+facts  [{item['difficulty']}]")
+    if tot["crit"]:
+        print(f"\nTổng (chỉ ok/partial): diễn giải {tot['interp']}/{tot['crit']}; "
+              f"diễn giải+facts {tot['both']}/{tot['crit']} (chỉ số thô chặt, chưa phải rubric)")
 
 
 if __name__ == "__main__":

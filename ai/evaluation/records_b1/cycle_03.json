@@ -1,0 +1,106 @@
+{
+  "method": "B1",
+  "benchmark_id": "cycle_03",
+  "image_sha256": "4752cafb9b000896cd6562d6f0fb7ffd3356d0aad8abd9ff698c78a7244feee7",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "cycle_03",
+    "image_sha256": "4752cafb9b000896cd6562d6f0fb7ffd3356d0aad8abd9ff698c78a7244feee7",
+    "image_type": "cycle_diagram",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là sơ đồ vòng đời của cây dậu, trình bày các giai đoạn phát triển của cây.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Vòng đời của cây dậu",
+        "evidence": "phần trên cùng của ảnh"
+      },
+      {
+        "subject": "Nút",
+        "predicate": "có nội dung",
+        "object": "Giống hạt",
+        "evidence": "hộp trên cùng"
+      },
+      {
+        "subject": "Nút",
+        "predicate": "có nội dung",
+        "object": "Hạt mọc",
+        "evidence": "hộp bên trái"
+      },
+      {
+        "subject": "Nút",
+        "predicate": "có nội dung",
+        "object": "Hạt nảy mầm",
+        "evidence": "hộp bên phải"
+      },
+      {
+        "subject": "Nút",
+        "predicate": "có nội dung",
+        "object": "Cây con",
+        "evidence": "hộp dưới bên phải"
+      },
+      {
+        "subject": "Nút",
+        "predicate": "có nội dung",
+        "object": "Ra hoa, kết quả",
+        "evidence": "hộp dưới bên trái"
+      },
+      {
+        "subject": "Mũi tên",
+        "predicate": "chỉ từ",
+        "object": "Giống hạt đến Hạt mọc",
+        "evidence": "mũi tên giữa hộp trên cùng và hộp bên trái"
+      },
+      {
+        "subject": "Mũi tên",
+        "predicate": "chỉ từ",
+        "object": "Giống hạt đến Hạt nảy mầm",
+        "evidence": "mũi tên giữa hộp trên cùng và hộp bên phải"
+      },
+      {
+        "subject": "Mũi tên",
+        "predicate": "chỉ từ",
+        "object": "Hạt nảy mầm đến Cây con",
+        "evidence": "mũi tên giữa hộp bên phải và hộp dưới bên phải"
+      },
+      {
+        "subject": "Mũi tên",
+        "predicate": "chỉ từ",
+        "object": "Cây con đến Ra hoa, kết quả",
+        "evidence": "mũi tên giữa hộp dưới bên phải và hộp dưới bên trái"
+      },
+      {
+        "subject": "Mũi tên",
+        "predicate": "chỉ từ",
+        "object": "Ra hoa, kết quả đến Hạt mọc",
+        "evidence": "mũi tên giữa hộp dưới bên trái và hộp bên trái"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là sơ đồ vòng đời của cây dậu, trình bày các giai đoạn phát triển của cây.\n\n2. Thành phần: Các nhãn trong dữ kiện bao gồm Giống hạt, Hạt mọc, Hạt nảy mầm, Cây con, Ra hoa, kết quả.\n\n3. Quan hệ: Mũi tên chỉ từ Giống hạt đến Hạt mọc; từ Giống hạt đến Hạt nảy mầm; từ Hạt nảy mầm đến Cây con; từ Cây con đến Ra hoa, kết quả; từ Ra hoa, kết quả đến Hạt mọc. Thứ tự và hướng mũi tạo thành một chu trình. Không có số liệu so sánh.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về chu trình sinh trưởng của cây dậu, từ giống hạt phát triển qua các giai đoạn cho đến khi ra hoa kết quả và tạo ra hạt mọc để tiếp tục vòng đời. Điều chưa chắc chắn là vị trí chính xác của từng nhãn trên hình ảnh vì dữ kiện không cung cấp toạ độ.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 7.775,
+      "usage": {
+        "prompt_tokens": 1685,
+        "completion_tokens": 760
+      },
+      "created_at_utc": "2026-11-17T06:48:57.731661Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"cycle_diagram\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Vòng đời của cây dậu\", \"evidence\": \"phần trên cùng của ảnh\"}, {\"subject\": \"Nút\", \"predicate\": \"có nội dung\", \"object\": \"Giống hạt\", \"evidence\": \"hộp trên cùng\"}, {\"subject\": \"Nút\", \"predicate\": \"có nội dung\", \"object\": \"Hạt mọc\", \"evidence\": \"hộp bên trái\"}, {\"subject\": \"Nút\", \"predicate\": \"có nội dung\", \"object\": \"Hạt nảy mầm\", \"evidence\": \"hộp bên phải\"}, {\"subject\": \"Nút\", \"predicate\": \"có nội dung\", \"object\": \"Cây con\", \"evidence\": \"hộp dưới bên phải\"}, {\"subject\": \"Nút\", \"predicate\": \"có nội dung\", \"object\": \"Ra hoa, kết quả\", \"evidence\": \"hộp dưới bên trái\"}, {\"subject\": \"Mũi tên\", \"predicate\": \"chỉ từ\", \"object\": \"Giống hạt đến Hạt mọc\", \"evidence\": \"mũi tên giữa hộp trên cùng và hộp bên trái\"}, {\"subject\": \"Mũi tên\", \"predicate\": \"chỉ từ\", \"object\": \"Giống hạt đến Hạt nảy mầm\", \"evidence\": \"mũi tên giữa hộp trên cùng và hộp bên phải\"}, {\"subject\": \"Mũi tên\", \"predicate\": \"chỉ từ\", \"object\": \"Hạt nảy mầm đến Cây con\", \"evidence\": \"mũi tên giữa hộp bên phải và hộp dưới bên phải\"}, {\"subject\": \"Mũi tên\", \"predicate\": \"chỉ từ\", \"object\": \"Cây con đến Ra hoa, kết quả\", \"evidence\": \"mũi tên giữa hộp dưới bên phải và hộp dưới bên trái\"}, {\"subject\": \"Mũi tên\", \"predicate\": \"chỉ từ\", \"object\": \"Ra hoa, kết quả đến Hạt mọc\", \"evidence\": \"mũi tên giữa hộp dưới bên trái và hộp bên trái\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Hình ảnh là sơ đồ vòng đời của cây dậu, trình bày các giai đoạn phát triển của cây.\n\n2. Thành phần: Các nhãn trong dữ kiện bao gồm Giống hạt, Hạt mọc, Hạt nảy mầm, Cây con, Ra hoa, kết quả.\n\n3. Quan hệ: Mũi tên chỉ từ Giống hạt đến Hạt mọc; từ Giống hạt đến Hạt nảy mầm; từ Hạt nảy mầm đến Cây con; từ Cây con đến Ra hoa, kết quả; từ Ra hoa, kết quả đến Hạt mọc. Thứ tự và hướng mũi tạo thành một chu trình. Không có số liệu so sánh.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về chu trình sinh trưởng của cây dậu, từ giống hạt phát triển qua các giai đoạn cho đến khi ra hoa kết quả và tạo ra hạt mọc để tiếp tục vòng đời. Điều chưa chắc chắn là vị trí chính xác của từng nhãn trên hình ảnh vì dữ kiện không cung cấp toạ độ.",
+    "stage2_finish": "stop"
+  }
+}

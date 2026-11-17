@@ -1,0 +1,124 @@
+{
+  "method": "B1",
+  "benchmark_id": "bar_06",
+  "image_sha256": "435ddc8ae7a795ea83031c2d6e76597d1bc3d6a2e04389fc56329eee2b68e502",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_06",
+    "image_sha256": "435ddc8ae7a795ea83031c2d6e76597d1bc3d6a2e04389fc56329eee2b68e502",
+    "image_type": "bar_chart",
+    "status": "ok",
+    "summary_vi": "Biểu đồ cột.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Số lượng rác phân loại ở các khu",
+        "evidence": "phần trên cùng của ảnh"
+      },
+      {
+        "subject": "Chú thích",
+        "predicate": "là",
+        "object": "Dữ liệu minh họa",
+        "evidence": "dưới tiêu đề chính"
+      },
+      {
+        "subject": "Trục tung",
+        "predicate": "có nhãn",
+        "object": "Số lượng",
+        "evidence": "bên trái biểu đồ"
+      },
+      {
+        "subject": "Trục tung",
+        "predicate": "có thang đo",
+        "object": "0, 5, 10, 15, 20, 25, 30, 35",
+        "evidence": "các vạch ngang bên trái"
+      },
+      {
+        "subject": "Trục hoành",
+        "predicate": "có nhãn",
+        "object": "Khu A",
+        "evidence": "dưới cột thứ nhất"
+      },
+      {
+        "subject": "Khu A",
+        "predicate": "có giá trị",
+        "object": "15",
+        "evidence": "chiều cao cột đầu tiên"
+      },
+      {
+        "subject": "Trục hoành",
+        "predicate": "có nhãn",
+        "object": "Khu B",
+        "evidence": "dưới cột thứ hai"
+      },
+      {
+        "subject": "Khu B",
+        "predicate": "có giá trị",
+        "object": "5",
+        "evidence": "chiều cao cột thứ hai"
+      },
+      {
+        "subject": "Trục hoành",
+        "predicate": "có nhãn",
+        "object": "Khu C",
+        "evidence": "dưới cột thứ ba"
+      },
+      {
+        "subject": "Khu C",
+        "predicate": "có giá trị",
+        "object": "20",
+        "evidence": "chiều cao cột thứ ba"
+      },
+      {
+        "subject": "Trục hoành",
+        "predicate": "có nhãn",
+        "object": "Khu D",
+        "evidence": "dưới cột thứ tư"
+      },
+      {
+        "subject": "Khu D",
+        "predicate": "có giá trị",
+        "object": "30",
+        "evidence": "chiều cao cột thứ tư"
+      },
+      {
+        "subject": "Khu D",
+        "predicate": "là khu có số lượng rác lớn nhất",
+        "object": "30",
+        "evidence": "so sánh chiều cao các cột"
+      },
+      {
+        "subject": "Khu B",
+        "predicate": "là khu có số lượng rác nhỏ nhất",
+        "object": "5",
+        "evidence": "so sánh chiều cao các cột"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ cột. Nội dung chính là số lượng rác phân loại ở các khu.\n\n2. Thành phần: Tiêu đề là Số lượng rác phân loại ở các khu. Chú thích là Dữ liệu minh họa. Trục tung có nhãn Số lượng và thang đo 0, 5, 10, 15, 20, 25, 30, 35. Trục hoành có nhãn Khu A, Khu B, Khu C, Khu D. Số liệu: Khu A 15, Khu B 5, Khu C 20, Khu D 30.\n\n3. Quan hệ: Khu D là khu có số lượng rác lớn nhất với 30. Khu B là khu có số lượng rác nhỏ nhất với 5. Thứ tự các khu trên trục hoành là Khu A, Khu B, Khu C, Khu D.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về phân bố và so sánh số lượng rác phân loại tại các khu khác nhau, từ đó nhận diện khu vực có nhiều rác nhất và ít rác nhất.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 10.484,
+      "usage": {
+        "prompt_tokens": 1760,
+        "completion_tokens": 848
+      },
+      "created_at_utc": "2026-11-17T06:47:33.801303Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"bar_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Số lượng rác phân loại ở các khu\", \"evidence\": \"phần trên cùng của ảnh\"}, {\"subject\": \"Chú thích\", \"predicate\": \"là\", \"object\": \"Dữ liệu minh họa\", \"evidence\": \"dưới tiêu đề chính\"}, {\"subject\": \"Trục tung\", \"predicate\": \"có nhãn\", \"object\": \"Số lượng\", \"evidence\": \"bên trái biểu đồ\"}, {\"subject\": \"Trục tung\", \"predicate\": \"có thang đo\", \"object\": \"0, 5, 10, 15, 20, 25, 30, 35\", \"evidence\": \"các vạch ngang bên trái\"}, {\"subject\": \"Trục hoành\", \"predicate\": \"có nhãn\", \"object\": \"Khu A\", \"evidence\": \"dưới cột thứ nhất\"}, {\"subject\": \"Khu A\", \"predicate\": \"có giá trị\", \"object\": \"15\", \"evidence\": \"chiều cao cột đầu tiên\"}, {\"subject\": \"Trục hoành\", \"predicate\": \"có nhãn\", \"object\": \"Khu B\", \"evidence\": \"dưới cột thứ hai\"}, {\"subject\": \"Khu B\", \"predicate\": \"có giá trị\", \"object\": \"5\", \"evidence\": \"chiều cao cột thứ hai\"}, {\"subject\": \"Trục hoành\", \"predicate\": \"có nhãn\", \"object\": \"Khu C\", \"evidence\": \"dưới cột thứ ba\"}, {\"subject\": \"Khu C\", \"predicate\": \"có giá trị\", \"object\": \"20\", \"evidence\": \"chiều cao cột thứ ba\"}, {\"subject\": \"Trục hoành\", \"predicate\": \"có nhãn\", \"object\": \"Khu D\", \"evidence\": \"dưới cột thứ tư\"}, {\"subject\": \"Khu D\", \"predicate\": \"có giá trị\", \"object\": \"30\", \"evidence\": \"chiều cao cột thứ tư\"}, {\"subject\": \"Khu D\", \"predicate\": \"là khu có số lượng rác lớn nhất\", \"object\": \"30\", \"evidence\": \"so sánh chiều cao các cột\"}, {\"subject\": \"Khu B\", \"predicate\": \"là khu có số lượng rác nhỏ nhất\", \"object\": \"5\", \"evidence\": \"so sánh chiều cao các cột\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Biểu đồ cột. Nội dung chính là số lượng rác phân loại ở các khu.\n\n2. Thành phần: Tiêu đề là Số lượng rác phân loại ở các khu. Chú thích là Dữ liệu minh họa. Trục tung có nhãn Số lượng và thang đo 0, 5, 10, 15, 20, 25, 30, 35. Trục hoành có nhãn Khu A, Khu B, Khu C, Khu D. Số liệu: Khu A 15, Khu B 5, Khu C 20, Khu D 30.\n\n3. Quan hệ: Khu D là khu có số lượng rác lớn nhất với 30. Khu B là khu có số lượng rác nhỏ nhất với 5. Thứ tự các khu trên trục hoành là Khu A, Khu B, Khu C, Khu D.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về phân bố và so sánh số lượng rác phân loại tại các khu khác nhau, từ đó nhận diện khu vực có nhiều rác nhất và ít rác nhất.",
+    "stage2_finish": "stop"
+  }
+}

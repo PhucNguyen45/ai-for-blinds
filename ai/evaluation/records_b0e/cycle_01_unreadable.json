@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "cycle_01_unreadable",
+  "image_sha256": "b1e2b9773d3e1ec7080868f63b6611bf6db383718999297d7148a214b6dc8fcd",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "cycle_01_unreadable",
+    "image_sha256": "b1e2b9773d3e1ec7080868f63b6611bf6db383718999297d7148a214b6dc8fcd",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là sơ đồ vòng tròn hoặc chu kỳ, nhưng nội dung chính không thể xác định được do hình ảnh quá mờ.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là sơ đồ vòng tròn hoặc chu kỳ, nhưng nội dung chính không thể xác định được do hình ảnh quá mờ.\n\n2. Thành phần: Có năm ô hình chữ nhật tròn góc sắp xếp thành hình tròn, bao gồm một ô ở trên cùng, hai ô ở hai bên trái và phải, và hai ô ở dưới bên trái và phải. Các ô được nối với nhau bằng các đường thẳng tạo thành vòng tròn. Không thể đọc được văn bản trong các ô và không có nhãn, số liệu hoặc yếu tố quan trọng nào nhận diện được.\n\n3. Quan hệ: Các ô được sắp xếp theo thứ tự vòng tròn và nối tiếp nhau bằng đường thẳng, nhưng hướng mũi tên và sự liên kết cụ thể không thể xác định được do hình ảnh quá mờ.\n\n4. Ý nghĩa: Không thể giải thích kiến thức chính mà hình ảnh truyền đạt vì không đọc được nội dung.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 2.99,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 208
+      },
+      "created_at_utc": "2026-11-17T06:53:10.947937Z"
+    }
+  },
+  "trace": {}
+}

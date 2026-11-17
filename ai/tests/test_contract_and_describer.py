@@ -104,3 +104,74 @@ def test_contract_rejects_inconsistent_results(bad):
 def test_published_examples_are_valid():
     for path in sorted((Path(__file__).parents[1] / "contract" / "examples").glob("*.json")):
         DescriptionResult.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+# ----- B1 -----
+from vlm.describer import describe_image_b1, parse_extraction  # noqa: E402
+
+JSON1 = ('{"image_type": "bar_chart", "status": "ok", "facts": ['
+         '{"subject": "Cột Thứ 2", "predicate": "có giá trị", "object": "40 quyển", '
+         '"evidence": "nhãn trên cột"}], "uncertainties": []}')
+
+
+def seq_post(*replies):
+    """Mỗi phần tử: (status, content, finish) hoặc Exception; gọi lần lượt."""
+    calls = iter(replies)
+    seen = []
+
+    def post(payload, api_key, base_url, timeout=60.0):
+        seen.append(payload)
+        r = next(calls)
+        if isinstance(r, Exception):
+            raise r
+        status, content, finish = r
+        body = {"choices": [{"message": {"content": content}, "finish_reason": finish}],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 5}}
+        return httpx.Response(status, json=body)
+    post.seen = seen
+    return post
+
+
+def test_b1_two_stage_ok(image):
+    post = seq_post((200, "```json\n" + JSON1 + "\n```", "stop"), (200, B0_TEXT, "stop"))
+    r = describe_image_b1(image, env=ENV, image_id="i", post=post)
+    assert r.status == "ok" and r.image_type == "bar_chart" and r.meta.method == "B1"
+    assert len(r.facts) == 1 and r.facts[0].object == "40 quyển"
+    assert r.question_answering_ready is True
+    assert r.meta.usage.completion_tokens == 10 and len(post.seen) == 2
+    stage2_content = post.seen[1]["messages"][0]["content"]
+    assert all(part["type"] == "text" for part in stage2_content)  # bước 2 không gửi ảnh
+    assert "40 quyển" in stage2_content[0]["text"]
+    assert "nhãn trên cột" not in stage2_content[0]["text"]  # evidence không đưa vào bước 2
+
+
+def test_b1_unreadable_skips_second_call(image):
+    unreadable = '{"image_type": "line_chart", "status": "unreadable", "facts": [], "uncertainties": ["Ảnh quá mờ."]}'
+    post = seq_post((200, unreadable, "stop"))
+    r = describe_image_b1(image, env=ENV, post=post)
+    assert r.status == "unreadable" and r.summary_vi == "Ảnh quá mờ." and len(post.seen) == 1
+
+
+@pytest.mark.parametrize("replies,code", [
+    ([(200, "không phải json", "stop")], "invalid_output"),
+    ([(200, '{"facts": []}', "stop")], "invalid_output"),
+    ([(500, "x", "stop")], "http_error"),
+    ([(200, JSON1, "stop"), httpx.ReadTimeout("t")], "timeout"),
+    ([(200, JSON1, "stop"), (200, "", "stop")], "empty_response"),
+])
+def test_b1_failures_return_error(image, replies, code):
+    r = describe_image_b1(image, env=ENV, post=seq_post(*replies))
+    assert r.status == "error" and r.error.code == code and r.meta.method == "B1"
+
+
+def test_b1_truncated_is_partial(image):
+    r = describe_image_b1(image, env=ENV,
+                          post=seq_post((200, JSON1, "length"), (200, B0_TEXT, "stop")))
+    assert r.status == "partial" and r.question_answering_ready is False
+
+
+def test_parse_extraction_tolerates_noise_and_bad_types():
+    out = parse_extraction('Đây:\n{"image_type": "xyz", "facts": [1, {"subject": "a", '
+                           '"predicate": 3, "object": "b"}], "uncertainties": "x"} hết')
+    assert out["image_type"] == "other" and len(out["facts"]) == 1
+    assert out["facts"][0].predicate == "3" and out["uncertainties"] == []

@@ -1,0 +1,88 @@
+{
+  "method": "B1",
+  "benchmark_id": "map_03",
+  "image_sha256": "ab868668b10930748917e056b3d2756c86b0108926cfc51de0a825ab20a4f330",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "map_03",
+    "image_sha256": "ab868668b10930748917e056b3d2756c86b0108926cfc51de0a825ab20a4f330",
+    "image_type": "map",
+    "status": "ok",
+    "summary_vi": "Loại hình ảnh là sơ đồ khu phố.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Sơ đồ khu phố",
+        "evidence": "phần trên cùng của ảnh"
+      },
+      {
+        "subject": "Chú thích",
+        "predicate": "là",
+        "object": "Hướng Bắc ở phía trên của sơ đồ",
+        "evidence": "dưới tiêu đề chính"
+      },
+      {
+        "subject": "Hướng",
+        "predicate": "chỉ",
+        "object": "Bắc",
+        "evidence": "mũi tên hướng lên trên ở góc trên bên phải"
+      },
+      {
+        "subject": "Trường học",
+        "predicate": "vị trí",
+        "object": "góc trên bên trái",
+        "evidence": "hộp màu vàng góc trên trái"
+      },
+      {
+        "subject": "Bưu điện",
+        "predicate": "vị trí",
+        "object": "trái giữa, dưới Trường học",
+        "evidence": "hộp màu xanh bên trái giữa"
+      },
+      {
+        "subject": "Nhà văn hóa",
+        "predicate": "vị trí",
+        "object": "góc dưới bên trái",
+        "evidence": "hộp màu xanh góc dưới trái"
+      },
+      {
+        "subject": "Sân vận động",
+        "predicate": "vị trí",
+        "object": "dưới cùng ở giữa",
+        "evidence": "hộp màu xanh dưới cùng giữa"
+      },
+      {
+        "subject": "Thư viện",
+        "predicate": "vị trí",
+        "object": "góc dưới bên phải",
+        "evidence": "hộp màu xanh góc dưới phải"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Loại hình ảnh là sơ đồ khu phố. Nội dung chính là vị trí các công trình trong khu phố.\n\n2. Thành phần: Các nhãn có trong dữ kiện bao gồm Tiêu đề, Chú thích, Hướng, Trường học, Bưu điện, Nhà văn hóa, Sân vận động, Thư viện. Số liệu liên quan là hướng Bắc ở phía trên của sơ đồ.\n\n3. Quan hệ: Trường học nằm góc trên bên trái. Bưu điện nằm trái giữa, dưới Trường học. Nhà văn hóa nằm góc dưới bên trái. Sân vận động nằm dưới cùng ở giữa. Thư viện nằm góc dưới bên phải. Hướng Bắc được chỉ ở phía trên của sơ đồ.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về cách xác định vị trí các công trình trên sơ đồ khu phố dựa trên hướng dẫn phương Bắc. Điều chưa chắc chắn là khoảng cách và tỷ lệ giữa các công trình vì dữ kiện không cung cấp thông tin này.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 23.62,
+      "usage": {
+        "prompt_tokens": 1583,
+        "completion_tokens": 575
+      },
+      "created_at_utc": "2026-11-17T06:49:23.252498Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"map\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Sơ đồ khu phố\", \"evidence\": \"phần trên cùng của ảnh\"}, {\"subject\": \"Chú thích\", \"predicate\": \"là\", \"object\": \"Hướng Bắc ở phía trên của sơ đồ\", \"evidence\": \"dưới tiêu đề chính\"}, {\"subject\": \"Hướng\", \"predicate\": \"chỉ\", \"object\": \"Bắc\", \"evidence\": \"mũi tên hướng lên trên ở góc trên bên phải\"}, {\"subject\": \"Trường học\", \"predicate\": \"vị trí\", \"object\": \"góc trên bên trái\", \"evidence\": \"hộp màu vàng góc trên trái\"}, {\"subject\": \"Bưu điện\", \"predicate\": \"vị trí\", \"object\": \"trái giữa, dưới Trường học\", \"evidence\": \"hộp màu xanh bên trái giữa\"}, {\"subject\": \"Nhà văn hóa\", \"predicate\": \"vị trí\", \"object\": \"góc dưới bên trái\", \"evidence\": \"hộp màu xanh góc dưới trái\"}, {\"subject\": \"Sân vận động\", \"predicate\": \"vị trí\", \"object\": \"dưới cùng ở giữa\", \"evidence\": \"hộp màu xanh dưới cùng giữa\"}, {\"subject\": \"Thư viện\", \"predicate\": \"vị trí\", \"object\": \"góc dưới bên phải\", \"evidence\": \"hộp màu xanh góc dưới phải\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Loại hình ảnh là sơ đồ khu phố. Nội dung chính là vị trí các công trình trong khu phố.\n\n2. Thành phần: Các nhãn có trong dữ kiện bao gồm Tiêu đề, Chú thích, Hướng, Trường học, Bưu điện, Nhà văn hóa, Sân vận động, Thư viện. Số liệu liên quan là hướng Bắc ở phía trên của sơ đồ.\n\n3. Quan hệ: Trường học nằm góc trên bên trái. Bưu điện nằm trái giữa, dưới Trường học. Nhà văn hóa nằm góc dưới bên trái. Sân vận động nằm dưới cùng ở giữa. Thư viện nằm góc dưới bên phải. Hướng Bắc được chỉ ở phía trên của sơ đồ.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về cách xác định vị trí các công trình trên sơ đồ khu phố dựa trên hướng dẫn phương Bắc. Điều chưa chắc chắn là khoảng cách và tỷ lệ giữa các công trình vì dữ kiện không cung cấp thông tin này.",
+    "stage2_finish": "stop"
+  }
+}

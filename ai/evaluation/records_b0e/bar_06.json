@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "bar_06",
+  "image_sha256": "435ddc8ae7a795ea83031c2d6e76597d1bc3d6a2e04389fc56329eee2b68e502",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "bar_06",
+    "image_sha256": "435ddc8ae7a795ea83031c2d6e76597d1bc3d6a2e04389fc56329eee2b68e502",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ cột thể hiện số lượng rác phân loại ở các khu, dữ liệu minh họa.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ cột thể hiện số lượng rác phân loại ở các khu, dữ liệu minh họa.\n\n2. Thành phần:\n- Trục hoành: các khu Khu A, Khu B, Khu C, Khu D.\n- Trục tung: Số lượng, thang từ 0 đến 35, cách mỗi 5 đơn vị.\n- Cột tương ứng: Khu A, Khu B, Khu C, Khu D.\n\n3. Quan hệ:\n- Khu A có cột cao thứ hai, thấp hơn Khu C và Khu D, cao hơn Khu B.\n- Khu B có cột thấp nhất.\n- Khu C có cột cao thứ ba, thấp hơn Khu D, cao hơn Khu A và Khu B.\n- Khu D có cột cao nhất.\n- Mỗi cột đứng độc lập, không có mũi nối giữa các cột.\n\n4. Ý nghĩa: Hình ảnh truyền đạt thông tin về số lượng rác đã phân loại tại bốn khu khác nhau, cho phép so sánh mức độ phân loại rác giữa các khu.\n\nChi tiết giá trị số:\n- Khu A: 15\n- Khu B: 5\n- Khu C: 20\n- Khu D: 30\n\nTất cả giá trị trên đều đọc trực tiếp từ biểu đồ.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 2.694,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 280
+      },
+      "created_at_utc": "2026-11-17T06:50:56.518818Z"
+    }
+  },
+  "trace": {}
+}

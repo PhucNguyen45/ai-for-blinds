@@ -1,0 +1,100 @@
+{
+  "method": "B1",
+  "benchmark_id": "line_03",
+  "image_sha256": "4839dd8c6073c9f5e9c0e78dbb08274c1cfb633e421c45f0d54a86ea82d5ff3d",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_03",
+    "image_sha256": "4839dd8c6073c9f5e9c0e78dbb08274c1cfb633e421c45f0d54a86ea82d5ff3d",
+    "image_type": "line_chart",
+    "status": "ok",
+    "summary_vi": "Biểu đồ cột minh họa số cuốn sách đọc được qua các tuần.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Số cuốn sách đọc được qua các tuần",
+        "evidence": "đầu hình"
+      },
+      {
+        "subject": "Chú thích",
+        "predicate": "là",
+        "object": "Dữ liệu minh họa",
+        "evidence": "dưới tiêu đề"
+      },
+      {
+        "subject": "Trục tung",
+        "predicate": "là",
+        "object": "Số cuốn",
+        "evidence": "trục dọc bên trái"
+      },
+      {
+        "subject": "Trục hoành",
+        "predicate": "là",
+        "object": "Tuần",
+        "evidence": "trục ngang dưới"
+      },
+      {
+        "subject": "Tuần 1",
+        "predicate": "có",
+        "object": "5 cuốn",
+        "evidence": "điểm dữ liệu đầu tiên"
+      },
+      {
+        "subject": "Tuần 2",
+        "predicate": "có",
+        "object": "15 cuốn",
+        "evidence": "điểm dữ liệu thứ hai"
+      },
+      {
+        "subject": "Tuần 3",
+        "predicate": "có",
+        "object": "25 cuốn",
+        "evidence": "điểm dữ liệu thứ ba"
+      },
+      {
+        "subject": "Tuần 4",
+        "predicate": "có",
+        "object": "40 cuốn",
+        "evidence": "điểm dữ liệu thứ tư"
+      },
+      {
+        "subject": "Tuần 5",
+        "predicate": "có",
+        "object": "30 cuốn",
+        "evidence": "điểm dữ liệu thứ năm"
+      },
+      {
+        "subject": "Xu hướng",
+        "predicate": "tăng từ Tuần 1 đến Tuần 4, sau đó giảm ở Tuần 5",
+        "object": "",
+        "evidence": "đường nối các điểm dữ liệu"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ cột minh họa số cuốn sách đọc được qua các tuần.\n\n2. Thành phần: Tiêu đề là Số cuốn sách đọc được qua các tuần. Chú thích là Dữ liệu minh họa. Trục tung là Số cuốn. Trục hoành là Tuần. Dữ liệu: Tuần 1 có 5 cuốn, Tuần 2 có 15 cuốn, Tuần 3 có 25 cuốn, Tuần 4 có 40 cuốn, Tuần 5 có 30 cuốn.\n\n3. Quan hệ: Thứ tự tuần từ Tuần 1 đến Tuần 5. Xu hướng tăng từ Tuần 1 đến Tuần 4, sau đó giảm ở Tuần 5. Giá trị cao nhất là Tuần 4 với 40 cuốn. Giá trị thấp nhất là Tuần 1 với 5 cuốn.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về sự biến động số lượng cuốn sách đọc được theo thời gian, cho thấy mức độ đọc tăng lên đến tuần thứ tư rồi giảm xuống ở tuần thứ năm.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 8.836,
+      "usage": {
+        "prompt_tokens": 1637,
+        "completion_tokens": 673
+      },
+      "created_at_utc": "2026-11-17T06:47:52.913383Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"line_chart\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Số cuốn sách đọc được qua các tuần\", \"evidence\": \"đầu hình\"}, {\"subject\": \"Chú thích\", \"predicate\": \"là\", \"object\": \"Dữ liệu minh họa\", \"evidence\": \"dưới tiêu đề\"}, {\"subject\": \"Trục tung\", \"predicate\": \"là\", \"object\": \"Số cuốn\", \"evidence\": \"trục dọc bên trái\"}, {\"subject\": \"Trục hoành\", \"predicate\": \"là\", \"object\": \"Tuần\", \"evidence\": \"trục ngang dưới\"}, {\"subject\": \"Tuần 1\", \"predicate\": \"có\", \"object\": \"5 cuốn\", \"evidence\": \"điểm dữ liệu đầu tiên\"}, {\"subject\": \"Tuần 2\", \"predicate\": \"có\", \"object\": \"15 cuốn\", \"evidence\": \"điểm dữ liệu thứ hai\"}, {\"subject\": \"Tuần 3\", \"predicate\": \"có\", \"object\": \"25 cuốn\", \"evidence\": \"điểm dữ liệu thứ ba\"}, {\"subject\": \"Tuần 4\", \"predicate\": \"có\", \"object\": \"40 cuốn\", \"evidence\": \"điểm dữ liệu thứ tư\"}, {\"subject\": \"Tuần 5\", \"predicate\": \"có\", \"object\": \"30 cuốn\", \"evidence\": \"điểm dữ liệu thứ năm\"}, {\"subject\": \"Xu hướng\", \"predicate\": \"tăng từ Tuần 1 đến Tuần 4, sau đó giảm ở Tuần 5\", \"object\": \"\", \"evidence\": \"đường nối các điểm dữ liệu\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Biểu đồ cột minh họa số cuốn sách đọc được qua các tuần.\n\n2. Thành phần: Tiêu đề là Số cuốn sách đọc được qua các tuần. Chú thích là Dữ liệu minh họa. Trục tung là Số cuốn. Trục hoành là Tuần. Dữ liệu: Tuần 1 có 5 cuốn, Tuần 2 có 15 cuốn, Tuần 3 có 25 cuốn, Tuần 4 có 40 cuốn, Tuần 5 có 30 cuốn.\n\n3. Quan hệ: Thứ tự tuần từ Tuần 1 đến Tuần 5. Xu hướng tăng từ Tuần 1 đến Tuần 4, sau đó giảm ở Tuần 5. Giá trị cao nhất là Tuần 4 với 40 cuốn. Giá trị thấp nhất là Tuần 1 với 5 cuốn.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về sự biến động số lượng cuốn sách đọc được theo thời gian, cho thấy mức độ đọc tăng lên đến tuần thứ tư rồi giảm xuống ở tuần thứ năm.",
+    "stage2_finish": "stop"
+  }
+}

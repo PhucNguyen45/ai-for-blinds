@@ -1,0 +1,70 @@
+{
+  "method": "B1",
+  "benchmark_id": "geo_01",
+  "image_sha256": "87825d64b06b32521df736ea3f8d5459ad22a7b30869813fb511672b455f9628",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "geo_01",
+    "image_sha256": "87825d64b06b32521df736ea3f8d5459ad22a7b30869813fb511672b455f9628",
+    "image_type": "geometry",
+    "status": "ok",
+    "summary_vi": "Hình học tam giác.",
+    "facts": [
+      {
+        "subject": "Tiêu đề",
+        "predicate": "là",
+        "object": "Tam giác ABC vuông tại A",
+        "evidence": "đầu hình"
+      },
+      {
+        "subject": "Tam giác ABC",
+        "predicate": "có đỉnh",
+        "object": "A, B, C",
+        "evidence": "nhãn đỉnh"
+      },
+      {
+        "subject": "Góc A",
+        "predicate": "là",
+        "object": "góc vuông",
+        "evidence": "ký hiệu vuông góc tại A"
+      },
+      {
+        "subject": "AB",
+        "predicate": "=",
+        "object": "3 cm",
+        "evidence": "nhãn bên cạnh cạnh AB"
+      },
+      {
+        "subject": "AC",
+        "predicate": "=",
+        "object": "4 cm",
+        "evidence": "nhãn bên cạnh cạnh AC"
+      }
+    ],
+    "interpretation_vi": "1. Chủ đề: Hình học tam giác. Nội dung chính là tam giác ABC vuông tại A.\n\n2. Thành phần: Tam giác ABC có đỉnh A, B, C. Góc A là góc vuông. AB bằng 3 cm. AC bằng 4 cm.\n\n3. Quan hệ: Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh trong dữ kiện.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về tam giác vuông, bao gồm đỉnh, góc vuông và độ dài hai cạnh AB và AC. Không chắc chắn về hình vẽ cụ thể, vị trí các đỉnh trên mặt phẳng, độ dài cạnh BC và các góc còn lại.",
+    "uncertainties": [],
+    "question_answering_ready": true,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B1",
+      "prompt_id": "b1_v1",
+      "prompt_sha256": "7dbfaec02cf2328325fa65cecb2c809a0fa1357ebd80a2e4dd1e1298d12811af",
+      "temperature": 0.2,
+      "max_tokens": 2300,
+      "finish_reason": "stop",
+      "latency_seconds": 3.59,
+      "usage": {
+        "prompt_tokens": 1486,
+        "completion_tokens": 368
+      },
+      "created_at_utc": "2026-11-17T06:49:05.511330Z"
+    }
+  },
+  "trace": {
+    "stage1_text": "{\"image_type\": \"geometry\", \"status\": \"ok\", \"facts\": [{\"subject\": \"Tiêu đề\", \"predicate\": \"là\", \"object\": \"Tam giác ABC vuông tại A\", \"evidence\": \"đầu hình\"}, {\"subject\": \"Tam giác ABC\", \"predicate\": \"có đỉnh\", \"object\": \"A, B, C\", \"evidence\": \"nhãn đỉnh\"}, {\"subject\": \"Góc A\", \"predicate\": \"là\", \"object\": \"góc vuông\", \"evidence\": \"ký hiệu vuông góc tại A\"}, {\"subject\": \"AB\", \"predicate\": \"=\", \"object\": \"3 cm\", \"evidence\": \"nhãn bên cạnh cạnh AB\"}, {\"subject\": \"AC\", \"predicate\": \"=\", \"object\": \"4 cm\", \"evidence\": \"nhãn bên cạnh cạnh AC\"}], \"uncertainties\": []}",
+    "stage1_finish": "stop",
+    "stage2_text": "1. Chủ đề: Hình học tam giác. Nội dung chính là tam giác ABC vuông tại A.\n\n2. Thành phần: Tam giác ABC có đỉnh A, B, C. Góc A là góc vuông. AB bằng 3 cm. AC bằng 4 cm.\n\n3. Quan hệ: Không có thông tin về vị trí, thứ tự, hướng mũi tên hay so sánh trong dữ kiện.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về tam giác vuông, bao gồm đỉnh, góc vuông và độ dài hai cạnh AB và AC. Không chắc chắn về hình vẽ cụ thể, vị trí các đỉnh trên mặt phẳng, độ dài cạnh BC và các góc còn lại.",
+    "stage2_finish": "stop"
+  }
+}

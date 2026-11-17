@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "line_03",
+  "image_sha256": "4839dd8c6073c9f5e9c0e78dbb08274c1cfb633e421c45f0d54a86ea82d5ff3d",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "line_03",
+    "image_sha256": "4839dd8c6073c9f5e9c0e78dbb08274c1cfb633e421c45f0d54a86ea82d5ff3d",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ đường thể hiện số cuốn sách đọc được qua các tuần, dữ liệu minh họa.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ đường thể hiện số cuốn sách đọc được qua các tuần, dữ liệu minh họa.\n\n2. Thành phần:\n- Trục hoành: Tuần 1, Tuần 2, Tuần 3, Tuần 4, Tuần 5.\n- Trục tung: Số cuốn, thang từ 0 đến 45, cách nhau mỗi 5 đơn vị.\n- Các điểm dữ liệu trên đường:\n  - Tuần 1: 5 cuốn.\n  - Tuần 2: 15 cuốn.\n  - Tuần 3: 25 cuốn.\n  - Tuần 4: 40 cuốn.\n  - Tuần 5: 30 cuốn.\n\n3. Quan hệ:\n- Đường nối các điểm theo thứ tự từ Tuần 1 đến Tuần 5.\n- Từ Tuần 1 đến Tuần 4, số lượng cuốn sách tăng dần.\n- Từ Tuần 4 đến Tuần 5, số lượng cuốn sách giảm từ 40 xuống 30.\n- Giá trị cao nhất là 40 cuốn tại Tuần 4.\n- Giá trị thấp nhất là 5 cuốn tại Tuần 1.\n\n4. Ý nghĩa: Hình ảnh truyền đạt xu hướng số cuốn sách đọc được thay đổi theo 5 tuần, đạt đỉnh tại tuần thứ tư rồi giảm ở tuần thứ năm.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 2.931,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 312
+      },
+      "created_at_utc": "2026-11-17T06:51:02.909071Z"
+    }
+  },
+  "trace": {}
+}

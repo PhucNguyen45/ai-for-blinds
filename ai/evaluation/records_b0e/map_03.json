@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "map_03",
+  "image_sha256": "ab868668b10930748917e056b3d2756c86b0108926cfc51de0a825ab20a4f330",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "map_03",
+    "image_sha256": "ab868668b10930748917e056b3d2756c86b0108926cfc51de0a825ab20a4f330",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Hình ảnh là sơ đồ khu phó, minh họa hướng Bác ở phía trên của sơ đồ.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Hình ảnh là sơ đồ khu phó, minh họa hướng Bác ở phía trên của sơ đồ.\n\n2. Thành phần:\n- Tiêu đề: Sơ đồ khu phó\n- Chú thích: Hướng Bác ở phía trên của sơ đồ\n- Nhãn hướng: Bác (có mũi tên chỉ lên trên)\n- Các ô chứa nhãn:\n  - Trường học\n  - Bưu điện\n  - Nhà văn hóa\n  - Sân vận động\n  - Thư viện\n\n3. Quan hệ:\n- Sử dụng lưới hai đường thẳng ngang và hai đường thẳng dọc chia thành các ô.\n- Trường học nằm ở ô trên cùng bên trái.\n- Bưu điện nằm ở ô giữa bên trái.\n- Nhà văn hóa nằm ở ô dưới cùng bên trái.\n- Sân vận động nằm ở ô dưới cùng ở giữa.\n- Thư viện nằm ở ô dưới cùng bên phải.\n- Mũi tên chỉ hướng Bác hướng lên trên, nằm ở góc trên bên phải.\n\n4. Ý nghĩa: Hình ảnh truyền đạt kiến thức về vị trí tương đối của các công trình trong khu phó dựa trên lưới tọa độ đơn giản và hướng Bác làm mốc định hướng.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 67.686,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 269
+      },
+      "created_at_utc": "2026-11-17T06:51:48.174341Z"
+    }
+  },
+  "trace": {}
+}

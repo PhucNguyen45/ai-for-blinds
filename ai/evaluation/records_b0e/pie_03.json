@@ -1,0 +1,34 @@
+{
+  "method": "B0E",
+  "benchmark_id": "pie_03",
+  "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+  "benchmark_version": "0.2.0",
+  "result": {
+    "schema_version": "0.1",
+    "image_id": "pie_03",
+    "image_sha256": "dcdbbacf1629bb86d22d0fb34a3191e28413232908b387166b0b1ab49ec5f651",
+    "image_type": "unknown",
+    "status": "ok",
+    "summary_vi": "Biểu đồ tròn có tiêu đề “Cơ cấu sử dụng đất của xã”, chú thích “Dữ liệu minh họa”.",
+    "facts": [],
+    "interpretation_vi": "1. Chủ đề: Biểu đồ tròn có tiêu đề “Cơ cấu sử dụng đất của xã”, chú thích “Dữ liệu minh họa”.\n\n2. Thành phần: Biểu đồ có 4 phần tương ứng với 4 loại đất trong chú thích:\n- Trống lúa: màu xanh nhạt, 35%.\n- Rau màu: màu vàng cam, 15%.\n- Ao hồ: màu xanh lá nhạt, 20%.\n- Đất ở: màu hồng nhạt, 30%.\n\n3. Quan hệ: Các phần được sắp xếp theo chiều kim đồng hồ bắt đầu từ phía trên bên phải: Trống lúa 35%, tiếp theo là Đất ở 30%, Ao hồ 20%, và Rau màu 15%. Tổng các giá trị là 100%. Không có mũi tên hay đường nối giữa các phần.\n\n4. Ý nghĩa: Hình ảnh truyền đạt tỷ lệ phần trăm sử dụng đất theo bốn loại trong xã, trong đó Trống lúa chiếm tỉ lệ cao nhất 35%, Rau màu thấp nhất 15%.",
+    "uncertainties": [],
+    "question_answering_ready": false,
+    "meta": {
+      "model": "nvidia/nemotron-3.5-super-vl:free",
+      "method": "B0",
+      "prompt_id": "b0e_v1",
+      "prompt_sha256": "a88d1397fc895ab0c0f4eb2dc55be6092693fa0f86d8be85f5be1cf958490078",
+      "temperature": 0.2,
+      "max_tokens": 600,
+      "finish_reason": "stop",
+      "latency_seconds": 2.651,
+      "usage": {
+        "prompt_tokens": 1080,
+        "completion_tokens": 244
+      },
+      "created_at_utc": "2026-11-17T06:51:07.976492Z"
+    }
+  },
+  "trace": {}
+}
