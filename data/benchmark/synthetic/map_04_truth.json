@@ -1,0 +1,116 @@
+{
+  "schema": "truth_v0.2",
+  "id": "map_04",
+  "category": "schematic_map",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Sơ đồ khu phố",
+  "expected_status": "ok",
+  "data": {
+    "north_is_up": true,
+    "grid_cell_(row,col)": {
+      "Trường học": [
+        2,
+        0
+      ],
+      "Bưu điện": [
+        0,
+        1
+      ],
+      "Thư viện": [
+        1,
+        1
+      ],
+      "Sân vận động": [
+        2,
+        2
+      ],
+      "Bệnh viện": [
+        2,
+        1
+      ]
+    }
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "structure",
+      "subject": "Hướng Bắc",
+      "predicate": "nằm ở",
+      "object": "phía trên của sơ đồ",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "structure",
+      "subject": "Số địa điểm được đánh dấu",
+      "predicate": "là",
+      "object": "5",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "relation",
+      "subject": "Bưu điện",
+      "predicate": "nằm ở",
+      "object": "phía Đông Bắc của Trường học",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "relation",
+      "subject": "Thư viện",
+      "predicate": "nằm ở",
+      "object": "phía Đông Bắc của Trường học",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "relation",
+      "subject": "Sân vận động",
+      "predicate": "nằm ở",
+      "object": "phía Đông của Trường học",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "relation",
+      "subject": "Bệnh viện",
+      "predicate": "nằm ở",
+      "object": "phía Đông của Trường học",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "relation",
+      "question": "Bưu điện nằm ở hướng nào so với Trường học?",
+      "answer": "Đông Bắc"
+    },
+    {
+      "id": "Q2",
+      "type": "relation",
+      "question": "Thư viện nằm ở hướng nào so với Trường học?",
+      "answer": "Đông Bắc"
+    },
+    {
+      "id": "Q3",
+      "type": "relation",
+      "question": "Sân vận động nằm ở hướng nào so với Trường học?",
+      "answer": "Đông"
+    },
+    {
+      "id": "Q4",
+      "type": "relation",
+      "question": "Bệnh viện nằm ở hướng nào so với Trường học?",
+      "answer": "Đông"
+    },
+    {
+      "id": "Q5",
+      "type": "lookup",
+      "question": "Sơ đồ đánh dấu bao nhiêu địa điểm?",
+      "answer": "5"
+    }
+  ]
+}

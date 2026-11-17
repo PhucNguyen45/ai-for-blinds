@@ -1,0 +1,95 @@
+{
+  "schema": "truth_v0.2",
+  "id": "flow_04",
+  "category": "flow_diagram",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Quy trình làm một bài toán",
+  "expected_status": "ok",
+  "data": {
+    "nodes": [
+      "Nhận đề bài",
+      "Đọc kĩ đề",
+      "Đã hiểu đề?",
+      "Làm bài"
+    ],
+    "edges": [
+      {
+        "from": "Nhận đề bài",
+        "to": "Đọc kĩ đề",
+        "label": null
+      },
+      {
+        "from": "Đọc kĩ đề",
+        "to": "Đã hiểu đề?",
+        "label": null
+      },
+      {
+        "from": "Đã hiểu đề?",
+        "to": "Làm bài",
+        "label": "Có"
+      },
+      {
+        "from": "Đã hiểu đề?",
+        "to": "Đọc kĩ đề",
+        "label": "Không"
+      }
+    ]
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "relation",
+      "subject": "Nhận đề bài",
+      "predicate": "dẫn đến",
+      "object": "Đọc kĩ đề",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "relation",
+      "subject": "Đọc kĩ đề",
+      "predicate": "dẫn đến",
+      "object": "Đã hiểu đề?",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "relation",
+      "subject": "Đã hiểu đề?",
+      "predicate": "dẫn đến khi câu trả lời là 'Có'",
+      "object": "Làm bài",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "relation",
+      "subject": "Đã hiểu đề?",
+      "predicate": "dẫn đến khi câu trả lời là 'Không'",
+      "object": "Đọc kĩ đề",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "structure",
+      "subject": "Sơ đồ",
+      "predicate": "có",
+      "object": "một vòng lặp: nếu chưa hiểu đề thì quay lại bước 'Đọc kĩ đề'",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "relation",
+      "question": "Nếu chưa hiểu đề thì quay lại bước nào?",
+      "answer": "Đọc kĩ đề"
+    },
+    {
+      "id": "Q2",
+      "type": "relation",
+      "question": "Nếu đã hiểu đề thì làm gì tiếp theo?",
+      "answer": "Làm bài"
+    }
+  ]
+}

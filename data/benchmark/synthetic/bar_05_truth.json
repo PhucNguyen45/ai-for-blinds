@@ -1,0 +1,115 @@
+{
+  "schema": "truth_v0.2",
+  "id": "bar_05",
+  "category": "bar_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Số huy chương của các đội",
+  "expected_status": "ok",
+  "data": {
+    "values": {
+      "Đội A": 35,
+      "Đội B": 40,
+      "Đội C": 6,
+      "Đội D": 25,
+      "Đội E": 39
+    },
+    "unit": "huy chương",
+    "y_axis_step": 5,
+    "has_value_labels": true
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Cột Đội A",
+      "predicate": "có giá trị",
+      "object": "35 huy chương",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Cột Đội B",
+      "predicate": "có giá trị",
+      "object": "40 huy chương",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Cột Đội C",
+      "predicate": "có giá trị",
+      "object": "6 huy chương",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Cột Đội D",
+      "predicate": "có giá trị",
+      "object": "25 huy chương",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "value",
+      "subject": "Cột Đội E",
+      "predicate": "có giá trị",
+      "object": "39 huy chương",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Giá trị lớn nhất",
+      "predicate": "thuộc về",
+      "object": "Đội B",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "comparison",
+      "subject": "Giá trị nhỏ nhất",
+      "predicate": "thuộc về",
+      "object": "Đội C",
+      "critical": true
+    },
+    {
+      "id": "P8",
+      "kind": "inference",
+      "subject": "Chênh lệch giữa cột lớn nhất và nhỏ nhất",
+      "predicate": "bằng",
+      "object": "34 huy chương",
+      "critical": false
+    },
+    {
+      "id": "P9",
+      "kind": "inference",
+      "subject": "Tổng các cột",
+      "predicate": "bằng",
+      "object": "145 huy chương",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Cột nào có giá trị lớn nhất?",
+      "answer": "Đội B"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Cột Đội A có giá trị là bao nhiêu?",
+      "answer": "35 huy chương"
+    },
+    {
+      "id": "Q3",
+      "type": "computation",
+      "question": "Tổng giá trị của tất cả các cột là bao nhiêu?",
+      "answer": "145 huy chương"
+    }
+  ]
+}

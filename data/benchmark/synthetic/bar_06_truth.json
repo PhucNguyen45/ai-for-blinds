@@ -1,0 +1,106 @@
+{
+  "schema": "truth_v0.2",
+  "id": "bar_06",
+  "category": "bar_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Số thùng rác phân loại ở các khu",
+  "expected_status": "ok",
+  "data": {
+    "values": {
+      "Khu A": 15,
+      "Khu B": 5,
+      "Khu C": 20,
+      "Khu D": 30
+    },
+    "unit": "thùng",
+    "y_axis_step": 5,
+    "has_value_labels": false
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Cột Khu A",
+      "predicate": "có giá trị",
+      "object": "15 thùng",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Cột Khu B",
+      "predicate": "có giá trị",
+      "object": "5 thùng",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Cột Khu C",
+      "predicate": "có giá trị",
+      "object": "20 thùng",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Cột Khu D",
+      "predicate": "có giá trị",
+      "object": "30 thùng",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "comparison",
+      "subject": "Giá trị lớn nhất",
+      "predicate": "thuộc về",
+      "object": "Khu D",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Giá trị nhỏ nhất",
+      "predicate": "thuộc về",
+      "object": "Khu B",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "inference",
+      "subject": "Chênh lệch giữa cột lớn nhất và nhỏ nhất",
+      "predicate": "bằng",
+      "object": "25 thùng",
+      "critical": false
+    },
+    {
+      "id": "P8",
+      "kind": "inference",
+      "subject": "Tổng các cột",
+      "predicate": "bằng",
+      "object": "70 thùng",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Cột nào có giá trị lớn nhất?",
+      "answer": "Khu D"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Cột Khu A có giá trị là bao nhiêu?",
+      "answer": "15 thùng"
+    },
+    {
+      "id": "Q3",
+      "type": "computation",
+      "question": "Tổng giá trị của tất cả các cột là bao nhiêu?",
+      "answer": "70 thùng"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "truth_v0.2",
+  "id": "cand_009",
+  "category": "pie_chart",
+  "synthetic": false,
+  "language": "en",
+  "title": "Biểu đồ tròn: nơi người Úc gốc Israel sinh sống (nhãn tiếng Anh)",
+  "expected_status": "ok",
+  "ground_truth_status": "draft_ai_assisted_unverified",
+  "review_required": "Người nghiên cứu phải đối chiếu từng mệnh đề với ảnh gốc (và người thứ hai rà soát) trước khi đưa vào manifest.",
+  "note": "Không có số liệu trong ảnh: hệ thống chỉ nên so sánh tương đối, không bịa phần trăm.",
+  "data": {},
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "structure",
+      "subject": "Tiêu đề",
+      "predicate": "là",
+      "object": "Where Israeli Australians Live; phụ đề: Data from the 2016 Australian Census",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "structure",
+      "subject": "Chú giải",
+      "predicate": "gồm",
+      "object": "bốn phần: NSW (xanh dương), VIC (cam), WA (xám), QLD (vàng)",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "structure",
+      "subject": "Biểu đồ",
+      "predicate": "không hiển thị",
+      "object": "số liệu phần trăm hay số người trên các phần",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "comparison",
+      "subject": "Phần lớn nhất",
+      "predicate": "là",
+      "object": "NSW (xanh dương, gần một nửa hình tròn)",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "comparison",
+      "subject": "Thứ tự các phần từ lớn đến nhỏ",
+      "predicate": "là",
+      "object": "NSW, VIC, WA, QLD (WA và QLD khá gần nhau; cần người kiểm chứng xác nhận WA hơn QLD)",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Phần nào lớn nhất?",
+      "answer": "NSW"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Biểu đồ có ghi số liệu phần trăm không?",
+      "answer": "Không"
+    }
+  ]
+}

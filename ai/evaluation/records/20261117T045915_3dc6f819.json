@@ -1,0 +1,65 @@
+{
+  "run_id": "20261117T045915_3dc6f819",
+  "timestamp_utc": "2026-11-17T04:59:15.944556+00:00",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "image_sha256": "31ed6205f71f76c9cdbbe83e1e88e0f20325c5400e69b122693e3aed2c2d41da",
+  "prompt": "Bạn là trợ lý diễn giải học liệu trực quan cho học sinh khiếm thị.\n\nHãy quan sát hình ảnh và diễn giải bằng tiếng Việt theo các mục:\n\n1. Chủ đề: Xác định loại hình ảnh và nội dung chính.\n2. Thành phần: Nêu các đối tượng, nhãn, số liệu hoặc yếu tố quan trọng.\n3. Quan hệ: Giải thích vị trí, thứ tự, sự liên kết, hướng mũi tên hoặc so sánh nếu có.\n4. Ý nghĩa: Giải thích kiến thức chính mà hình ảnh truyền đạt.\n\nYêu cầu:\n- Chỉ sử dụng thông tin có căn cứ từ hình ảnh.\n- Phân biệt giá trị đọc trực tiếp với giá trị ước lượng.\n- Nếu không chắc chắn, hãy nói rõ điều chưa chắc chắn.\n- Không tự tạo số liệu, thành phần hoặc quan hệ không có căn cứ.\n- Sử dụng tiếng Việt rõ ràng, đúng thuật ngữ, phù hợp đọc bằng giọng nói.\n- Tránh lời mở đầu, kết thúc và ký tự trang trí không cần thiết.",
+  "temperature": 0.2,
+  "max_tokens": 600,
+  "reasoning": {
+    "enabled": false
+  },
+  "http_status": 200,
+  "latency_seconds": 25.713,
+  "response": {
+    "id": "gen-1794891572-Pl5BENetIJv0SKiBIYE0",
+    "object": "chat.completion",
+    "created": 1794891572,
+    "model": "nvidia/nemotron-3.5-super-vl:free",
+    "provider": "Nvidia",
+    "system_fingerprint": null,
+    "service_tier": null,
+    "choices": [
+      {
+        "index": 0,
+        "logprobs": null,
+        "finish_reason": "stop",
+        "native_finish_reason": "stop",
+        "message": {
+          "role": "assistant",
+          "content": "1. Chủ đề: Bảng điểm kiểm tra giữa kỳ của các học sinh theo từng môn học.\n\n2. Thành phần:\n- Cột đầu tiên: Học sinh, bao gồm Học sinh A, Học sinh B, Học sinh C, Học sinh D.\n- Cột thứ hai: Toán.\n- Cột thứ ba: Ngữ văn.\n- Cột thứ tư: Tiếng Anh.\n- Các ô chứa số liệu điểm tương ứng.\n\n3. Quan hệ:\n- Mỗi hàng tương ứng với một học sinh và liệt kê điểm của ba môn: Toán, Ngữ văn, Tiếng Anh.\n- Không có mũi tên hay đường nối trực tiếp giữa các ô.\n- Các giá trị được đọc trực tiếp từ bảng.\n\n4. Ý nghĩa:\n- Hình ảnh truyền đạt thông tin về kết quả học tập giữa kỳ của bốn học sinh trong ba môn học chính.\n- Cho phép so sánh điểm số giữa các học sinh và giữa các môn học dựa trên dữ liệu trong bảng.\n\nChi tiết số liệu đọc trực tiếp từ hình ảnh:\n- Học sinh A: Toán 8,5; Ngữ văn 8,0; Tiếng Anh 7,5.\n- Học sinh B: Toán 8,0; Ngữ văn 5,0; Tiếng Anh 6,5.\n- Học sinh C: Toán 6,0; Ngữ văn 9,0; Tiếng Anh 10,0.\n- Học sinh D: Toán 7,5; Ngữ văn 6,5; Tiếng Anh 7,5.",
+          "refusal": null,
+          "reasoning": null
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1055,
+      "completion_tokens": 352,
+      "total_tokens": 1407,
+      "cost": 0,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 0,
+        "upstream_inference_prompt_cost": 0,
+        "upstream_inference_completions_cost": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    }
+  },
+  "benchmark_id": "table_01",
+  "benchmark_version": "0.2.0",
+  "image_path": "data/benchmark/synthetic/table_01.png",
+  "prompt_id": "b0_v1",
+  "prompt_sha256": "bed8178b7ac8782c7d3e720bac05bc979ebd590ab9d76c210c057949fdcf20c0"
+}

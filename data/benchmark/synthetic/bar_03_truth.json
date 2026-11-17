@@ -1,0 +1,115 @@
+{
+  "schema": "truth_v0.2",
+  "id": "bar_03",
+  "category": "bar_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Số học sinh tham gia các câu lạc bộ",
+  "expected_status": "ok",
+  "data": {
+    "values": {
+      "Bóng đá": 18,
+      "Cờ vua": 21,
+      "Vẽ": 12,
+      "Âm nhạc": 37,
+      "Tin học": 13
+    },
+    "unit": "học sinh",
+    "y_axis_step": 5,
+    "has_value_labels": true
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Cột Bóng đá",
+      "predicate": "có giá trị",
+      "object": "18 học sinh",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Cột Cờ vua",
+      "predicate": "có giá trị",
+      "object": "21 học sinh",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Cột Vẽ",
+      "predicate": "có giá trị",
+      "object": "12 học sinh",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Cột Âm nhạc",
+      "predicate": "có giá trị",
+      "object": "37 học sinh",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "value",
+      "subject": "Cột Tin học",
+      "predicate": "có giá trị",
+      "object": "13 học sinh",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Giá trị lớn nhất",
+      "predicate": "thuộc về",
+      "object": "Âm nhạc",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "comparison",
+      "subject": "Giá trị nhỏ nhất",
+      "predicate": "thuộc về",
+      "object": "Vẽ",
+      "critical": true
+    },
+    {
+      "id": "P8",
+      "kind": "inference",
+      "subject": "Chênh lệch giữa cột lớn nhất và nhỏ nhất",
+      "predicate": "bằng",
+      "object": "25 học sinh",
+      "critical": false
+    },
+    {
+      "id": "P9",
+      "kind": "inference",
+      "subject": "Tổng các cột",
+      "predicate": "bằng",
+      "object": "101 học sinh",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Cột nào có giá trị lớn nhất?",
+      "answer": "Âm nhạc"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Cột Bóng đá có giá trị là bao nhiêu?",
+      "answer": "18 học sinh"
+    },
+    {
+      "id": "Q3",
+      "type": "computation",
+      "question": "Tổng giá trị của tất cả các cột là bao nhiêu?",
+      "answer": "101 học sinh"
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "schema": "truth_v0.2",
+  "id": "table_02",
+  "category": "table",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Số sản phẩm bán được theo tuần",
+  "expected_status": "ok",
+  "data": {
+    "row_labels": [
+      "Tuần 1",
+      "Tuần 2",
+      "Tuần 3",
+      "Tuần 4"
+    ],
+    "column_labels": [
+      "Bút",
+      "Vở",
+      "Thước"
+    ],
+    "rows": [
+      [
+        47,
+        50,
+        36
+      ],
+      [
+        13,
+        17,
+        32
+      ],
+      [
+        45,
+        16,
+        47
+      ],
+      [
+        37,
+        42,
+        18
+      ]
+    ]
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Tuần 1 – Bút",
+      "predicate": "có giá trị",
+      "object": "47",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Tuần 1 – Vở",
+      "predicate": "có giá trị",
+      "object": "50",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Tuần 1 – Thước",
+      "predicate": "có giá trị",
+      "object": "36",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Tuần 2 – Bút",
+      "predicate": "có giá trị",
+      "object": "13",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "value",
+      "subject": "Tuần 2 – Vở",
+      "predicate": "có giá trị",
+      "object": "17",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "value",
+      "subject": "Tuần 2 – Thước",
+      "predicate": "có giá trị",
+      "object": "32",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "value",
+      "subject": "Tuần 3 – Bút",
+      "predicate": "có giá trị",
+      "object": "45",
+      "critical": true
+    },
+    {
+      "id": "P8",
+      "kind": "value",
+      "subject": "Tuần 3 – Vở",
+      "predicate": "có giá trị",
+      "object": "16",
+      "critical": true
+    },
+    {
+      "id": "P9",
+      "kind": "value",
+      "subject": "Tuần 3 – Thước",
+      "predicate": "có giá trị",
+      "object": "47",
+      "critical": true
+    },
+    {
+      "id": "P10",
+      "kind": "value",
+      "subject": "Tuần 4 – Bút",
+      "predicate": "có giá trị",
+      "object": "37",
+      "critical": true
+    },
+    {
+      "id": "P11",
+      "kind": "value",
+      "subject": "Tuần 4 – Vở",
+      "predicate": "có giá trị",
+      "object": "42",
+      "critical": true
+    },
+    {
+      "id": "P12",
+      "kind": "value",
+      "subject": "Tuần 4 – Thước",
+      "predicate": "có giá trị",
+      "object": "18",
+      "critical": true
+    },
+    {
+      "id": "P13",
+      "kind": "comparison",
+      "subject": "Giá trị lớn nhất của cột Bút",
+      "predicate": "thuộc về",
+      "object": "Tuần 1",
+      "critical": true
+    },
+    {
+      "id": "P14",
+      "kind": "comparison",
+      "subject": "Giá trị lớn nhất của cột Vở",
+      "predicate": "thuộc về",
+      "object": "Tuần 1",
+      "critical": true
+    },
+    {
+      "id": "P15",
+      "kind": "comparison",
+      "subject": "Giá trị lớn nhất của cột Thước",
+      "predicate": "thuộc về",
+      "object": "Tuần 3",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "lookup",
+      "question": "Tuần 2 – Bút có giá trị là bao nhiêu?",
+      "answer": "13"
+    },
+    {
+      "id": "Q2",
+      "type": "comparison",
+      "question": "Ở cột Thước, hàng nào có giá trị lớn nhất?",
+      "answer": "Tuần 3"
+    },
+    {
+      "id": "Q3",
+      "type": "computation",
+      "question": "Tổng các giá trị của hàng Tuần 1 là bao nhiêu?",
+      "answer": "133"
+    }
+  ]
+}

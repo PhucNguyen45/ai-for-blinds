@@ -1,0 +1,31 @@
+{
+  "schema": "truth_v0.2",
+  "id": "line_03_unreadable",
+  "category": "line_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Số cuốn sách đọc được qua các tuần",
+  "expected_status": "unreadable",
+  "data": {},
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "structure",
+      "subject": "Ảnh",
+      "predicate": "ở trạng thái",
+      "object": "không đọc được, không đủ căn cứ để diễn giải",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "refusal",
+      "question": "Giá trị hoặc nhãn chính trong ảnh là gì?",
+      "answer": "không xác định được từ ảnh"
+    }
+  ],
+  "derived_from": "line_03",
+  "degradation": "giảm độ phân giải 36 lần, làm mờ mạnh, tối đi",
+  "refusal_expected": true
+}

@@ -1,0 +1,92 @@
+{
+  "schema": "truth_v0.2",
+  "id": "flow_03",
+  "category": "flow_diagram",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Các bước chấm và trả bài kiểm tra",
+  "expected_status": "ok",
+  "data": {
+    "nodes": [
+      "Học sinh nộp bài",
+      "Giáo viên chấm bài",
+      "Nhập điểm vào sổ",
+      "Thông báo kết quả"
+    ],
+    "edges": [
+      {
+        "from": "Học sinh nộp bài",
+        "to": "Giáo viên chấm bài",
+        "label": null
+      },
+      {
+        "from": "Giáo viên chấm bài",
+        "to": "Nhập điểm vào sổ",
+        "label": null
+      },
+      {
+        "from": "Nhập điểm vào sổ",
+        "to": "Thông báo kết quả",
+        "label": null
+      }
+    ]
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "relation",
+      "subject": "Học sinh nộp bài",
+      "predicate": "dẫn đến",
+      "object": "Giáo viên chấm bài",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "relation",
+      "subject": "Giáo viên chấm bài",
+      "predicate": "dẫn đến",
+      "object": "Nhập điểm vào sổ",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "relation",
+      "subject": "Nhập điểm vào sổ",
+      "predicate": "dẫn đến",
+      "object": "Thông báo kết quả",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "structure",
+      "subject": "Sơ đồ",
+      "predicate": "đi theo hướng",
+      "object": "từ trên xuống dưới",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "structure",
+      "subject": "Bước đầu tiên",
+      "predicate": "là",
+      "object": "Học sinh nộp bài",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "structure",
+      "subject": "Bước cuối cùng",
+      "predicate": "là",
+      "object": "Thông báo kết quả",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "relation",
+      "question": "Bước nào diễn ra ngay trước khi nhập điểm vào sổ?",
+      "answer": "Giáo viên chấm bài"
+    }
+  ]
+}

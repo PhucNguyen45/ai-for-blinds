@@ -1,0 +1,52 @@
+{
+  "schema": "truth_v0.2",
+  "id": "geo_04",
+  "category": "geometry",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Đường tròn tâm O",
+  "expected_status": "ok",
+  "data": {
+    "radius_cm": 6
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "structure",
+      "subject": "Điểm O",
+      "predicate": "là",
+      "object": "tâm của đường tròn",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Bán kính của đường tròn",
+      "predicate": "bằng",
+      "object": "6 cm",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "inference",
+      "subject": "Đường kính của đường tròn",
+      "predicate": "bằng",
+      "object": "12 cm",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "lookup",
+      "question": "Bán kính của đường tròn là bao nhiêu?",
+      "answer": "6 cm"
+    },
+    {
+      "id": "Q2",
+      "type": "computation",
+      "question": "Đường kính của đường tròn là bao nhiêu?",
+      "answer": "12 cm"
+    }
+  ]
+}

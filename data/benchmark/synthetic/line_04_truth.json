@@ -1,0 +1,115 @@
+{
+  "schema": "truth_v0.2",
+  "id": "line_04",
+  "category": "line_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Số cây xanh của trường qua các năm",
+  "expected_status": "ok",
+  "data": {
+    "points": {
+      "2021": 30,
+      "2022": 5,
+      "2023": 40,
+      "2024": 10,
+      "2025": 20
+    },
+    "unit": "cây",
+    "y_axis_step": 5,
+    "has_value_labels": false
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Điểm 2021",
+      "predicate": "có giá trị",
+      "object": "30 cây",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Điểm 2022",
+      "predicate": "có giá trị",
+      "object": "5 cây",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Điểm 2023",
+      "predicate": "có giá trị",
+      "object": "40 cây",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Điểm 2024",
+      "predicate": "có giá trị",
+      "object": "10 cây",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "value",
+      "subject": "Điểm 2025",
+      "predicate": "có giá trị",
+      "object": "20 cây",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Giá trị cao nhất",
+      "predicate": "xuất hiện tại",
+      "object": "2023",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "comparison",
+      "subject": "Giá trị thấp nhất",
+      "predicate": "xuất hiện tại",
+      "object": "2022",
+      "critical": true
+    },
+    {
+      "id": "P8",
+      "kind": "comparison",
+      "subject": "Từ 2021 đến 2025",
+      "predicate": "xu hướng chung là",
+      "object": "giảm",
+      "critical": true
+    },
+    {
+      "id": "P9",
+      "kind": "comparison",
+      "subject": "Mức tăng lớn nhất giữa hai điểm liên tiếp",
+      "predicate": "xảy ra từ",
+      "object": "2022 đến 2023 (tăng 35 cây)",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Giá trị cao nhất xuất hiện ở đâu?",
+      "answer": "2023"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Giá trị tại 2021 là bao nhiêu?",
+      "answer": "30 cây"
+    },
+    {
+      "id": "Q3",
+      "type": "comparison",
+      "question": "Giữa hai điểm liên tiếp nào giá trị tăng nhiều nhất?",
+      "answer": "2022 đến 2023"
+    }
+  ]
+}

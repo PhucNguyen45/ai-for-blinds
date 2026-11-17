@@ -1,0 +1,115 @@
+{
+  "schema": "truth_v0.2",
+  "id": "line_05",
+  "category": "line_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Chiều cao của cây đậu theo ngày",
+  "expected_status": "ok",
+  "data": {
+    "points": {
+      "Ngày 1": 30,
+      "Ngày 3": 5,
+      "Ngày 5": 35,
+      "Ngày 7": 15,
+      "Ngày 9": 10
+    },
+    "unit": "cm",
+    "y_axis_step": 5,
+    "has_value_labels": true
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Điểm Ngày 1",
+      "predicate": "có giá trị",
+      "object": "30 cm",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Điểm Ngày 3",
+      "predicate": "có giá trị",
+      "object": "5 cm",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Điểm Ngày 5",
+      "predicate": "có giá trị",
+      "object": "35 cm",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Điểm Ngày 7",
+      "predicate": "có giá trị",
+      "object": "15 cm",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "value",
+      "subject": "Điểm Ngày 9",
+      "predicate": "có giá trị",
+      "object": "10 cm",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Giá trị cao nhất",
+      "predicate": "xuất hiện tại",
+      "object": "Ngày 5",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "comparison",
+      "subject": "Giá trị thấp nhất",
+      "predicate": "xuất hiện tại",
+      "object": "Ngày 3",
+      "critical": true
+    },
+    {
+      "id": "P8",
+      "kind": "comparison",
+      "subject": "Từ Ngày 1 đến Ngày 9",
+      "predicate": "xu hướng chung là",
+      "object": "giảm",
+      "critical": true
+    },
+    {
+      "id": "P9",
+      "kind": "comparison",
+      "subject": "Mức tăng lớn nhất giữa hai điểm liên tiếp",
+      "predicate": "xảy ra từ",
+      "object": "Ngày 3 đến Ngày 5 (tăng 30 cm)",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Giá trị cao nhất xuất hiện ở đâu?",
+      "answer": "Ngày 5"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Giá trị tại Ngày 1 là bao nhiêu?",
+      "answer": "30 cm"
+    },
+    {
+      "id": "Q3",
+      "type": "comparison",
+      "question": "Giữa hai điểm liên tiếp nào giá trị tăng nhiều nhất?",
+      "answer": "Ngày 3 đến Ngày 5"
+    }
+  ]
+}

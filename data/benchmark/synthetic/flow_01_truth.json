@@ -1,0 +1,112 @@
+{
+  "schema": "truth_v0.2",
+  "id": "flow_01",
+  "category": "flow_diagram",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Quy trình xử lý rác tái chế",
+  "expected_status": "ok",
+  "data": {
+    "nodes": [
+      "Thu gom rác",
+      "Phân loại rác",
+      "Làm sạch",
+      "Tái chế",
+      "Sản phẩm mới"
+    ],
+    "edges": [
+      {
+        "from": "Thu gom rác",
+        "to": "Phân loại rác",
+        "label": null
+      },
+      {
+        "from": "Phân loại rác",
+        "to": "Làm sạch",
+        "label": null
+      },
+      {
+        "from": "Làm sạch",
+        "to": "Tái chế",
+        "label": null
+      },
+      {
+        "from": "Tái chế",
+        "to": "Sản phẩm mới",
+        "label": null
+      }
+    ]
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "relation",
+      "subject": "Thu gom rác",
+      "predicate": "dẫn đến",
+      "object": "Phân loại rác",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "relation",
+      "subject": "Phân loại rác",
+      "predicate": "dẫn đến",
+      "object": "Làm sạch",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "relation",
+      "subject": "Làm sạch",
+      "predicate": "dẫn đến",
+      "object": "Tái chế",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "relation",
+      "subject": "Tái chế",
+      "predicate": "dẫn đến",
+      "object": "Sản phẩm mới",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "structure",
+      "subject": "Sơ đồ",
+      "predicate": "đi theo hướng",
+      "object": "từ trái sang phải",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "structure",
+      "subject": "Bước đầu tiên",
+      "predicate": "là",
+      "object": "Thu gom rác",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "structure",
+      "subject": "Bước cuối cùng",
+      "predicate": "là",
+      "object": "Sản phẩm mới",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "relation",
+      "question": "Sau bước Phân loại rác là bước nào?",
+      "answer": "Làm sạch"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Quy trình có tất cả bao nhiêu bước?",
+      "answer": "5"
+    }
+  ]
+}

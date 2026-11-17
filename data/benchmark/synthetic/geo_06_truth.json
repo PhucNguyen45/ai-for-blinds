@@ -1,0 +1,62 @@
+{
+  "schema": "truth_v0.2",
+  "id": "geo_06",
+  "category": "geometry",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Tam giác ABC với hai góc cho trước",
+  "expected_status": "ok",
+  "data": {
+    "angle_A": 45,
+    "angle_B": 75,
+    "angle_C": 60
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Góc A",
+      "predicate": "có số đo",
+      "object": "45°",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Góc B",
+      "predicate": "có số đo",
+      "object": "75°",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "structure",
+      "subject": "Góc C",
+      "predicate": "chưa biết số đo (đánh dấu '?')",
+      "object": "cần tính",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "inference",
+      "subject": "Góc C",
+      "predicate": "có số đo",
+      "object": "60°",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "lookup",
+      "question": "Góc A có số đo bao nhiêu độ?",
+      "answer": "45°"
+    },
+    {
+      "id": "Q2",
+      "type": "computation",
+      "question": "Góc C có số đo bao nhiêu độ?",
+      "answer": "60°"
+    }
+  ]
+}

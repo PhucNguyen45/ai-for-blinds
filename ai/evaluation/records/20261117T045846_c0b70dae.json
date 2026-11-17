@@ -1,0 +1,65 @@
+{
+  "run_id": "20261117T045846_c0b70dae",
+  "timestamp_utc": "2026-11-17T04:58:46.771094+00:00",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "image_sha256": "50e5033eae9ae8c2baf6a27b158ca3c03d023722cbe88208c0ad6ac3f2b1dec1",
+  "prompt": "Bạn là trợ lý diễn giải học liệu trực quan cho học sinh khiếm thị.\n\nHãy quan sát hình ảnh và diễn giải bằng tiếng Việt theo các mục:\n\n1. Chủ đề: Xác định loại hình ảnh và nội dung chính.\n2. Thành phần: Nêu các đối tượng, nhãn, số liệu hoặc yếu tố quan trọng.\n3. Quan hệ: Giải thích vị trí, thứ tự, sự liên kết, hướng mũi tên hoặc so sánh nếu có.\n4. Ý nghĩa: Giải thích kiến thức chính mà hình ảnh truyền đạt.\n\nYêu cầu:\n- Chỉ sử dụng thông tin có căn cứ từ hình ảnh.\n- Phân biệt giá trị đọc trực tiếp với giá trị ước lượng.\n- Nếu không chắc chắn, hãy nói rõ điều chưa chắc chắn.\n- Không tự tạo số liệu, thành phần hoặc quan hệ không có căn cứ.\n- Sử dụng tiếng Việt rõ ràng, đúng thuật ngữ, phù hợp đọc bằng giọng nói.\n- Tránh lời mở đầu, kết thúc và ký tự trang trí không cần thiết.",
+  "temperature": 0.2,
+  "max_tokens": 600,
+  "reasoning": {
+    "enabled": false
+  },
+  "http_status": 200,
+  "latency_seconds": 2.914,
+  "response": {
+    "id": "gen-1794891566-ITQuzOWcMCvsC1RUldgZ",
+    "object": "chat.completion",
+    "created": 1794891566,
+    "model": "nvidia/nemotron-3.5-super-vl:free",
+    "provider": "Nvidia",
+    "system_fingerprint": null,
+    "service_tier": null,
+    "choices": [
+      {
+        "index": 0,
+        "logprobs": null,
+        "finish_reason": "stop",
+        "native_finish_reason": "stop",
+        "message": {
+          "role": "assistant",
+          "content": "1. Chủ đề: Biểu đồ tròn thể hiện phương tiện học sinh đến trường.\n\n2. Thành phần: Bao gồm bốn phần tương ứng với bốn phương tiện: Đi bộ, Xe đạp, Xe máy, Xe buýt. Các giá trị phần trăm ghi trực tiếp trên biểu đồ là 35%, 25%, 25%, 15%.\n\n3. Quan hệ: Phần lớn nhất là Đi bộ với 35%. Phần nhỏ nhất là Xe buýt với 15%. Xe đạp và Xe máy bằng nhau, mỗi loại 25%. Tổng các phần trăm là 100%.\n\n4. Ý nghĩa: Hình ảnh truyền đạt thông tin về tỷ lệ học sinh sử dụng các phương tiện di chuyển đến trường, cho thấy đi bộ là phương thức phổ biến nhất, tiếp theo là xe đạp và xe máy, còn xe buýt ít được sử dụng nhất.",
+          "refusal": null,
+          "reasoning": null
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1055,
+      "completion_tokens": 202,
+      "total_tokens": 1257,
+      "cost": 0,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 0,
+        "upstream_inference_prompt_cost": 0,
+        "upstream_inference_completions_cost": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    }
+  },
+  "benchmark_id": "pie_01",
+  "benchmark_version": "0.2.0",
+  "image_path": "data/benchmark/synthetic/pie_01.png",
+  "prompt_id": "b0_v1",
+  "prompt_sha256": "bed8178b7ac8782c7d3e720bac05bc979ebd590ab9d76c210c057949fdcf20c0"
+}

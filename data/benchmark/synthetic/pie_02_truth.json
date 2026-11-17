@@ -1,0 +1,105 @@
+{
+  "schema": "truth_v0.2",
+  "id": "pie_02",
+  "category": "pie_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Môn học yêu thích của lớp",
+  "expected_status": "ok",
+  "data": {
+    "percentages": {
+      "Toán": 30,
+      "Ngữ văn": 10,
+      "Tiếng Anh": 20,
+      "Thể dục": 20,
+      "Mỹ thuật": 20
+    },
+    "slice_order": "bắt đầu từ đỉnh (12 giờ), theo chiều kim đồng hồ, cùng thứ tự chú thích"
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Phần Toán",
+      "predicate": "chiếm",
+      "object": "30%",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Phần Ngữ văn",
+      "predicate": "chiếm",
+      "object": "10%",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Phần Tiếng Anh",
+      "predicate": "chiếm",
+      "object": "20%",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Phần Thể dục",
+      "predicate": "chiếm",
+      "object": "20%",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "value",
+      "subject": "Phần Mỹ thuật",
+      "predicate": "chiếm",
+      "object": "20%",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Phần lớn nhất",
+      "predicate": "là",
+      "object": "Toán",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "comparison",
+      "subject": "Phần nhỏ nhất",
+      "predicate": "là",
+      "object": "Ngữ văn",
+      "critical": true
+    },
+    {
+      "id": "P8",
+      "kind": "structure",
+      "subject": "Tổng các phần",
+      "predicate": "bằng",
+      "object": "100%",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Phần nào chiếm tỉ lệ lớn nhất?",
+      "answer": "Toán"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Phần Toán chiếm bao nhiêu phần trăm?",
+      "answer": "30%"
+    },
+    {
+      "id": "Q3",
+      "type": "computation",
+      "question": "Hai phần Toán và Tiếng Anh cộng lại chiếm bao nhiêu phần trăm?",
+      "answer": "50%"
+    }
+  ]
+}

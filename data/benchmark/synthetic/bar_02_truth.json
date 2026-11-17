@@ -1,0 +1,106 @@
+{
+  "schema": "truth_v0.2",
+  "id": "bar_02",
+  "category": "bar_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Lượng mưa trung bình các tháng mùa mưa",
+  "expected_status": "ok",
+  "data": {
+    "values": {
+      "Tháng 6": 35,
+      "Tháng 7": 15,
+      "Tháng 8": 10,
+      "Tháng 9": 30
+    },
+    "unit": "mm",
+    "y_axis_step": 5,
+    "has_value_labels": false
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Cột Tháng 6",
+      "predicate": "có giá trị",
+      "object": "35 mm",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Cột Tháng 7",
+      "predicate": "có giá trị",
+      "object": "15 mm",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Cột Tháng 8",
+      "predicate": "có giá trị",
+      "object": "10 mm",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Cột Tháng 9",
+      "predicate": "có giá trị",
+      "object": "30 mm",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "comparison",
+      "subject": "Giá trị lớn nhất",
+      "predicate": "thuộc về",
+      "object": "Tháng 6",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Giá trị nhỏ nhất",
+      "predicate": "thuộc về",
+      "object": "Tháng 8",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "inference",
+      "subject": "Chênh lệch giữa cột lớn nhất và nhỏ nhất",
+      "predicate": "bằng",
+      "object": "25 mm",
+      "critical": false
+    },
+    {
+      "id": "P8",
+      "kind": "inference",
+      "subject": "Tổng các cột",
+      "predicate": "bằng",
+      "object": "90 mm",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Cột nào có giá trị lớn nhất?",
+      "answer": "Tháng 6"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Cột Tháng 6 có giá trị là bao nhiêu?",
+      "answer": "35 mm"
+    },
+    {
+      "id": "Q3",
+      "type": "computation",
+      "question": "Tổng giá trị của tất cả các cột là bao nhiêu?",
+      "answer": "90 mm"
+    }
+  ]
+}

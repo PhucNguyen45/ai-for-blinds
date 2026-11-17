@@ -1,0 +1,116 @@
+{
+  "schema": "truth_v0.2",
+  "id": "map_01",
+  "category": "schematic_map",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Sơ đồ khu phố",
+  "expected_status": "ok",
+  "data": {
+    "north_is_up": true,
+    "grid_cell_(row,col)": {
+      "Trường học": [
+        1,
+        2
+      ],
+      "Chợ": [
+        2,
+        2
+      ],
+      "Sân vận động": [
+        0,
+        0
+      ],
+      "Bưu điện": [
+        2,
+        1
+      ],
+      "Công viên": [
+        1,
+        1
+      ]
+    }
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "structure",
+      "subject": "Hướng Bắc",
+      "predicate": "nằm ở",
+      "object": "phía trên của sơ đồ",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "structure",
+      "subject": "Số địa điểm được đánh dấu",
+      "predicate": "là",
+      "object": "5",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "relation",
+      "subject": "Chợ",
+      "predicate": "nằm ở",
+      "object": "phía Nam của Trường học",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "relation",
+      "subject": "Sân vận động",
+      "predicate": "nằm ở",
+      "object": "phía Tây Bắc của Trường học",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "relation",
+      "subject": "Bưu điện",
+      "predicate": "nằm ở",
+      "object": "phía Tây Nam của Trường học",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "relation",
+      "subject": "Công viên",
+      "predicate": "nằm ở",
+      "object": "phía Tây của Trường học",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "relation",
+      "question": "Chợ nằm ở hướng nào so với Trường học?",
+      "answer": "Nam"
+    },
+    {
+      "id": "Q2",
+      "type": "relation",
+      "question": "Sân vận động nằm ở hướng nào so với Trường học?",
+      "answer": "Tây Bắc"
+    },
+    {
+      "id": "Q3",
+      "type": "relation",
+      "question": "Bưu điện nằm ở hướng nào so với Trường học?",
+      "answer": "Tây Nam"
+    },
+    {
+      "id": "Q4",
+      "type": "relation",
+      "question": "Công viên nằm ở hướng nào so với Trường học?",
+      "answer": "Tây"
+    },
+    {
+      "id": "Q5",
+      "type": "lookup",
+      "question": "Sơ đồ đánh dấu bao nhiêu địa điểm?",
+      "answer": "5"
+    }
+  ]
+}

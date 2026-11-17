@@ -1,0 +1,88 @@
+{
+  "schema": "truth_v0.2",
+  "id": "cycle_01",
+  "category": "cycle_diagram",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Vòng tuần hoàn của nước",
+  "expected_status": "ok",
+  "data": {
+    "stages_in_order": [
+      "Nước bốc hơi",
+      "Hơi nước ngưng tụ thành mây",
+      "Mưa rơi xuống",
+      "Nước chảy về sông, biển"
+    ],
+    "arrow_direction": "cùng chiều kim đồng hồ"
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "relation",
+      "subject": "Nước bốc hơi",
+      "predicate": "dẫn đến",
+      "object": "Hơi nước ngưng tụ thành mây",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "relation",
+      "subject": "Hơi nước ngưng tụ thành mây",
+      "predicate": "dẫn đến",
+      "object": "Mưa rơi xuống",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "relation",
+      "subject": "Mưa rơi xuống",
+      "predicate": "dẫn đến",
+      "object": "Nước chảy về sông, biển",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "relation",
+      "subject": "Nước chảy về sông, biển",
+      "predicate": "dẫn đến",
+      "object": "Nước bốc hơi",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "structure",
+      "subject": "Chiều các mũi tên",
+      "predicate": "là",
+      "object": "cùng chiều kim đồng hồ",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "structure",
+      "subject": "Sơ đồ",
+      "predicate": "là",
+      "object": "một chu trình khép kín, không có điểm kết thúc",
+      "critical": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "relation",
+      "question": "Sau 'Nước bốc hơi' là giai đoạn nào?",
+      "answer": "Hơi nước ngưng tụ thành mây"
+    },
+    {
+      "id": "Q2",
+      "type": "relation",
+      "question": "Sau 'Nước chảy về sông, biển' là giai đoạn nào?",
+      "answer": "Nước bốc hơi"
+    },
+    {
+      "id": "Q3",
+      "type": "relation",
+      "question": "Các mũi tên đi theo chiều nào?",
+      "answer": "cùng chiều kim đồng hồ"
+    }
+  ]
+}

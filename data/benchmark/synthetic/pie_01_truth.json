@@ -1,0 +1,96 @@
+{
+  "schema": "truth_v0.2",
+  "id": "pie_01",
+  "category": "pie_chart",
+  "synthetic": true,
+  "language": "vi",
+  "title": "Phương tiện học sinh đến trường",
+  "expected_status": "ok",
+  "data": {
+    "percentages": {
+      "Đi bộ": 35,
+      "Xe đạp": 25,
+      "Xe máy": 25,
+      "Xe buýt": 15
+    },
+    "slice_order": "bắt đầu từ đỉnh (12 giờ), theo chiều kim đồng hồ, cùng thứ tự chú thích"
+  },
+  "propositions": [
+    {
+      "id": "P1",
+      "kind": "value",
+      "subject": "Phần Đi bộ",
+      "predicate": "chiếm",
+      "object": "35%",
+      "critical": true
+    },
+    {
+      "id": "P2",
+      "kind": "value",
+      "subject": "Phần Xe đạp",
+      "predicate": "chiếm",
+      "object": "25%",
+      "critical": true
+    },
+    {
+      "id": "P3",
+      "kind": "value",
+      "subject": "Phần Xe máy",
+      "predicate": "chiếm",
+      "object": "25%",
+      "critical": true
+    },
+    {
+      "id": "P4",
+      "kind": "value",
+      "subject": "Phần Xe buýt",
+      "predicate": "chiếm",
+      "object": "15%",
+      "critical": true
+    },
+    {
+      "id": "P5",
+      "kind": "comparison",
+      "subject": "Phần lớn nhất",
+      "predicate": "là",
+      "object": "Đi bộ",
+      "critical": true
+    },
+    {
+      "id": "P6",
+      "kind": "comparison",
+      "subject": "Phần nhỏ nhất",
+      "predicate": "là",
+      "object": "Xe buýt",
+      "critical": true
+    },
+    {
+      "id": "P7",
+      "kind": "structure",
+      "subject": "Tổng các phần",
+      "predicate": "bằng",
+      "object": "100%",
+      "critical": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "comparison",
+      "question": "Phần nào chiếm tỉ lệ lớn nhất?",
+      "answer": "Đi bộ"
+    },
+    {
+      "id": "Q2",
+      "type": "lookup",
+      "question": "Phần Đi bộ chiếm bao nhiêu phần trăm?",
+      "answer": "35%"
+    },
+    {
+      "id": "Q3",
+      "type": "computation",
+      "question": "Hai phần Đi bộ và Xe đạp cộng lại chiếm bao nhiêu phần trăm?",
+      "answer": "60%"
+    }
+  ]
+}
