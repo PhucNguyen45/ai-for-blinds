@@ -1,0 +1,316 @@
+{
+  "$defs": {
+    "ErrorInfo": {
+      "additionalProperties": false,
+      "description": "Lỗi vận hành. `message` không được chứa khóa API hoặc đường dẫn nội bộ.",
+      "properties": {
+        "code": {
+          "enum": [
+            "invalid_image",
+            "config_error",
+            "timeout",
+            "http_error",
+            "empty_response",
+            "unknown"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Http Status"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "title": "ErrorInfo",
+      "type": "object"
+    },
+    "Fact": {
+      "additionalProperties": false,
+      "description": "Một dữ kiện có cấu trúc rút ra từ ảnh.",
+      "properties": {
+        "subject": {
+          "title": "Subject",
+          "type": "string"
+        },
+        "predicate": {
+          "title": "Predicate",
+          "type": "string"
+        },
+        "object": {
+          "title": "Object",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bằng chứng do mô hình tự nêu; không phải bằng chứng đã xác minh.",
+          "title": "Evidence"
+        }
+      },
+      "required": [
+        "subject",
+        "predicate",
+        "object"
+      ],
+      "title": "Fact",
+      "type": "object"
+    },
+    "Meta": {
+      "additionalProperties": false,
+      "description": "Thông tin tái lập: mô hình, prompt, tham số, hiệu năng.",
+      "properties": {
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "prompt_id": {
+          "title": "Prompt Id",
+          "type": "string"
+        },
+        "prompt_sha256": {
+          "title": "Prompt Sha256",
+          "type": "string"
+        },
+        "temperature": {
+          "title": "Temperature",
+          "type": "number"
+        },
+        "max_tokens": {
+          "title": "Max Tokens",
+          "type": "integer"
+        },
+        "finish_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finish Reason"
+        },
+        "latency_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Latency Seconds"
+        },
+        "usage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Usage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "created_at_utc": {
+          "format": "date-time",
+          "title": "Created At Utc",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model",
+        "prompt_id",
+        "prompt_sha256",
+        "temperature",
+        "max_tokens",
+        "created_at_utc"
+      ],
+      "title": "Meta",
+      "type": "object"
+    },
+    "Usage": {
+      "additionalProperties": false,
+      "properties": {
+        "prompt_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prompt Tokens"
+        },
+        "completion_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completion Tokens"
+        }
+      },
+      "title": "Usage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "image_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Do bên gọi (backend) cấp; module AI chỉ trả lại.",
+      "title": "Image Id"
+    },
+    "image_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Image Sha256"
+    },
+    "image_type": {
+      "default": "unknown",
+      "enum": [
+        "bar_chart",
+        "line_chart",
+        "pie_chart",
+        "table",
+        "flow_diagram",
+        "cycle_diagram",
+        "geometry",
+        "map",
+        "text",
+        "other",
+        "unknown"
+      ],
+      "title": "Image Type",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "partial",
+        "unreadable",
+        "unsupported",
+        "error"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "summary_vi": {
+      "default": "",
+      "description": "Tóm tắt tiếng Việt để phát trước (có thể rỗng khi lỗi).",
+      "title": "Summary Vi",
+      "type": "string"
+    },
+    "facts": {
+      "items": {
+        "$ref": "#/$defs/Fact"
+      },
+      "title": "Facts",
+      "type": "array"
+    },
+    "interpretation_vi": {
+      "default": "",
+      "description": "Lời diễn giải đầy đủ, dùng được cho TTS (không Markdown/JSON).",
+      "title": "Interpretation Vi",
+      "type": "string"
+    },
+    "uncertainties": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Uncertainties",
+      "type": "array"
+    },
+    "question_answering_ready": {
+      "default": false,
+      "description": "True nếu đủ căn cứ để hỏi đáp tiếp theo; chỉ có nghĩa khi status ok/partial.",
+      "title": "Question Answering Ready",
+      "type": "boolean"
+    },
+    "meta": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Meta"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "status"
+  ],
+  "title": "DescriptionResult",
+  "type": "object"
+}
