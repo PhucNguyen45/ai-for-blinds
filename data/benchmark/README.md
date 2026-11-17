@@ -1,8 +1,14 @@
 # Benchmark v0.2.0 — diễn giải học liệu trực quan cho học sinh khiếm thị
 
+> **Dữ liệu KHÔNG nằm trong repo.** Toàn bộ ảnh, ground truth, `manifest.json`, ảnh ứng viên và ảnh SGK chỉ giữ ở máy tác giả
+> (`.gitignore`) để dùng fine-tune và giữ tập test riêng tư; thứ đưa ra demo là **model đã fine-tune**, không phải dữ liệu.
+> Chỉ file mô tả này được theo dõi. Phần **tổng hợp** tái tạo được **giống hệt từng byte** từ mã:
+> `cd ai && uv run python evaluation/generators/generate_benchmark_v02.py` (hai mẫu legacy `chart_01`, `chart_02_no_labels`
+> do bộ sinh v0.1 tạo và cần được giữ từ bản sao cũ). Ảnh ứng viên tải lại bằng `fetch_commons_candidates.py`; ảnh SGK không tái tạo được.
+
 > **Trạng thái:** bản thí điểm gồm **mẫu tổng hợp** để kiểm tra pipeline và so sánh sơ bộ.
-> Chưa phải benchmark đại diện cho học liệu thực tế. Chưa có kết quả đánh giá mô hình nào
-> trên bộ này tại thời điểm tạo (2026-11-17).
+> Chưa phải benchmark đại diện cho học liệu thực tế. Đã có kết quả **thăm dò trên tập dev**
+> (xem `ai/evaluation/reports/`); tập test chưa chạy.
 
 ## Thành phần
 

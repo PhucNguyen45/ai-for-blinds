@@ -30,7 +30,7 @@ def sha256(path):
 def main():
     manifest = json.loads((BENCH / "manifest.json").read_text(encoding="utf-8"))
     items = manifest["items"]
-    errors = []
+    errors, warnings = [], []
     ids = [i["id"] for i in items]
     for dup in {i for i in ids if ids.count(i) > 1}:
         errors.append(f"id trùng: {dup}")
@@ -49,11 +49,15 @@ def main():
             errors.append(f"{iid}: expected_status không hợp lệ")
         for path_key, hash_key in (("image", "sha256"), ("ground_truth", "ground_truth_sha256")):
             p = (BENCH / it[path_key]).resolve()
-            if not p.is_relative_to(BENCH.resolve()) or not p.is_file():
+            if not p.is_relative_to(BENCH.resolve()):
+                errors.append(f"{iid}: đường dẫn không an toàn {it[path_key]}")
+            elif not p.is_file() and it.get("restricted"):
+                warnings.append(f"{iid}: {path_key} hạn chế phân phối không có trên máy này (bỏ qua kiểm hash)")
+            elif not p.is_file():
                 errors.append(f"{iid}: thiếu file {it[path_key]}")
             elif sha256(p) != it[hash_key]:
                 errors.append(f"{iid}: sai hash {it[path_key]}")
-        if it.get("truth_schema") == "truth_v0.2":
+        if it.get("truth_schema") == "truth_v0.2" and (BENCH / it["ground_truth"]).is_file():
             truth = json.loads((BENCH / it["ground_truth"]).read_text(encoding="utf-8"))
             if truth["id"] != iid:
                 errors.append(f"{iid}: id trong ground truth là {truth['id']}")
@@ -80,12 +84,14 @@ def main():
             print(f"  {k:<16}{v}")
     props = qs = 0
     for it in items:
-        if it.get("truth_schema") == "truth_v0.2":
+        if it.get("truth_schema") == "truth_v0.2" and (BENCH / it["ground_truth"]).is_file():
             t = json.loads((BENCH / it["ground_truth"]).read_text(encoding="utf-8"))
             props += len(t["propositions"])
             qs += len(t["questions"])
     print(f"\nTổng mệnh đề (truth_v0.2): {props}; tổng câu hỏi: {qs}")
 
+    for w in warnings:
+        print("CẢNH BÁO:", w)
     if errors:
         print("\nLỖI:")
         for e in errors:

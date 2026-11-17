@@ -74,6 +74,10 @@ def main():
 
         item = matches[0]
 
+        if item.get("restricted"):
+            raise SystemExit(f"Từ chối lưu trữ {run_id}: mẫu {item['id']} hạn chế phân phối (SGK); "
+                             "đầu ra không được đưa vào records/ công khai.")
+
         for key, hash_key in [
             ("image", "sha256"),
             ("ground_truth", "ground_truth_sha256"),

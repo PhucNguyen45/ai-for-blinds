@@ -111,7 +111,8 @@ def main_records(method):
     manifest = json.loads((BENCH / "manifest.json").read_text(encoding="utf-8"))
     by_id = {i["id"]: i for i in manifest["items"]}
     tot = {"crit": 0, "interp": 0, "both": 0}
-    for path in sorted((AI_ROOT / "evaluation" / f"records_{method}").glob("*.json")):
+    _d = AI_ROOT / "evaluation" / f"records_{method}"
+    for path in sorted([*_d.glob("*.json"), *(_d / "_restricted").glob("*.json")]):
         rec = json.loads(path.read_text(encoding="utf-8"))
         item = by_id[rec["benchmark_id"]]
         truth = json.loads((BENCH / item["ground_truth"]).read_text(encoding="utf-8"))

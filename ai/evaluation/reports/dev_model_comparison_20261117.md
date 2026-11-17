@@ -52,3 +52,22 @@ n = 1 lần chạy/ảnh, ảnh tổng hợp sạch, chỉ số từ khóa (ph�
 2. Lặp ≥3 lần/ảnh cho `qwen3-vl-4b` B0e (chạy cục bộ nên rẻ) để ước lượng nhiễu.
 3. Thử các model Qwen3-VL lớn hơn chạy cục bộ nếu VRAM cho phép (8B Q4), cho B1.
 4. Chấm tay rubric_v1 cho các mẫu lỗi; chạy tập test khi cố định cấu hình.
+
+## Bổ sung: chạy lặp 3 lần — `qwen3-vl-4b` B0e cục bộ (dev, 22 ảnh × 3)
+
+Công cụ: `run_b1_dev.py --reps 3`, thống kê bằng `repeat_stats.py`. Thư mục bản ghi:
+`evaluation/records_b0e__lmstudio__qwen-qwen3-vl-4b__reps/`.
+
+| Chỉ số | Kết quả |
+|---|---|
+| Tổng mệnh đề critical phủ được theo từng lần | 123, 123, 123 / 141 (87,2%) |
+| Độ lệch chuẩn giữa các lần | **0,0** |
+| Ảnh có kết quả ổn định hoàn toàn (theo chỉ số) | 20/20 |
+| Lần chạy đơn trước đó | 123/141 — trùng |
+| Câu trả lời giống hệt từng ký tự giữa 3 lần | **0/22** (các lần chạy đều độc lập; độ trễ trung vị 6,6 / 5,4 / 6,4 s) |
+
+**Cách đọc:**
+1. Mô hình **diễn đạt khác nhau** mỗi lần nhưng luôn nêu **cùng tập dữ kiện** mà chỉ số từ khóa kiểm tra. Ở n=3, hành vi ổn định theo chỉ số này.
+2. Độ lệch chuẩn 0 cho thấy chỉ số **thiếu độ nhạy** (hiệu ứng trần), không phải mô hình hoàn hảo: chỉ số không bắt được bịa thêm, thứ tự, hay chất lượng diễn đạt. Việc hai model (qwen 4B và gemini-3.1-flash-lite) cùng đạt 123 nhiều khả năng cũng do điều này, nên **không** kết luận chúng ngang nhau.
+3. 18 mệnh đề thiếu là **thiếu có hệ thống** (chủ yếu bản đồ do cách viết mệnh đề, một phần sơ đồ vòng và hình học), không phải nhiễu.
+4. Hệ quả cho nghiên cứu: cần chỉ số nhạy hơn (rubric bằng người, đếm mệnh đề **thừa/bịa**, đúng chiều quan hệ) trước khi so sánh model hay phương pháp một cách có ý nghĩa.

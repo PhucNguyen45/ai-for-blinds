@@ -52,3 +52,19 @@ data/local/
 
 # Local review archive
 /foundation-review.tar.gz
+
+# DỮ LIỆU CHỈ GIỮ Ở MÁY TÁC GIẢ (dùng để fine-tune; đưa ra demo là model đã fine-tune, không phải dữ liệu).
+# Gồm benchmark/ảnh/ground truth (synthetic, candidates, textbook), manifest và đầu ra mô hình trên từng mẫu.
+# Mẫu tổng hợp tái tạo được từ mã (ai/evaluation/generators). Chỉ README mô tả dữ liệu được theo dõi.
+/data/benchmark/*
+!/data/benchmark/README.md
+/ai/evaluation/records*/
+
+# Trọng số model (fine-tune/adapter): không đưa vào git; phát hành riêng khi ship demo
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+/ai/models/
+/ai/finetune/outputs/
