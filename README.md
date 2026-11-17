@@ -15,7 +15,7 @@ học tập kiến thức trực quan.
 - `backend/`: API, dữ liệu và triển khai — Nam. *(nhánh này: rỗng)*
 - `frontend/`: Ứng dụng Flutter và trợ năng — Toàn. *(nhánh này: rỗng)*
 - `data/benchmark/`: bộ dữ liệu đánh giá — **chỉ ở máy tác giả, không có trong repo** (xem [Dữ liệu và fine-tune](#dữ-liệu-và-fine-tune)).
-- `docs/`: tài liệu nghiên cứu và thiết kế. *(nhánh này: rỗng; tài liệu nội bộ không đưa lên repo công khai)*
+- `docs/`: báo cáo của dự án (`bao_cao/`), ghi chú, quy định NCKH và tài liệu tham khảo ngoài (`tham_khao/`); xem `docs/README.md`.
 
 ## Trạng thái phần AI (nhánh `phuc`)
 

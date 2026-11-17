@@ -71,3 +71,9 @@ data/local/
 
 # Tập huấn luyện sinh ra (chỉ ở máy)
 /data/train/
+
+# docs: tài liệu tham khảo của người khác/nội bộ, không đưa lên repo công khai
+/docs/tham_khao/slide_giang_vien/
+/docs/tham_khao/hoc_tap_ca_nhan/
+/docs/tham_khao/sgbe_tien_than/SGBEyes_Slide*.pptx
+*.Zone.Identifier
