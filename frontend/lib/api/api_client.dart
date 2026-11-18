@@ -27,8 +27,8 @@ class ApiClient implements SgbeApi {
     http.Client? client,
     this.slowTimeout = const Duration(seconds: 130),
     this.fastTimeout = const Duration(seconds: 8),
-  })  : baseUrl = normalizeBaseUrl(baseUrl),
-        _client = client ?? http.Client();
+  }) : baseUrl = normalizeBaseUrl(baseUrl),
+       _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
@@ -55,8 +55,11 @@ class ApiClient implements SgbeApi {
     final req = http.MultipartRequest('POST', Uri.parse('$baseUrl/v1/describe'))
       ..fields['page_type'] = pageType
       ..files.add(http.MultipartFile.fromBytes('image', image, filename: 'trang.jpg'));
-    return _run(() => _client.send(req).then(http.Response.fromStream), slowTimeout,
-        (data) => DescribeResult.fromJson(data as Map<String, dynamic>));
+    return _run(
+      () => _client.send(req).then(http.Response.fromStream),
+      slowTimeout,
+      (data) => DescribeResult.fromJson(data as Map<String, dynamic>),
+    );
   }
 
   @override
@@ -67,18 +70,28 @@ class ApiClient implements SgbeApi {
       'history': [for (final t in history) t.toJson()],
     });
     return _run(
-        () => _client.post(Uri.parse('$baseUrl/v1/ask'),
-            headers: {'Content-Type': 'application/json; charset=utf-8'}, body: body),
-        slowTimeout,
-        (data) => AskResult.fromJson(data as Map<String, dynamic>));
+      () => _client.post(
+        Uri.parse('$baseUrl/v1/ask'),
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: body,
+      ),
+      slowTimeout,
+      (data) => AskResult.fromJson(data as Map<String, dynamic>),
+    );
   }
 
   @override
-  Future<ApiResult<HealthInfo>> health() => _run(() => _client.get(Uri.parse('$baseUrl/health')), fastTimeout,
-      (data) => HealthInfo.fromJson(data as Map<String, dynamic>));
+  Future<ApiResult<HealthInfo>> health() => _run(
+    () => _client.get(Uri.parse('$baseUrl/health')),
+    fastTimeout,
+    (data) => HealthInfo.fromJson(data as Map<String, dynamic>),
+  );
 
   Future<ApiResult<T>> _run<T>(
-      Future<http.Response> Function() call, Duration timeout, T Function(Object? data) parse) async {
+    Future<http.Response> Function() call,
+    Duration timeout,
+    T Function(Object? data) parse,
+  ) async {
     if (baseUrl.isEmpty) return const ApiFail('NETWORK', S.errOffline);
     final http.Response res;
     try {

@@ -41,12 +41,13 @@ class DeviceCaptureSource implements CaptureSource {
         _state.value = CameraState.missing;
         return;
       }
-      final back = cameras.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
-        orElse: () => cameras.first,
+      final back = cameras.firstWhere((c) => c.lensDirection == CameraLensDirection.back, orElse: () => cameras.first);
+      final controller = CameraController(
+        back,
+        resolution,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
       );
-      final controller = CameraController(back, resolution,
-          enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg);
       await controller.initialize();
       await controller.setFlashMode(FlashMode.auto);
       _controller = controller;

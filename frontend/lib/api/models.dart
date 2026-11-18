@@ -54,8 +54,8 @@ class DescribeResult {
     final interpretation = str('interpretation_vi');
     final description = str('description');
     // v0.1: unreadable/unsupported chỉ có summary_vi giải thích lý do; partial = ảnh bị cắt một phần.
-    final unreadable = (j['unreadable'] as bool?) ??
-        (status == 'unreadable' || status == 'unsupported' || status == 'partial');
+    final unreadable =
+        (j['unreadable'] as bool?) ?? (status == 'unreadable' || status == 'unsupported' || status == 'partial');
     final text = interpretation.isNotEmpty ? interpretation : (description.isNotEmpty ? description : summary);
     final latencySeconds = meta['latency_seconds'] as num?;
 
@@ -110,10 +110,10 @@ class AskResult {
   const AskResult({required this.imageId, required this.answer, required this.latencyMs});
 
   factory AskResult.fromJson(Map<String, dynamic> j) => AskResult(
-        imageId: j['image_id'] as String,
-        answer: j['answer'] as String,
-        latencyMs: (j['latency_ms'] as num?)?.toInt() ?? 0,
-      );
+    imageId: j['image_id'] as String,
+    answer: j['answer'] as String,
+    latencyMs: (j['latency_ms'] as num?)?.toInt() ?? 0,
+  );
 
   final String imageId;
   final String answer;
@@ -124,11 +124,11 @@ class HealthInfo {
   const HealthInfo({required this.status, required this.vlmMode, required this.model, required this.sttMode});
 
   factory HealthInfo.fromJson(Map<String, dynamic> j) => HealthInfo(
-        status: (j['status'] as String?) ?? '',
-        vlmMode: (j['vlm_mode'] as String?) ?? '',
-        model: (j['model'] as String?) ?? '',
-        sttMode: (j['stt_mode'] as String?) ?? '',
-      );
+    status: (j['status'] as String?) ?? '',
+    vlmMode: (j['vlm_mode'] as String?) ?? '',
+    model: (j['model'] as String?) ?? '',
+    sttMode: (j['stt_mode'] as String?) ?? '',
+  );
 
   final String status;
   final String vlmMode;

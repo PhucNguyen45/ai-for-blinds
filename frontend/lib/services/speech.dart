@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 /// Giọng đọc của app. Tách giao diện ra để test không cần điện thoại.
@@ -48,4 +49,56 @@ class TtsSpeaker implements Speaker {
 
   @override
   Future<void> setRate(double rate) => _tts.setSpeechRate(rate);
+}
+
+/// Câu app đang nói, để hiện thành phụ đề trên màn hình.
+@immutable
+class Caption {
+  const Caption(this.text, {required this.speaking});
+  static const empty = Caption('', speaking: false);
+
+  final String text;
+
+  /// `false` khi câu đã nói xong hoặc bị dừng: phụ đề vẫn hiện nhưng mờ đi.
+  final bool speaking;
+}
+
+/// Bọc một [Speaker] để mọi câu nói đều hiện lên phụ đề (người nhìn kém,
+/// giáo viên đứng cạnh, hội đồng xem demo đều đọc được app đang nói gì).
+class CaptionedSpeaker implements Speaker {
+  CaptionedSpeaker(this.inner);
+
+  final Speaker inner;
+  final ValueNotifier<Caption> caption = ValueNotifier(Caption.empty);
+  int _token = 0;
+
+  @override
+  Future<bool> init({required double rate}) => inner.init(rate: rate);
+
+  @override
+  Future<void> speak(String text) => _run(text, () => inner.speak(text));
+
+  @override
+  Future<void> speakEnglish(String text) => _run(text, () => inner.speakEnglish(text));
+
+  Future<void> _run(String text, Future<void> Function() say) async {
+    final token = ++_token;
+    caption.value = Caption(text, speaking: true);
+    try {
+      await say();
+    } finally {
+      if (token == _token) caption.value = Caption(text, speaking: false);
+    }
+  }
+
+  @override
+  Future<void> stop() async {
+    _token++;
+    final c = caption.value;
+    if (c.speaking) caption.value = Caption(c.text, speaking: false);
+    await inner.stop();
+  }
+
+  @override
+  Future<void> setRate(double rate) => inner.setRate(rate);
 }

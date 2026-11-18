@@ -1,4 +1,4 @@
-"""Sinh 4 âm báo trạng thái cho app (WAV mono 22.05 kHz, 16-bit).
+"""Sinh 6 âm báo trạng thái cho app (WAV mono 22.05 kHz, 16-bit).
 
 Chạy lại khi muốn đổi âm: python tool/tao_am_bao.py
 Âm do script tự tạo nên không vướng bản quyền.
@@ -43,4 +43,8 @@ write("cho.wav", tone(620, 90, 0.3) + silence(110) + tone(620, 90, 0.3))
 write("xong.wav", tone(660, 110, 0.5) + silence(30) + tone(990, 160, 0.5))
 # Lỗi: hai nốt đi xuống, trầm hơn
 write("loi.wav", tone(440, 170, 0.55) + silence(40) + tone(300, 260, 0.55))
+# Chạm một lần (nghe tên nút): tiếng tách rất nhẹ, ngắn để không lấn giọng đọc
+write("cham.wav", tone(1900, 28, 0.22))
+# Chạm hai lần (dùng nút): hai nốt ngắn đi lên
+write("mo.wav", tone(660, 60, 0.4) + silence(20) + tone(990, 80, 0.4))
 print("Đã ghi:", sorted(p.name for p in OUT.glob("*.wav")))

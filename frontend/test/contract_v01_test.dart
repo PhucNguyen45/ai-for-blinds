@@ -61,8 +61,10 @@ void main() {
   }
 
   test('ApiClient gọi máy chủ trả hợp đồng v0.1 dạng gốc vẫn chạy', () async {
-    final api = ApiClient('http://x',
-        client: MockClient((_) async => http.Response.bytes(utf8.encode(example('ok_bar_chart')), 200)));
+    final api = ApiClient(
+      'http://x',
+      client: MockClient((_) async => http.Response.bytes(utf8.encode(example('ok_bar_chart')), 200)),
+    );
     final r = await api.describe(Uint8List.fromList([1, 2, 3]));
     expect((r as ApiOk<DescribeResult>).value.pageType, 'bar_chart');
   });
@@ -73,7 +75,8 @@ void main() {
       final speaker = FakeSpeaker();
       final c = ReaderController(api: () => api, speaker: speaker, earcons: FakeEarcons());
       await c.describe(Uint8List.fromList([1]));
-      return speaker.spoken.last;
+      // Câu đầu là "Đang đọc trang"; mô tả được đọc từng câu nên ghép lại để so.
+      return speaker.spoken.skip(1).join(' ');
     }
 
     test('ảnh hỏng hẳn: giải thích rồi hướng dẫn chụp lại, không lặp "có chỗ không đọc được"', () async {

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sgbe/api/api_client.dart';
 import 'package:sgbe/api/models.dart';
+import 'package:sgbe/library/library_data.dart';
 import 'package:sgbe/services/capture_source.dart';
 import 'package:sgbe/services/earcons.dart';
 import 'package:sgbe/services/platform_bridge.dart';
@@ -59,17 +60,18 @@ class FakeApi implements SgbeApi {
   /// Khi đặt, `describe` chờ tới khi completer hoàn thành (giả lập máy chủ chậm).
   Completer<void>? gate;
 
-  static ApiResult<DescribeResult> ok({String description = 'Trang có một lược đồ.', bool unreadable = false}) =>
-      ApiOk(DescribeResult(
-        imageId: 'b9b1d4985e464bbb',
-        description: description,
-        pageType: 'map',
-        unreadable: unreadable,
-        model: 'mock',
-        promptVersion: 'v1',
-        latencyMs: 10,
-        cached: false,
-      ));
+  static ApiResult<DescribeResult> ok({String description = 'Trang có một lược đồ.', bool unreadable = false}) => ApiOk(
+    DescribeResult(
+      imageId: 'b9b1d4985e464bbb',
+      description: description,
+      pageType: 'map',
+      unreadable: unreadable,
+      model: 'mock',
+      promptVersion: 'v1',
+      latencyMs: 10,
+      cached: false,
+    ),
+  );
 
   @override
   Future<ApiResult<DescribeResult>> describe(Uint8List image, {String pageType = 'auto'}) async {
@@ -80,9 +82,18 @@ class FakeApi implements SgbeApi {
     return next;
   }
 
+  ApiResult<AskResult>? nextAsk;
+  String? lastAskImageId;
+  String? lastQuestion;
+  List<AskTurn> lastHistory = const [];
+
   @override
-  Future<ApiResult<AskResult>> ask(String imageId, String question, {List<AskTurn> history = const []}) async =>
-      ApiOk(AskResult(imageId: imageId, answer: 'Trả lời.', latencyMs: 1));
+  Future<ApiResult<AskResult>> ask(String imageId, String question, {List<AskTurn> history = const []}) async {
+    lastAskImageId = imageId;
+    lastQuestion = question;
+    lastHistory = history;
+    return nextAsk ?? ApiOk(AskResult(imageId: imageId, answer: 'Trả lời.', latencyMs: 1));
+  }
 
   @override
   Future<ApiResult<HealthInfo>> health() async =>
@@ -128,4 +139,27 @@ class FakeBridge extends PlatformBridge {
 
   @override
   Future<void> openTtsSettings() async => ttsSettingsOpened++;
+}
+
+class FakeLibrary implements LibrarySource {
+  @override
+  Future<List<Book>> load() async => const [
+    Book(
+      id: 'a',
+      title: 'Sách A',
+      subtitle: 'Lớp 3 · 2 trang mẫu',
+      color: 'lib',
+      pages: [
+        BookPage(number: 1, title: 'Trang một', text: 'Nội dung trang một. Câu thứ hai.'),
+        BookPage(number: 2, title: 'Trang hai', text: 'Nội dung trang hai.'),
+      ],
+    ),
+    Book(
+      id: 'b',
+      title: 'Sách B',
+      subtitle: 'Lớp 4 · 1 trang mẫu',
+      color: 'ask',
+      pages: [BookPage(number: 9, title: 'Trang chín', text: 'Nội dung trang chín.')],
+    ),
+  ];
 }

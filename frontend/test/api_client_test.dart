@@ -31,10 +31,13 @@ void main() {
   group('describe', () {
     test('gửi multipart đúng tên trường và đọc kết quả thành công', () async {
       late http.Request sent;
-      final api = ApiClient('http://x', client: MockClient((req) async {
-        sent = req;
-        return jsonResponse(fixture('describe_ok.json'), 200);
-      }));
+      final api = ApiClient(
+        'http://x',
+        client: MockClient((req) async {
+          sent = req;
+          return jsonResponse(fixture('describe_ok.json'), 200);
+        }),
+      );
 
       final result = await api.describe(image, pageType: 'map');
 
@@ -51,8 +54,10 @@ void main() {
     });
 
     test('ảnh hỏng: đọc mã và câu báo lỗi của máy chủ', () async {
-      final api = ApiClient('http://x',
-          client: MockClient((_) async => jsonResponse(fixture('describe_invalid_image.json'), 400)));
+      final api = ApiClient(
+        'http://x',
+        client: MockClient((_) async => jsonResponse(fixture('describe_invalid_image.json'), 400)),
+      );
       final fail = await api.describe(image) as ApiFail<DescribeResult>;
       expect(fail.code, 'INVALID_IMAGE');
       expect(fail.message, 'Ảnh gửi lên không đọc được. Bạn chụp lại nhé.');
@@ -73,9 +78,11 @@ void main() {
     });
 
     test('quá giờ: báo máy chủ trả lời quá lâu', () async {
-      final api = ApiClient('http://x',
-          slowTimeout: const Duration(milliseconds: 50),
-          client: MockClient((_) => Completer<http.Response>().future));
+      final api = ApiClient(
+        'http://x',
+        slowTimeout: const Duration(milliseconds: 50),
+        client: MockClient((_) => Completer<http.Response>().future),
+      );
       final fail = await api.describe(image) as ApiFail<DescribeResult>;
       expect(fail.code, 'TIMEOUT');
       expect(fail.message, S.errTimeout);
@@ -83,10 +90,13 @@ void main() {
 
     test('chưa có địa chỉ máy chủ: không gọi mạng', () async {
       var called = false;
-      final api = ApiClient('', client: MockClient((_) async {
-        called = true;
-        return http.Response('', 200);
-      }));
+      final api = ApiClient(
+        '',
+        client: MockClient((_) async {
+          called = true;
+          return http.Response('', 200);
+        }),
+      );
       expect(await api.describe(image), isA<ApiFail<DescribeResult>>());
       expect(called, isFalse);
     });
@@ -95,25 +105,31 @@ void main() {
   group('ask', () {
     test('gửi image_id, câu hỏi và lịch sử; đọc câu trả lời', () async {
       late Map<String, dynamic> body;
-      final api = ApiClient('http://x', client: MockClient((req) async {
-        body = jsonDecode(utf8.decode(req.bodyBytes)) as Map<String, dynamic>;
-        return jsonResponse(fixture('ask_ok.json'), 200);
-      }));
+      final api = ApiClient(
+        'http://x',
+        client: MockClient((req) async {
+          body = jsonDecode(utf8.decode(req.bodyBytes)) as Map<String, dynamic>;
+          return jsonResponse(fixture('ask_ok.json'), 200);
+        }),
+      );
 
-      final ok = await api.ask('b9b1d4985e464bbb', 'Có mấy tỉnh?',
-          history: const [AskTurn('Đây là gì?', 'Một lược đồ.')]) as ApiOk<AskResult>;
+      final ok =
+          await api.ask('b9b1d4985e464bbb', 'Có mấy tỉnh?', history: const [AskTurn('Đây là gì?', 'Một lược đồ.')])
+              as ApiOk<AskResult>;
 
       expect(body['image_id'], 'b9b1d4985e464bbb');
       expect(body['question'], 'Có mấy tỉnh?');
       expect(body['history'], [
-        {'question': 'Đây là gì?', 'answer': 'Một lược đồ.'}
+        {'question': 'Đây là gì?', 'answer': 'Một lược đồ.'},
       ]);
       expect(ok.value.answer, contains('Có mấy tỉnh?'));
     });
 
     test('ảnh không còn trên máy chủ: IMAGE_NOT_FOUND', () async {
-      final api = ApiClient('http://x',
-          client: MockClient((_) async => jsonResponse(fixture('ask_image_not_found.json'), 404)));
+      final api = ApiClient(
+        'http://x',
+        client: MockClient((_) async => jsonResponse(fixture('ask_image_not_found.json'), 404)),
+      );
       final fail = await api.ask('0000000000000000', 'a') as ApiFail<AskResult>;
       expect(fail.code, 'IMAGE_NOT_FOUND');
     });

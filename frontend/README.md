@@ -1,8 +1,14 @@
 # SgBe — app Android
 
-App Flutter cho học sinh khiếm thị: chụp trang sách, nghe mô tả bằng giọng tiếng Việt. Người phụ trách: Toàn (Mảng C).
+App Flutter cho học sinh khiếm thị: chụp trang sách, nghe mô tả bằng giọng tiếng Việt, hỏi thêm về trang, nghe sách đã số hóa. Người phụ trách: Toàn (Mảng C).
 
-**Hợp đồng dữ liệu:** theo hợp đồng đầu ra AI v0.1 của Phúc (`../ai/contract/`): `status`, `summary_vi`, `interpretation_vi`, `image_type`, `question_answering_ready`, lỗi ở `status="error"` + `error`. App nhận cả kết quả gốc lẫn khi backend bọc trong `{data, error}`. Vẫn đọc được API v1 cũ của Nam (`docs/API_v1.md` trên nhánh `dev`) để chạy với backend hiện có. Gọi máy chủ qua `POST /v1/describe`.
+**Hợp đồng dữ liệu:** theo hợp đồng đầu ra AI v0.1 của Phúc (`../ai/contract/`): `status`, `summary_vi`, `interpretation_vi`, `image_type`, `question_answering_ready`, lỗi ở `status="error"` + `error`. App nhận cả kết quả gốc lẫn khi backend bọc trong `{data, error}`. Vẫn đọc được API v1 cũ của Nam (`docs/API_v1.md` trên nhánh `dev`) để chạy với backend hiện có. Gọi máy chủ qua `POST /v1/describe` và `POST /v1/ask`.
+
+| Màn hình chính | Đang đọc trang | Kết quả | Hỏi | Thư viện | Cài đặt |
+|---|---|---|---|---|---|
+| ![](docs/anh-giao-dien/1-man-hinh-chinh.png) | ![](docs/anh-giao-dien/3-dang-doc-trang.png) | ![](docs/anh-giao-dien/4-ket-qua.png) | ![](docs/anh-giao-dien/5-hoi.png) | ![](docs/anh-giao-dien/7-doc-sach.png) | ![](docs/anh-giao-dien/8-cai-dat.png) |
+
+Ảnh chụp từ máy ảo Android 15, bản release, chế độ demo (camera của máy ảo là cảnh giả).
 
 ## Chạy thử nhanh nhất (không cần điện thoại, không cần máy chủ)
 
@@ -11,79 +17,107 @@ flutter pub get
 flutter test
 ```
 
-37 test, gồm kiểm tra trợ năng tự động (nhãn TalkBack, vùng chạm, tương phản), đọc phản hồi thật của backend (`test/fixtures/`) và 4 ví dụ của hợp đồng AI v0.1 (`test/fixtures/contract_v01/`).
+62 test: trợ năng tự động (nhãn TalkBack, vùng chạm, tương phản) trên mọi màn hình; cách thao tác chạm nghe / chạm hai lần / rê ngón / nhường TalkBack; không tràn chữ khi phóng chữ 200% và màn hình 360×640; đọc phản hồi thật của backend (`test/fixtures/`) và 4 ví dụ của hợp đồng AI v0.1 (`test/fixtures/contract_v01/`).
 
-## Chạy trên máy ảo hoặc điện thoại
+## Kiểm môi trường và dựng APK cho điện thoại
 
-1. Chạy máy chủ ở chế độ thử (xem `../README.md`):
-   ```
-   cd <thư mục backend của Nam>   # hiện ở nhánh dev, thư mục backend/
-   uvicorn app.main:app --host 0.0.0.0 --port 8000
-   ```
+```
+powershell -ExecutionPolicy Bypass -File tool\kiem_va_build.ps1
+```
+
+Script kiểm lần lượt Flutter, Android SDK, JDK, thiết bị đang cắm, `analyze`, `test`, rồi dựng APK release tách theo loại chip. Bước nào trượt thì dừng và nói cách sửa. Tham số:
+
+- `-CaiLenMay`: build xong cài luôn lên điện thoại / máy ảo đang cắm (tự chọn đúng loại chip).
+- `-Demo`: bật sẵn chế độ demo trong APK (không cần máy chủ).
+- `-BoQuaTest`: bỏ bước analyze và test khi vừa chạy xong.
+
+APK cho điện thoại thật: `build\app\outputs\flutter-apk\app-arm64-v8a-release.apk` (khoảng 19 MB). Bản release đang ký bằng khóa debug: đủ để cài thử, chưa đưa lên cửa hàng được.
+
+## Chạy trên máy ảo hoặc điện thoại khi đang viết mã
+
+1. Chạy máy chủ ở chế độ thử (xem `../README.md`), hoặc bỏ qua bước này và dùng chế độ demo.
 2. Chạy app:
    ```
-   flutter run
+   flutter run                              # có máy chủ
+   flutter run --dart-define=SGBE_DEMO=true # không có máy chủ: bật sẵn chế độ demo
    ```
-3. Trong app, mở **Cài đặt**:
+3. Cài đặt → **Cho người hỗ trợ**:
    - Máy ảo Android: giữ địa chỉ mặc định `http://10.0.2.2:8000`.
    - Điện thoại thật cùng Wi-Fi: nhập IP LAN của laptop, ví dụ `http://192.168.1.15:8000`. Có thể phải mở cổng 8000 trên Windows Firewall.
    - Chạm **Kiểm tra kết nối**: app đọc to kết quả.
-   - Không có máy chủ: bật **Chế độ demo**.
 
 Điện thoại phải có dữ liệu giọng tiếng Việt: Cài đặt → Trợ năng → Chuyển văn bản thành giọng nói → Google → tải Tiếng Việt. Thiếu giọng, app báo bằng tiếng Anh và hiện nút mở cài đặt giọng.
 
-Hướng dẫn bật gỡ lỗi USB, chạy không dây, build APK: `Desktop\NCKH\HUONG-DAN-BUILD-APP.md`.
+Hướng dẫn bật gỡ lỗi USB, chạy không dây: `Desktop\NCKH\HUONG-DAN-BUILD-APP.md`.
 
 ## Thao tác
 
+**Chạm một lần để nghe, chạm hai lần để dùng** — trên mọi màn hình, không cần bật TalkBack.
+
 | Làm gì | Kết quả |
 |---|---|
-| Chạm vùng camera (TalkBack: chạm hai lần) hoặc bấm nút âm lượng | Chụp và đọc trang |
-| Làm lại thao tác trên khi đang đọc | Dừng đọc |
-| Nút **Đọc lại** | Đọc lại mô tả gần nhất |
-| Nút **Chọn ảnh** | Đọc một ảnh có sẵn trong máy |
-| Nút **Cài đặt** | Máy chủ, tốc độ đọc, loại trang, chế độ demo |
+| Chạm một lần vào nút | Nghe tên nút (tiếng tách + rung nhẹ), nút được viền trắng |
+| Chạm hai lần vào nút | Dùng nút |
+| Giữ và rê ngón tay | Nghe tên từng nút đi qua |
+| Chạm bất kỳ khi đang đọc | Dừng đọc |
+| Nút âm lượng (màn hình chính) | Chụp ngay; đang đọc thì dừng |
+| Bật TalkBack | App nhường cho TalkBack, thao tác như mọi app |
 
-Kịch bản đầy đủ: `docs/KICH_BAN_TUONG_TAC.md`.
+Bố cục cố định: **Cài đặt** góc trên trái, **Trợ giúp** góc trên phải, **vùng chụp** ở giữa (kết quả hiện tại chỗ), **Đọc lại / Hỏi / Thư viện** ở mép dưới. Màn hình con: **Quay lại** chiếm cả mép dưới.
+
+Kịch bản đầy đủ: `docs/KICH_BAN_TUONG_TAC.md`. Yêu cầu giao diện: `docs/YEU_CAU_GIAO_DIEN.md`. Checklist trợ năng: `docs/CHECKLIST_TRO_NANG.md`.
 
 ## Cấu trúc
 
 ```
 lib/
-  main.dart                 khởi động: nạp cài đặt, giọng đọc, lời chào
+  main.dart                 khởi động: nạp cài đặt, giọng đọc, lời hướng dẫn lần đầu
+  app_services.dart         gom các dịch vụ; phản hồi chạm (âm, rung, đọc tên nút)
   strings.dart              MỌI câu app nói và chữ hiển thị — sửa văn phong ở đây
-  api/
-    api_client.dart         gọi API v1, đọc {data, error}, đổi lỗi mạng thành câu nói
-    demo_api.dart           trả lời mẫu cho chế độ demo
-    models.dart             kiểu dữ liệu theo hợp đồng
+  api/                      gọi máy chủ (describe, ask, health), chế độ demo, kiểu dữ liệu
   reader/
-    reader_controller.dart  luồng chụp → gửi → nghe, không phụ thuộc giao diện
+    reader_controller.dart  luồng chụp → gửi → đọc từng câu → hỏi tiếp; không phụ thuộc giao diện
+  library/library_data.dart sách cho Thư viện (hiện là bản mẫu trong assets/library/)
   services/
     capture_source.dart     camera trong app + chọn ảnh
-    speech.dart             giọng đọc (flutter_tts, vi-VN)
-    earcons.dart            4 âm báo trạng thái
+    speech.dart             giọng đọc (flutter_tts, vi-VN) + phụ đề câu đang nói
+    earcons.dart            6 âm báo + rung, tắt được trong Cài đặt
     settings_store.dart     cài đặt lưu trên máy
     platform_bridge.dart    nút âm lượng, mở cài đặt giọng đọc (nối sang MainActivity.kt)
   ui/
-    home_screen.dart        màn hình chính
-    settings_screen.dart    cài đặt
-    big_button.dart, theme.dart
+    explore.dart            lớp thao tác chạm nghe / chạm hai lần / rê ngón; tự tắt khi bật TalkBack
+    widgets.dart            nút màu, nút góc, hàng, Quay lại, phụ đề, đoạn đọc tô vàng, khung góc
+    home_screen.dart        màn hình chính (camera tràn màn hình, kết quả trong vùng chụp)
+    ask_screen.dart         Hỏi
+    library_screen.dart     Thư viện, đọc sách
+    settings_screen.dart    Cài đặt, Cài đặt cho người hỗ trợ
+    theme.dart              màu, phông
 android/app/src/main/kotlin/vn/nckh/sgbe/MainActivity.kt   bắt nút âm lượng
+android/app/proguard-rules.pro   luật giữ lớp cho bản release (thiếu thì app treo khi mở)
 assets/audio/               âm báo, sinh bằng tool/tao_am_bao.py
+assets/fonts/               Be Vietnam Pro (SIL OFL 1.1)
+assets/library/             sách mẫu cho Thư viện
+tool/                       sinh âm báo, sinh biểu tượng app, kiểm môi trường và dựng APK
 test/                       test tự động + phản hồi thật của backend
-docs/                       kịch bản tương tác, checklist trợ năng, yêu cầu giao diện (SRS)
+docs/                       kịch bản tương tác, checklist trợ năng, yêu cầu giao diện, ảnh chụp màn hình
 ```
 
 ## Các quyết định thiết kế
 
-- **Camera trong app** (gói `camera`), không mở app camera hệ thống: bước "Đồng ý / Chụp lại" của camera hệ thống khó dùng khi không nhìn.
-- **Nút âm lượng chụp ảnh** chỉ ở màn hình chính. Sang Cài đặt, nút trở lại chỉnh âm lượng.
-- **App tự đọc bằng TTS**, không nhờ TalkBack, để người không bật TalkBack cũng nghe được. Vì vậy chữ trạng thái không đặt `liveRegion`, tránh hai giọng đọc chồng nhau.
-- **Lỗi luôn đọc thành tiếng**, không dùng SnackBar. Lỗi của máy chủ đọc nguyên `error.message`, vì câu đó đã được viết sẵn cho người dùng.
-- **Ảnh 1920×1080**: đủ nét cho chữ SGK, thường dưới giới hạn 10 MB của máy chủ. Đổi ở `DeviceCaptureSource.resolution` nếu mô hình đọc sót chữ nhỏ.
+Tham khảo Seeing AI, Lookout (Google), Be My Eyes / Be My AI, Envision:
 
-## Chưa làm (Giai đoạn 2)
+- **Camera tràn màn hình, nút nổi trên hình** (Seeing AI, Envision); **bốn góc vàng ôm trang** (khung tài liệu của Lookout).
+- **Phụ đề câu đang nói** dạng bong bóng có biểu tượng loa (Envision).
+- **Đọc từng câu, tô vàng câu đang đọc** (công cụ đọc của Lookout).
+- **Hỏi tiếp dạng hội thoại** trên ảnh vừa chụp (Ask more của Be My AI).
+- **Chạm nghe, chạm hai lần dùng** ngay trong app, không bắt bật TalkBack; bật TalkBack thì app nhường.
+- **Màu vàng gạch dẫn đường** trên nền gần đen, tương phản trên 7:1; mỗi nút một màu nhưng luôn kèm biểu tượng và chữ.
+- **Camera trong app** (gói `camera`), không mở app camera hệ thống: bước "Đồng ý / Chụp lại" khó dùng khi không nhìn.
+- **Lỗi luôn đọc thành tiếng**, không dùng SnackBar. Lỗi của máy chủ đọc nguyên `error.message`.
+- **Ảnh 1920×1080**: đủ nét cho chữ SGK, thường dưới giới hạn 10 MB của máy chủ.
 
-- Hỏi tiếp bằng giọng nói (`/v1/ask`): chờ STT PhoWhisper của Phúc.
-- Thư viện offline (`/v1/library`).
-- Lịch sử, sao chép, chia sẻ mô tả.
+## Chưa làm
+
+- Hỏi bằng giọng nói: chờ STT của Phúc (hiện hỏi bằng 3 câu gợi ý, gửi thật lên `/v1/ask`).
+- Thư viện thật (`/v1/library` của Nam) và đọc offline: hiện là sách mẫu.
+- Khóa ký riêng cho bản phát hành.
