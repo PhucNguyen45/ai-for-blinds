@@ -26,7 +26,7 @@ ImageType = Literal[
 
 ErrorCode = Literal[
     "invalid_image", "config_error", "timeout", "http_error",
-    "empty_response", "invalid_output", "unknown",
+    "empty_response", "invalid_output", "invalid_input", "unknown",
 ]
 
 
@@ -117,4 +117,30 @@ class DescriptionResult(_Strict):
 
         if self.question_answering_ready and self.status not in ("ok", "partial"):
             raise ValueError("question_answering_ready chỉ đúng khi status ok/partial")
+        return self
+
+
+AnswerStatus = Literal["ok", "partial", "error"]
+
+
+class AnswerResult(_Strict):
+    """Kết quả một lượt hỏi đáp theo hình (bản nháp, cùng phiên bản hợp đồng với DescriptionResult)."""
+
+    schema_version: Literal["0.1"] = CONTRACT_VERSION
+    image_id: str | None = None
+    status: AnswerStatus
+    answer_vi: str = Field(default="", description="Câu trả lời tiếng Việt, dùng được cho TTS (không Markdown).")
+    meta: Meta | None = None
+    error: ErrorInfo | None = None
+
+    @model_validator(mode="after")
+    def _check_consistency(self) -> "AnswerResult":
+        if self.status == "error":
+            if self.error is None or self.answer_vi:
+                raise ValueError("status='error' cần error và không có answer_vi")
+        else:
+            if self.error is not None:
+                raise ValueError("chỉ status='error' mới có trường error")
+            if not self.answer_vi.strip():
+                raise ValueError(f"status='{self.status}' cần answer_vi")
         return self

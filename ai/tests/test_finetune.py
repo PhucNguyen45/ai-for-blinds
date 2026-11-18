@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from finetune import export_sft, train_gen
-from finetune.vn_numbers import sn, su, words
+from speech.vn_numbers import sn, su, words
 
 CASES = {0: "không", 5: "năm", 10: "mười", 11: "mười một", 15: "mười lăm", 21: "hai mươi mốt",
          25: "hai mươi lăm", 99: "chín mươi chín", 100: "một trăm", 101: "một trăm linh một",

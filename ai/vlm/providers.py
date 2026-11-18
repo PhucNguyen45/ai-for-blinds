@@ -151,3 +151,16 @@ def resolve_provider(config: dict, provider: str | None = None,
         raise ConfigError(f"Thiếu cấu hình cho nhà cung cấp '{name}' ({missing}).")
     return Provider(name=name, base_url=base.rstrip("/"), api_key=key, model=chosen,
                     reasoning_effort=effort, timeout=DEFAULT_TIMEOUTS[name])
+
+
+def lmstudio_loaded_config(root, model):
+    """Cấu hình instance đang nạp của `model` (API gốc của LM Studio, không phải /v1) hoặc None."""
+    r = httpx.get(root + "/api/v1/models", timeout=10)
+    r.raise_for_status()
+    for m in r.json().get("models", []):
+        if m.get("key") == model and m.get("loaded_instances"):
+            return {"key": m["key"], "quantization": m.get("quantization"),
+                    "size_bytes": m.get("size_bytes"), "params": m.get("params_string"),
+                    "max_context_length": m.get("max_context_length"),
+                    "instance": m["loaded_instances"][0]}
+    return None

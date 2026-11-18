@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Xuất JSON Schema và các ví dụ response của hợp đồng v0.1.
+"""Xuất JSON Schema và các ví dụ response của hợp đồng v0.1 (mô tả ảnh và hỏi đáp).
 
-Chạy từ thư mục ai/:  uv run python contract/export_contract.py
+Chạy từ thư mục ai/:  uv run python -m contract.export_contract
 Ví dụ được dựng bằng chính model Pydantic nên luôn hợp lệ.
 """
 
@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from contract.models import (
-    CONTRACT_VERSION, DescriptionResult, ErrorInfo, Fact, Meta, Usage,
+    CONTRACT_VERSION, AnswerResult, DescriptionResult, ErrorInfo, Fact, Meta, Usage,
 )
 
 HERE = Path(__file__).resolve().parent
@@ -41,6 +41,19 @@ EXAMPLES = {
         image_id="img-004", image_sha256="d" * 64, status="error",
         error=ErrorInfo(code="timeout", message="Hết thời gian chờ mô hình.", retryable=True),
         meta=META),
+    "unreadable_capture_gate": DescriptionResult(
+        image_id="img-005", image_sha256="e" * 64, status="unreadable",
+        summary_vi="Ảnh quá tối nên mình không đọc được. Bạn bật đèn hoặc đưa trang sách ra chỗ sáng hơn rồi chụp lại nhé.",
+        uncertainties=["capture_gate:dark"]),
+}
+
+ANSWER_EXAMPLES = {
+    "answer_ok": AnswerResult(
+        image_id="img-001", status="ok",
+        answer_vi="Cột Thứ Hai cao nhất, với bốn mươi quyển.", meta=META),
+    "answer_error_timeout": AnswerResult(
+        image_id="img-001", status="error",
+        error=ErrorInfo(code="timeout", message="Hết thời gian chờ mô hình.", retryable=True), meta=META),
 }
 
 
@@ -49,10 +62,12 @@ def main():
     schema = DescriptionResult.model_json_schema()
     (HERE / f"schema_v{CONTRACT_VERSION.replace('.', '_')}.json").write_text(
         json.dumps(schema, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    for name, value in EXAMPLES.items():
+    (HERE / f"answer_schema_v{CONTRACT_VERSION.replace('.', '_')}.json").write_text(
+        json.dumps(AnswerResult.model_json_schema(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    for name, value in {**EXAMPLES, **ANSWER_EXAMPLES}.items():
         (HERE / "examples" / f"{name}.json").write_text(
             value.model_dump_json(indent=2, exclude_none=True) + "\n", encoding="utf-8")
-    print("Đã xuất schema và", len(EXAMPLES), "ví dụ.")
+    print("Đã xuất 2 schema và", len(EXAMPLES) + len(ANSWER_EXAMPLES), "ví dụ.")
 
 
 if __name__ == "__main__":

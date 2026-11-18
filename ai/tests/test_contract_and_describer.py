@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import httpx
@@ -6,8 +5,9 @@ import pytest
 from PIL import Image
 from pydantic import ValidationError
 
-from contract.models import CONTRACT_VERSION, DescriptionResult, ErrorInfo
-from vlm.describer import _extract_summary, describe_image
+from contract.models import CONTRACT_VERSION, AnswerResult, DescriptionResult, ErrorInfo
+from vlm.common import extract_summary as _extract_summary
+from vlm.describer import describe_image
 
 ENV = {"OPENROUTER_API_KEY": "test-key", "OPENROUTER_BASE_URL": "https://example.test/api/v1",
        "OPENROUTER_MODEL": "test/model"}
@@ -103,11 +103,12 @@ def test_contract_rejects_inconsistent_results(bad):
 
 def test_published_examples_are_valid():
     for path in sorted((Path(__file__).parents[1] / "contract" / "examples").glob("*.json")):
-        DescriptionResult.model_validate_json(path.read_text(encoding="utf-8"))
+        model = AnswerResult if path.name.startswith("answer_") else DescriptionResult
+        model.model_validate_json(path.read_text(encoding="utf-8"))
 
 
 # ----- B1 -----
-from vlm.describer import describe_image_b1, parse_extraction  # noqa: E402
+from vlm.b1 import describe_image_b1, parse_extraction  # noqa: E402
 
 JSON1 = ('{"image_type": "bar_chart", "status": "ok", "facts": ['
          '{"subject": "Cột Thứ 2", "predicate": "có giá trị", "object": "40 quyển", '
@@ -178,7 +179,7 @@ def test_parse_extraction_tolerates_noise_and_bad_types():
 
 
 # ----- Nhà cung cấp: OpenRouter / Google AI Studio -----
-from vlm.openrouter_client import build_chat_payload, post_chat_completion  # noqa: E402
+from vlm.client import build_chat_payload, post_chat_completion  # noqa: E402
 from vlm.providers import ConfigError, resolve_provider  # noqa: E402
 
 GENV = {"GOOGLE_API_KEY": "g-secret", "GOOGLE_MODEL": "gemini-2.5-flash"}
@@ -269,7 +270,7 @@ def test_missing_google_key_returns_config_error_not_exception(image):
 
 
 # ----- Làm sạch Markdown + thông báo HTTP -----
-from vlm.describer import strip_markdown  # noqa: E402
+from vlm.common import strip_markdown  # noqa: E402
 
 MD = ("**1. Chủ đề:**\nBiểu đồ cột về số sách. Câu hai.\n\n**2. Thành phần:**\n"
       "- Tiêu đề chính: \"Số sách\"\n- Trục *đứng*: số quyển\n\n### 3. Quan hệ\n`Thứ 2` cao nhất.")
@@ -379,3 +380,72 @@ def test_b1_with_salvaged_json_is_ok_and_flagged(image):
 def test_unrecoverable_json_still_invalid_output(image):
     r = describe_image_b1(image, env=ENV, post=seq_post((200, '{"facts": [oops', "stop")))
     assert r.error.code == "invalid_output"
+
+
+# ---------------------------------------------------------------- "ảnh không đọc được" do model tự báo (prompt b0g_v1)
+
+def _png(tmp_path):
+    p = tmp_path / "x.png"
+    p.write_bytes(b"\x89PNG\r\n\x1a\n" + b"0" * 64)
+    return p
+
+
+def _fake_reply(text, finish="stop"):
+    def post(payload, api_key, base_url, timeout=None):
+        return httpx.Response(200, json={"choices": [{"message": {"content": text}, "finish_reason": finish}],
+                                         "usage": {"prompt_tokens": 10, "completion_tokens": 5}})
+    return post
+
+
+LM_ENV = {"VLM_PROVIDER": "lmstudio", "LMSTUDIO_BASE_URL": "http://x/v1", "LMSTUDIO_MODEL": "m"}
+
+
+def test_model_reported_unreadable_becomes_unreadable_status(tmp_path):
+    reply = "KHÔNG ĐỌC ĐƯỢC: Ảnh bị mờ. Bạn giữ yên máy rồi chụp lại nhé."
+    r = describe_image(_png(tmp_path), prompt_id="b0g_v1", post=_fake_reply(reply), env=LM_ENV)
+    assert r.status == "unreadable" and r.summary_vi.startswith("Ảnh bị mờ")
+    assert r.interpretation_vi == "" and r.error is None
+
+
+def test_normal_description_is_not_flagged_unreadable(tmp_path):
+    reply = "1. Chủ đề: Biểu đồ cột.\n2. Thành phần: Thứ Hai 40."
+    r = describe_image(_png(tmp_path), prompt_id="b0g_v1", post=_fake_reply(reply), env=LM_ENV)
+    assert r.status == "ok"
+
+
+def test_phrase_inside_sentence_is_not_a_flag(tmp_path):
+    reply = "Có một ô không đọc được rõ nhưng biểu đồ vẫn đọc được: Thứ Hai 40."
+    assert describe_image(_png(tmp_path), prompt_id="b0g_v1", post=_fake_reply(reply), env=LM_ENV).status == "ok"
+
+
+# ---------------------------------------------------------------- bộ lọc ký tự ngoài tiếng Việt
+
+def _seq_post(*texts):
+    it = iter(texts)
+
+    def post(payload, api_key, base_url, timeout=None):
+        return httpx.Response(200, json={"choices": [{"message": {"content": next(it)}, "finish_reason": "stop"}],
+                                         "usage": {"prompt_tokens": 4, "completion_tokens": 2}})
+    return post
+
+
+def test_foreign_script_triggers_one_retry_and_clean_text_is_used(tmp_path):
+    r = describe_image(_png(tmp_path), post=_seq_post("Điểm là tám phẩy零 năm.", "Điểm là tám phẩy năm."), env=LM_ENV)
+    assert r.interpretation_vi == "Điểm là tám phẩy năm." and r.uncertainties == []
+    assert r.meta.usage.prompt_tokens == 8  # cộng cả hai lượt gọi
+
+
+def test_persistent_foreign_script_is_removed_and_flagged(tmp_path):
+    r = describe_image(_png(tmp_path), post=_seq_post("Giá trị 知 là năm.", "Giá trị 知 là năm."), env=LM_ENV)
+    assert "知" not in r.interpretation_vi and r.interpretation_vi == "Giá trị là năm."
+    assert any("ngoài tiếng Việt" in u for u in r.uncertainties)
+
+
+def test_vietnamese_text_never_triggers_retry(tmp_path):
+    calls = []
+
+    def post(payload, api_key, base_url, timeout=None):
+        calls.append(1)
+        return httpx.Response(200, json={"choices": [{"message": {"content": "Biểu đồ cột: Thứ Hai bốn mươi ắ ằ ẳ ẵ ặ đ."}, "finish_reason": "stop"}]})
+    describe_image(_png(tmp_path), post=post, env=LM_ENV)
+    assert len(calls) == 1

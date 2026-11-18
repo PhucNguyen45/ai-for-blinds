@@ -4,6 +4,8 @@ Quy tắc: không tiêu đề, chủ đề (nước, bướm, cây đậu, sách
 `FORBIDDEN_TITLES` liệt kê tiêu đề của benchmark; bộ sinh còn đối chiếu động với benchmark cục bộ (nếu có).
 """
 
+from capture.quality import CAPTURE_GUIDANCE  # noqa: F401  (nguồn duy nhất của câu hướng dẫn chụp lại)
+
 # Tiêu đề đang dùng trong benchmark dev/test (tĩnh, để kiểm tra ngay cả khi máy không có benchmark).
 FORBIDDEN_TITLES = {
     "Số sách thư viện cho mượn trong tuần", "Lượng mưa trung bình các tháng mùa mưa",
@@ -141,26 +143,6 @@ CYCLES = [
 MAP_TITLES = ["Sơ đồ khu dân cư", "Sơ đồ khu vực quanh trường", "Sơ đồ làng em", "Sơ đồ thị trấn nhỏ"]
 MAP_PLACES = ["Trường học", "Bệnh viện", "Công viên", "Chợ", "Thư viện", "Bưu điện", "Nhà văn hóa",
               "Sân vận động", "Nhà ga", "Siêu thị", "Trạm y tế", "Sân chơi"]
-
-# Gợi ý chụp lại theo lỗi chụp
-CAPTURE_GUIDANCE = {
-    "blur": [
-        "Ảnh bị mờ nên mình chưa đọc rõ được nội dung. Bạn giữ điện thoại thật chắc tay, lùi ra một chút để cả trang vào khung, rồi chụp lại nhé.",
-        "Ảnh này mờ quá, mình không đọc được chữ và số. Bạn giữ yên điện thoại vài giây trước khi chụp, rồi thử lại nhé.",
-    ],
-    "dark": [
-        "Ảnh quá tối nên mình không đọc được. Bạn bật đèn hoặc đưa trang sách ra chỗ sáng hơn rồi chụp lại nhé.",
-        "Trang sách đang bị thiếu sáng, mình chưa nhìn rõ. Bạn thử chụp lại ở nơi có ánh sáng tốt hơn nhé.",
-    ],
-    "glare": [
-        "Ảnh bị chói sáng che mất một phần nên mình không đọc đủ. Bạn nghiêng nhẹ điện thoại hoặc tránh ánh đèn rọi thẳng vào trang rồi chụp lại nhé.",
-        "Có một vùng bị loá sáng trên ảnh. Bạn đổi góc cầm điện thoại một chút để hết loá rồi chụp lại nhé.",
-    ],
-    "cropped_left": ["Hình bị cắt mất phần bên trái. Bạn dịch điện thoại sang trái một chút và lùi ra xa hơn để thấy đủ cả hình rồi chụp lại nhé."],
-    "cropped_right": ["Hình bị cắt mất phần bên phải. Bạn dịch điện thoại sang phải một chút và lùi ra xa hơn để thấy đủ cả hình rồi chụp lại nhé."],
-    "cropped_top": ["Hình bị cắt mất phần phía trên. Bạn nâng điện thoại lên một chút và lùi ra xa hơn để thấy đủ cả hình rồi chụp lại nhé."],
-    "cropped_bottom": ["Hình bị cắt mất phần phía dưới. Bạn hạ điện thoại xuống một chút và lùi ra xa hơn để thấy đủ cả hình rồi chụp lại nhé."],
-}
 
 
 # ---------------------------------------------------------------- sinh theo thủ tục (mở rộng không gian nội dung)

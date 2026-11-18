@@ -9,7 +9,7 @@
 |---|---|
 | `train_gen.py` | Sinh mẫu: ảnh JPEG + ground truth theo mệnh đề (`truth_v0.2`) + **lời diễn giải mục tiêu bằng văn nói** + cặp hỏi đáp có trả lời nói + nhãn lỗi chụp. Lệnh con `generate`, `check`, `stats` |
 | `themes.py` | Kho chủ đề riêng cho huấn luyện (tách khỏi benchmark) và bộ sinh nội dung theo thủ tục |
-| `vn_numbers.py` | Đọc số/đơn vị bằng chữ tiếng Việt ("hai mươi chín độ C") |
+| (dùng `speech/vn_numbers.py`) | Đọc số/đơn vị bằng chữ tiếng Việt ("hai mươi chín độ C") |
 | `export_sft.py` | Xuất JSONL hội thoại (ảnh → mô tả; tùy chọn thêm hỏi đáp) cho fine-tune |
 
 8 loại hình: biểu đồ cột, đường, tròn, bảng, lưu đồ (5 bố cục), sơ đồ vòng, hình học (5 dạng), sơ đồ bản đồ.

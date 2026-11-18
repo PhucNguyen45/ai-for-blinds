@@ -1,6 +1,4 @@
 import json
-import shutil
-from pathlib import Path
 
 import pytest
 from PIL import Image

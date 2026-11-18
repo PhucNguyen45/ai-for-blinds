@@ -7,15 +7,15 @@
 ## Dùng thế nào
 
 ```python
-from vlm.describer import describe_image
+from pipeline import describe_page, ask_page
 
-result = describe_image("hinh.png", image_id="img-001")   # DescriptionResult
+result = describe_page("hinh.png", image_id="img-001")    # DescriptionResult (qua cổng chất lượng ảnh)
 result.status                # "ok" | "partial" | "unreadable" | "unsupported" | "error"
 result.interpretation_vi     # văn bản tiếng Việt để đọc bằng TTS
 result.model_dump_json()     # JSON trả cho app
 ```
 
-`describe_image` **không ném ngoại lệ** vì lỗi vận hành (mạng, HTTP, cấu hình, ảnh): nó trả
+`describe_page` và `ask_page` **không ném ngoại lệ** vì lỗi vận hành (mạng, HTTP, cấu hình, ảnh): nó trả
 `status="error"` kèm `error.code` và `error.retryable`. Backend chỉ cần xử lý một dạng kết quả.
 
 ## Trường chính (`contract/models.py`, JSON Schema: `schema_v0_1.json`, ví dụ: `examples/`)
@@ -32,7 +32,11 @@ result.model_dump_json()     # JSON trả cho app
 | `uncertainties[]` | Điều chưa chắc chắn/thiếu |
 | `question_answering_ready` | Đủ căn cứ để hỏi đáp tiếp; chỉ có nghĩa khi `ok`/`partial` |
 | `meta` | provider (openrouter/google), model, method (B0/B1), prompt_id, prompt_sha256, tham số, finish_reason, độ trễ, token |
-| `error` | `code` (invalid_image, config_error, timeout, http_error, empty_response, invalid_output, unknown), `message`, `retryable`, `http_status` |
+| `error` | `code` (invalid_image, invalid_input, config_error, timeout, http_error, empty_response, invalid_output, unknown), `message`, `retryable`, `http_status` |
+
+`ask_page(...)` trả `AnswerResult` (`answer_vi`, `status` ok/partial/error, `meta`, `error`; schema `answer_schema_v0_1.json`).
+Khi cổng chất lượng ảnh chặn ảnh: `status="unreadable"`, `summary_vi` là lời hướng dẫn chụp lại, `uncertainties=["capture_gate:<lỗi>"]`
+và **không có `meta`** (chưa gọi model). Mã lỗi `invalid_input` dùng cho câu hỏi trống hoặc quá dài.
 
 Ràng buộc nhất quán được kiểm bằng Pydantic (vd `error` chỉ đi với `status="error"`).
 
@@ -54,5 +58,5 @@ Ràng buộc nhất quán được kiểm bằng Pydantic (vd `error` chỉ đi 
 
 ```bash
 uv run pytest -q                                   # 18 kiểm thử, không gọi API thật
-PYTHONPATH=. uv run python contract/export_contract.py   # xuất lại schema + ví dụ
+uv run python -m contract.export_contract   # xuất lại schema + ví dụ
 ```

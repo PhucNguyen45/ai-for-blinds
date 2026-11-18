@@ -32,7 +32,7 @@ sys.path.insert(0, str(AI_ROOT))
 
 from evaluation.generators import generate_benchmark_v02 as gb  # noqa: E402
 from finetune import themes as T  # noqa: E402
-from finetune.vn_numbers import sn, su  # noqa: E402
+from speech.vn_numbers import sn, su  # noqa: E402
 
 W, H = gb.W, gb.H
 DEFAULT_BENCH = AI_ROOT.parent / "data" / "benchmark"
@@ -392,8 +392,8 @@ def gen_flow(rng):
                  N("e", end, "oval", (550, 640), (170, 70))]
         edges = [("s", "q"), ("q", "y", "Có"), ("q", "n", "Không"), ("y", "e"), ("n", "e")]
         extra = [("structure", "Sơ đồ", "có", f"một điểm rẽ nhánh tại '{q}'")]
-        questions = [(f"Nếu câu trả lời là có thì làm gì?", yes, "relation", f"Thì {lf(yes)}."),
-                     (f"Nếu câu trả lời là không thì làm gì?", no, "relation", f"Thì {lf(no)}."),
+        questions = [("Nếu câu trả lời là có thì làm gì?", yes, "relation", f"Thì {lf(yes)}."),
+                     ("Nếu câu trả lời là không thì làm gì?", no, "relation", f"Thì {lf(no)}."),
                      ("Hai nhánh gặp lại nhau ở bước nào?", end, "relation", f"Ở bước {lf(end)}.")]
         desc = " ".join([f"Trang có một sơ đồ về {lf(title)}.", f"Sơ đồ mở đầu bằng ô {start}, rồi tới câu hỏi: {q}",
                          f"Nếu có thì {lf(yes)}. Nếu không thì {lf(no)}.",
@@ -416,8 +416,8 @@ def gen_flow(rng):
                  N("q", q, "diamond", (680, 330), (220, 130)), N("c", c, "box", (960, 330), (160, 90))]
         edges = [("a", "b"), ("b", "q"), ("q", "c", "Có"), ("q", "b", "Không", [(680, 520), (390, 520)])]
         extra = [("structure", "Sơ đồ", "có", f"một vòng lặp: nếu chưa thì quay lại bước '{b}'")]
-        questions = [(f"Nếu câu trả lời là không thì quay lại bước nào?", b, "relation", f"Quay lại bước {lf(b)}."),
-                     (f"Nếu câu trả lời là có thì làm gì tiếp theo?", c, "relation", f"Thì {lf(c)}.")]
+        questions = [("Nếu câu trả lời là không thì quay lại bước nào?", b, "relation", f"Quay lại bước {lf(b)}."),
+                     ("Nếu câu trả lời là có thì làm gì tiếp theo?", c, "relation", f"Thì {lf(c)}.")]
         desc = " ".join([f"Trang có một sơ đồ về {lf(title)}.", f"Sơ đồ có hai bước đầu là {lf(a)} và {lf(b)}.",
                          f"Sau đó có câu hỏi: {q}", f"Nếu có thì {lf(c)}.",
                          f"Nếu không thì quay lại bước {lf(b)}, tạo thành một vòng lặp.", rng.choice(ENDINGS)])

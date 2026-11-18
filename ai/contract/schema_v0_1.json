@@ -12,6 +12,7 @@
             "http_error",
             "empty_response",
             "invalid_output",
+            "invalid_input",
             "unknown"
           ],
           "title": "Code",
