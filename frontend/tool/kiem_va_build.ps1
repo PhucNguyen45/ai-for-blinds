@@ -61,6 +61,8 @@ $thietBi = @()
 if (Test-Path $adb) {
   # @(...): khi chỉ có một thiết bị, PowerShell 5.1 trả về chuỗi chứ không phải mảng
   $thietBi = @(& $adb devices | Select-Object -Skip 1 | Where-Object { $_ -match '\tdevice$' } | ForEach-Object { ($_ -split "`t")[0] })
+  $chuaChoPhep = @(& $adb devices | Where-Object { $_ -match '\tunauthorized$' })
+  if ($chuaChoPhep.Count -gt 0) { CanhBao 'Thiết bị' 'Điện thoại đã cắm nhưng chưa cho phép: mở khóa điện thoại, bấm "Cho phép" ở hộp thoại Gỡ lỗi USB.' }
   if ($thietBi.Count -gt 0) { Dat 'Thiết bị' ("Đang cắm: " + ($thietBi -join ', ')) }
   else { CanhBao 'Thiết bị' 'Chưa có điện thoại/máy ảo. Điện thoại: bật Tùy chọn nhà phát triển > Gỡ lỗi USB rồi cắm cáp.' }
 } else { CanhBao 'Thiết bị' "Không thấy adb ở $adb" }
@@ -92,9 +94,14 @@ $arm64 = Join-Path $apkDir 'app-arm64-v8a-release.apk'
 Get-ChildItem $apkDir -Filter '*-release.apk' | ForEach-Object { Write-Host ("  {0}  {1:N1} MB" -f $_.Name, ($_.Length / 1MB)) }
 Dat 'build' ("Xong sau {0:N0} giây. Bản cho điện thoại: {1}" -f $sw.Elapsed.TotalSeconds, $arm64)
 
+if ($CaiLenMay -and $thietBi.Count -eq 0) {
+  CanhBao 'cài đặt' 'Chưa thấy điện thoại: bật Gỡ lỗi USB, cắm cáp truyền dữ liệu, bấm "Cho phép" trên điện thoại, rồi chạy lại.'
+}
 if ($CaiLenMay -and $thietBi.Count -gt 0) {
   Buoc 'Cài lên thiết bị'
-  $dich = $thietBi[0]
+  # Ưu tiên điện thoại thật khi đang mở cả máy ảo
+  $that = @($thietBi | Where-Object { $_ -notlike 'emulator-*' })
+  $dich = if ($that.Count -gt 0) { $that[0] } else { $thietBi[0] }
   $abi = (& $adb -s $dich shell getprop ro.product.cpu.abi).Trim()
   $apk = Join-Path $apkDir "app-$abi-release.apk"
   if (-not (Test-Path $apk)) { $apk = $arm64 }
