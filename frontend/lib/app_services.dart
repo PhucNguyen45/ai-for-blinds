@@ -7,6 +7,7 @@ import 'services/earcons.dart';
 import 'services/platform_bridge.dart';
 import 'services/settings_store.dart';
 import 'services/speech.dart';
+import 'services/speech_input.dart';
 import 'ui/explore.dart';
 
 /// Mọi dịch vụ các màn hình cần, gom một chỗ để truyền đi và thay bằng đồ giả khi test.
@@ -23,7 +24,8 @@ class AppServices implements ExploreFeedback {
     required this.earcons,
     required this.haptics,
     this.library = const AssetLibrarySource(),
-  });
+    SpeechInput? speechInput,
+  }) : speechInput = speechInput ?? AndroidSpeechInput();
 
   final ReaderController controller;
   final SettingsStore settings;
@@ -33,6 +35,9 @@ class AppServices implements ExploreFeedback {
   final EarconPlayer earcons;
   final Haptics haptics;
   final LibrarySource library;
+
+  /// Nhận giọng nói tiếng Việt (màn hình Hỏi).
+  final SpeechInput speechInput;
 
   /// Câu app đang nói, cho phụ đề.
   ValueListenable<Caption> get caption => speaker.caption;

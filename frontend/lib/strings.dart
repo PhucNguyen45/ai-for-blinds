@@ -80,12 +80,40 @@ class S {
 
   // Hỏi
   static const askTitle = 'Hỏi về trang này';
-  static const askOpen = 'Hỏi về trang vừa chụp. Có ba câu hỏi gợi ý ở giữa màn hình. Nút Quay lại ở mép dưới.';
+  static const askOpen =
+      'Hỏi về trang vừa chụp. Bấm nút âm lượng, hoặc chạm hai lần nút Nói câu hỏi ngay trên nút '
+      'Quay lại, rồi nói câu hỏi của bạn.';
+  static const askOpenNoStt =
+      'Hỏi về trang vừa chụp. Điện thoại chưa nhận được giọng nói, nên có ba câu hỏi gợi ý '
+      'ở giữa màn hình. Nút Quay lại ở mép dưới.';
   static const asking = 'Đang hỏi, xin chờ.';
   static const askNeedPage = 'Hãy chụp một trang trước khi hỏi.';
   static const askCannot = 'Trang này chưa đọc được nên chưa hỏi được. Bạn chụp lại trang nhé.';
-  static const askEmpty = 'Chưa có câu trả lời. Chạm hai lần vào một câu hỏi gợi ý.';
-  static const askEmptyShown = 'Chọn một câu hỏi bên dưới. Câu trả lời sẽ được đọc to.';
+  static const askEmpty = 'Chưa có câu trả lời. Bấm nút âm lượng rồi nói câu hỏi.';
+  static const askEmptyNoStt = 'Chưa có câu trả lời. Chạm hai lần vào một câu hỏi gợi ý.';
+  static const askEmptyShown =
+      'Bấm nút âm lượng hoặc chạm hai lần nút Nói câu hỏi, rồi nói. '
+      'Ví dụ: "Hình vẽ có mấy phần?"';
+  static const askEmptyShownNoStt = 'Chọn một câu hỏi bên dưới. Câu trả lời sẽ được đọc to.';
+
+  // Nói câu hỏi (nhận giọng nói có sẵn của Android)
+  static const mic = 'Nói câu hỏi';
+  static const micSay = 'Nói câu hỏi. Chạm hai lần rồi nói. Có thể bấm nút âm lượng.';
+  static const micStop = 'Đang nghe';
+  static const micStopSay = 'Đang nghe. Chạm hai lần để dừng.';
+  static const sttPrompt = 'Mời bạn nói.';
+  static const listeningShown = 'Đang nghe…';
+  static const sttNoMatch = 'Mình chưa nghe rõ. Bạn bấm nút âm lượng rồi nói lại nhé.';
+  static const sttNetwork =
+      'Nhận giọng nói đang cần mạng mà mạng yếu. Bạn thử lại, hoặc tải gói nhận giọng nói '
+      'tiếng Việt ngoại tuyến cho điện thoại.';
+  static const sttPermission = 'SgBe chưa được phép dùng micro. Bạn cấp quyền micro cho SgBe trong cài đặt điện thoại.';
+  static const sttLanguage =
+      'Điện thoại chưa có nhận giọng nói tiếng Việt. Bạn vào cài đặt Google, mục Giọng nói, '
+      'tải tiếng Việt.';
+  static const sttUnavailable = 'Điện thoại này không có dịch vụ nhận giọng nói. Bạn dùng các câu hỏi gợi ý.';
+  static const sttBusy = 'Micro đang bận, bạn thử lại sau giây lát.';
+  static const sttOther = 'Không nhận được giọng nói. Bạn thử lại nhé.';
   static const answerLabel = 'Câu trả lời';
   static const answerSay = 'Câu trả lời. Chạm hai lần để nghe lại.';
   static const youAsked = 'Bạn hỏi';
@@ -94,7 +122,6 @@ class S {
     'Hình vẽ gồm những phần nào?',
     'Giải thích lại cho dễ hiểu hơn',
   ];
-  static const voiceAskSoon = 'Hỏi bằng giọng nói sẽ có khi xong phần nhận dạng giọng nói.';
 
   // Thư viện
   static const sampleBadge = 'Bản mẫu';

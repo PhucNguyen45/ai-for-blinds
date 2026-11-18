@@ -4,6 +4,9 @@
     <!-- Chụp trang sách ngay trong app -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <!-- Hỏi bằng giọng nói (SpeechRecognizer có sẵn của Android) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-feature android:name="android.hardware.microphone" android:required="false"/>
     <application
         android:label="SgBe"
         android:usesCleartextTraffic="true"
@@ -46,6 +49,10 @@
         <!-- Android 11+ phải khai báo mới tìm được engine giọng đọc (flutter_tts) -->
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE"/>
+        </intent>
+        <!-- Android 11+ phải khai báo mới tìm được dịch vụ nhận giọng nói -->
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
         </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

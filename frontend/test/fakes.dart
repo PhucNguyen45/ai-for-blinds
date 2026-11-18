@@ -9,6 +9,7 @@ import 'package:sgbe/services/capture_source.dart';
 import 'package:sgbe/services/earcons.dart';
 import 'package:sgbe/services/platform_bridge.dart';
 import 'package:sgbe/services/speech.dart';
+import 'package:sgbe/services/speech_input.dart';
 
 class FakeSpeaker implements Speaker {
   final spoken = <String>[];
@@ -162,4 +163,57 @@ class FakeLibrary implements LibrarySource {
       pages: [BookPage(number: 9, title: 'Trang chín', text: 'Nội dung trang chín.')],
     ),
   ];
+}
+
+/// Nhận giọng nói giả: trả lần lượt [results]; hết thì trả câu mặc định.
+class FakeSpeechInput implements SpeechInput {
+  FakeSpeechInput({this.ok = true});
+
+  bool ok;
+  final results = <SttResult>[];
+  int listens = 0;
+  int stops = 0;
+  int cancels = 0;
+  final partialCtl = StreamController<String>.broadcast();
+
+  /// Khi đặt, listen() chờ tới khi stop()/cancel() (giả lập đang nghe).
+  Completer<SttResult>? gate;
+
+  /// false: stop() không đem lại kết quả (giả lập dịch vụ chờ mạng mãi).
+  bool stopsComplete = true;
+
+  static const macDinh = 'Hình vẽ có mấy phần?';
+
+  SttResult _next() => results.isEmpty ? const SttText(macDinh) : results.removeAt(0);
+
+  @override
+  Future<bool> available() async => ok;
+
+  @override
+  Future<SttResult> listen() async {
+    listens++;
+    final g = gate;
+    if (g != null) return g.future;
+    return _next();
+  }
+
+  @override
+  Future<void> stop() async {
+    stops++;
+    if (!stopsComplete) return;
+    final g = gate;
+    gate = null;
+    if (g != null && !g.isCompleted) g.complete(_next());
+  }
+
+  @override
+  Future<void> cancel() async {
+    cancels++;
+    final g = gate;
+    gate = null;
+    if (g != null && !g.isCompleted) g.complete(const SttCancelled());
+  }
+
+  @override
+  Stream<String> get partials => partialCtl.stream;
 }

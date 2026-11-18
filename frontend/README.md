@@ -17,7 +17,7 @@ flutter pub get
 flutter test
 ```
 
-62 test: trợ năng tự động (nhãn TalkBack, vùng chạm, tương phản) trên mọi màn hình; cách thao tác chạm nghe / chạm hai lần / rê ngón / nhường TalkBack; không tràn chữ khi phóng chữ 200% và màn hình 360×640; đọc phản hồi thật của backend (`test/fixtures/`) và 4 ví dụ của hợp đồng AI v0.1 (`test/fixtures/contract_v01/`).
+66 test: trợ năng tự động (nhãn TalkBack, vùng chạm, tương phản) trên mọi màn hình; cách thao tác chạm nghe / chạm hai lần / rê ngón / nhường TalkBack; không tràn chữ khi phóng chữ 200% và màn hình 360×640; đọc phản hồi thật của backend (`test/fixtures/`) và 4 ví dụ của hợp đồng AI v0.1 (`test/fixtures/contract_v01/`).
 
 ## Kiểm môi trường và dựng APK cho điện thoại
 
@@ -109,7 +109,7 @@ Tham khảo Seeing AI, Lookout (Google), Be My Eyes / Be My AI, Envision:
 - **Camera tràn màn hình, nút nổi trên hình** (Seeing AI, Envision); **bốn góc vàng ôm trang** (khung tài liệu của Lookout).
 - **Phụ đề câu đang nói** dạng bong bóng có biểu tượng loa (Envision).
 - **Đọc từng câu, tô vàng câu đang đọc** (công cụ đọc của Lookout).
-- **Hỏi tiếp dạng hội thoại** trên ảnh vừa chụp (Ask more của Be My AI).
+- **Hỏi tiếp bằng giọng nói** trên ảnh vừa chụp (Ask more của Be My AI): nhận giọng nói có sẵn của Android, tiếng Việt, bấm nút âm lượng là nói.
 - **Chạm nghe, chạm hai lần dùng** ngay trong app, không bắt bật TalkBack; bật TalkBack thì app nhường.
 - **Màu vàng gạch dẫn đường** trên nền gần đen, tương phản trên 7:1; mỗi nút một màu nhưng luôn kèm biểu tượng và chữ.
 - **Camera trong app** (gói `camera`), không mở app camera hệ thống: bước "Đồng ý / Chụp lại" khó dùng khi không nhìn.
@@ -118,6 +118,5 @@ Tham khảo Seeing AI, Lookout (Google), Be My Eyes / Be My AI, Envision:
 
 ## Chưa làm
 
-- Hỏi bằng giọng nói: chờ STT của Phúc (hiện hỏi bằng 3 câu gợi ý, gửi thật lên `/v1/ask`).
 - Thư viện thật (`/v1/library` của Nam) và đọc offline: hiện là sách mẫu.
 - Khóa ký riêng cho bản phát hành.

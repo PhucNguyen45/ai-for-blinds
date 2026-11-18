@@ -13,7 +13,9 @@ import 'package:sgbe/services/capture_source.dart';
 import 'package:sgbe/services/earcons.dart';
 import 'package:sgbe/services/settings_store.dart';
 import 'package:sgbe/services/speech.dart';
+import 'package:sgbe/services/speech_input.dart';
 import 'package:sgbe/strings.dart';
+import 'package:sgbe/ui/ask_screen.dart';
 import 'package:sgbe/ui/widgets.dart';
 
 import 'fakes.dart';
@@ -26,10 +28,12 @@ void main() {
   late FakeEarcons earcons;
   late SettingsStore settings;
   late ReaderController controller;
+  late FakeSpeechInput stt;
 
   Future<void> pumpApp(
     WidgetTester tester, {
     bool voiceReady = true,
+    bool sttOk = true,
     Size size = const Size(1080, 2340),
     double ratio = 3,
   }) async {
@@ -40,6 +44,7 @@ void main() {
     capture = FakeCapture();
     bridge = FakeBridge();
     earcons = FakeEarcons();
+    stt = FakeSpeechInput(ok: sttOk);
     final captioned = CaptionedSpeaker(speaker);
     controller = ReaderController(api: () => api, speaker: captioned, earcons: earcons);
     final services = AppServices(
@@ -51,6 +56,7 @@ void main() {
       earcons: earcons,
       haptics: Haptics(),
       library: FakeLibrary(),
+      speechInput: stt,
     );
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = ratio;
@@ -258,34 +264,101 @@ void main() {
       expect(find.text(S.askTitle), findsNothing);
     });
 
-    testWidgets('UI-43: chụp, mở Hỏi, chọn câu gợi ý: gửi image_id, đọc câu trả lời, đạt chuẩn trợ năng', (
+    Future<void> moHoi(WidgetTester tester) async {
+      await captureOnce(tester);
+      await doubleTap(tester, label(S.ask));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('UI-43: nói câu hỏi bằng giọng: gửi chữ nghe được + image_id, đọc câu trả lời; đạt chuẩn trợ năng', (
       tester,
     ) async {
       final handle = tester.ensureSemantics();
       await pumpApp(tester);
-      await captureOnce(tester);
-      await doubleTap(tester, label(S.ask));
-      await tester.pumpAndSettle();
+      await moHoi(tester);
       expect(find.text(S.askTitle), findsOneWidget);
       expect(speaker.spoken.last, S.askOpen);
+      expect(label(S.askSuggestions[0]), findsNothing, reason: 'có nhận giọng nói thì không hiện câu gợi ý');
       await checkGuidelines(tester);
 
-      await doubleTap(tester, label(S.askSuggestions[1]));
+      await doubleTap(tester, label(S.mic));
       await tester.pumpAndSettle();
-      expect(api.lastQuestion, S.askSuggestions[1]);
+      expect(stt.listens, 1);
+      expect(speaker.spoken, contains(S.sttPrompt), reason: 'mời nói trước khi mở micro');
+      expect(api.lastQuestion, FakeSpeechInput.macDinh);
       expect(api.lastAskImageId, 'b9b1d4985e464bbb');
       expect(speaker.spoken.last, 'Trả lời.');
       expect(inReading(find.textContaining('Trả lời.', findRichText: true)), findsOneWidget);
+      expect(find.text(FakeSpeechInput.macDinh), findsOneWidget, reason: 'câu hỏi hiện thành bong bóng');
 
-      await doubleTap(tester, label(S.askSuggestions[0]));
+      // Nút âm lượng cũng bật nghe; lượt hỏi sau gửi kèm lịch sử
+      stt.results.add(const SttText('Còn gì nữa không?'));
+      bridge.keys.add('down');
       await tester.pumpAndSettle();
-      expect(api.lastHistory.single.question, S.askSuggestions[1], reason: 'gửi kèm lượt hỏi trước');
+      expect(stt.listens, 2);
+      expect(api.lastQuestion, 'Còn gì nữa không?');
+      expect(api.lastHistory.single.question, FakeSpeechInput.macDinh, reason: 'gửi kèm lượt hỏi trước');
 
       await doubleTap(tester, label(S.back));
       await tester.pumpAndSettle();
       expect(find.text(S.askTitle), findsNothing);
       expect(speaker.spoken.last, S.homeSay);
       handle.dispose();
+    });
+
+    testWidgets('không nghe rõ: báo bằng giọng nói, không gửi câu hỏi', (tester) async {
+      await pumpApp(tester);
+      await moHoi(tester);
+      stt.results.add(const SttFail('7', S.sttNoMatch));
+      await doubleTap(tester, label(S.mic));
+      await tester.pumpAndSettle();
+      expect(api.lastQuestion, isNull);
+      expect(speaker.spoken.last, S.sttNoMatch);
+      expect(earcons.played.last, Earcon.error);
+    });
+
+    testWidgets('đang nghe mà chạm bất kỳ: dừng nghe, app không đọc tên nút (để không lọt vào micro)', (tester) async {
+      await pumpApp(tester);
+      await moHoi(tester);
+      stt.gate = Completer<SttResult>();
+      await doubleTap(tester, label(S.mic));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text(S.listeningShown), findsWidgets);
+      final noiTruoc = speaker.spoken.length;
+      await tester.tap(label(S.back));
+      await tester.pumpAndSettle();
+      expect(stt.stops, 1);
+      expect(speaker.spoken.sublist(noiTruoc), isNot(contains(S.backSay)));
+      expect(api.lastQuestion, FakeSpeechInput.macDinh, reason: 'dừng sớm vẫn lấy phần đã nghe');
+    });
+
+    testWidgets('dịch vụ nhận giọng không trả lời (mạng yếu): tự dừng, rồi huỷ và báo lỗi mạng, không treo', (
+      tester,
+    ) async {
+      await pumpApp(tester);
+      await moHoi(tester);
+      stt.gate = Completer<SttResult>();
+      stt.stopsComplete = false; // giả lập: dừng thu nhưng không bao giờ có kết quả
+      await doubleTap(tester, label(S.mic));
+      await tester.pump(AskScreen.nghiToiDa + const Duration(seconds: 1));
+      expect(stt.stops, 1, reason: 'quá thời gian nghe thì tự dừng thu âm');
+      await tester.pump(AskScreen.choKetQua);
+      await tester.pumpAndSettle();
+      expect(stt.cancels, 1);
+      expect(speaker.spoken.last, S.sttNetwork);
+      expect(find.text(S.listeningShown), findsNothing, reason: 'không còn kẹt ở Đang nghe');
+      expect(api.lastQuestion, isNull);
+    });
+
+    testWidgets('máy không nhận được giọng nói: hiện ba câu gợi ý, hỏi bằng câu gợi ý', (tester) async {
+      await pumpApp(tester, sttOk: false);
+      await moHoi(tester);
+      expect(speaker.spoken.last, S.askOpenNoStt);
+      expect(label(S.mic), findsNothing);
+      await doubleTap(tester, label(S.askSuggestions[1]));
+      await tester.pumpAndSettle();
+      expect(api.lastQuestion, S.askSuggestions[1]);
+      expect(speaker.spoken.last, 'Trả lời.');
     });
   });
 
@@ -377,7 +450,7 @@ void main() {
       await captureOnce(tester);
       await doubleTap(tester, label(S.ask));
       await tester.pumpAndSettle();
-      await doubleTap(tester, label(S.askSuggestions[0]));
+      await doubleTap(tester, label(S.mic));
       await tester.pumpAndSettle();
       await doubleTap(tester, label(S.back));
       await tester.pumpAndSettle();

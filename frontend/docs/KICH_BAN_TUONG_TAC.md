@@ -71,17 +71,22 @@ Máy chưa có giọng tiếng Việt: app nói một câu tiếng Anh hướng 
 
 Chạm khi app đang chờ máy chủ: "Đang đọc trang, xin chờ.", không gửi thêm ảnh.
 
-## Kịch bản 4 — Hỏi thêm về trang vừa chụp
+## Kịch bản 4 — Hỏi thêm về trang vừa chụp (bằng giọng nói)
 
 | Bước | Người dùng | App nói / hiện |
 |---|---|---|
 | 1 | Chạm hai lần **Hỏi** (chưa chụp trang nào) | "Hãy chụp một trang trước khi hỏi." (âm lỗi), không mở màn hình |
-| 2 | Chạm hai lần **Hỏi** (đã chụp) | Mở màn hình Hỏi: "Hỏi về trang vừa chụp. Có ba câu hỏi gợi ý…" |
-| 3 | Rê ngón qua ba câu gợi ý, chạm hai lần một câu | "Đang hỏi, xin chờ." → câu hỏi hiện thành bong bóng xanh, câu trả lời đọc từng câu, tô vàng |
-| 4 | Chạm hai lần thẻ câu trả lời | Nghe lại câu trả lời |
-| 5 | Chạm hai lần **Quay lại** | Về màn hình chụp: "Màn hình chụp." |
+| 2 | Chạm hai lần **Hỏi** (đã chụp) | Mở màn hình Hỏi: "Hỏi về trang vừa chụp. Bấm nút âm lượng, hoặc chạm hai lần nút Nói câu hỏi…" |
+| 3 | Bấm nút âm lượng (hoặc chạm hai lần **Nói câu hỏi**, ngay trên Quay lại) | "Mời bạn nói." rồi tiếng mở micro; thẻ giữa màn hình hiện micro vàng, chữ nghe được hiện dần |
+| 4 | Nói câu hỏi, ví dụ "Hình vẽ có mấy phần?" | Ngừng nói thì app tự dừng nghe; câu hỏi hiện thành bong bóng xanh; "Đang hỏi, xin chờ." rồi đọc câu trả lời, tô vàng từng câu |
+| 5 | Muốn hỏi tiếp | Bấm nút âm lượng lần nữa; câu hỏi sau gửi kèm các lượt trước |
+| 6 | Chạm hai lần **Quay lại** | Về màn hình chụp: "Màn hình chụp." |
 
-Mỗi câu hỏi gửi `/v1/ask` kèm `image_id` và các lượt hỏi trước. Hỏi bằng giọng nói sẽ thêm khi xong STT của Mảng A.
+- Lần đầu nghe, Android hỏi quyền micro.
+- Đang nghe mà chạm bất kỳ đâu: dừng nghe ngay (app không đọc tên nút lúc này để giọng app không lọt vào micro).
+- Không nghe rõ: "Mình chưa nghe rõ. Bạn bấm nút âm lượng rồi nói lại nhé." Mạng yếu, dịch vụ không trả lời: sau 12 giây tự dừng, thêm 8 giây thì báo lỗi mạng, không bao giờ kẹt ở "Đang nghe".
+- Nhận giọng nói dùng dịch vụ có sẵn của Android (Google), tiếng Việt. Có mạng là chạy; muốn chạy không cần mạng thì tải gói "Nhận dạng giọng nói ngoại tuyến" tiếng Việt trong cài đặt Google của điện thoại.
+- Máy không có dịch vụ nhận giọng nói: màn hình hiện ba câu hỏi gợi ý thay cho nút nói.
 
 ## Kịch bản 5 — Thư viện (bản mẫu)
 
