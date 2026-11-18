@@ -17,8 +17,8 @@
 | Model | `nvidia/nemotron-3.5-super-vl:free` |
 | Provider phản hồi | `Nvidia` (theo JSON OpenRouter) |
 | API | OpenRouter `/api/v1/chat/completions` |
-| Mã thử nghiệm | `ai/vlm/test_openrouter.py` |
-| Ảnh đầu vào | `data/local/test.png` (trong repo; không commit) |
+| Mã thử nghiệm | `ai/evaluation/legacy_b0/test_openrouter.py` |
+| Ảnh đầu vào | `data/benchmark/_legacy/test.png` (trong repo; không commit) |
 | Chủ đề ảnh | Sơ đồ vòng tuần hoàn nước (*Water Cycle Flowchart*) |
 | Nguồn ảnh tham khảo | https://commons.wikimedia.org/wiki/File:Water_cycle_flowchart.png |
 | SHA-256 của ảnh | *Chưa ghi — cần tính từ file gốc trên WSL* |
@@ -97,11 +97,11 @@ Dưới đây là giải thích ngắn gọn cho học sinh khiếm thị:
 
 ## 7. Tái lập lần B0-001b
 
-Chạy tại `ai/` (yêu cầu `../data/local/test.png` tồn tại và `.env` có key):
+Chạy tại `ai/` (yêu cầu `../data/benchmark/_legacy/test.png` tồn tại và `.env` có key):
 
 ```bash
-uv run python vlm/test_openrouter.py \
-  --image ../data/local/test.png \
+uv run python evaluation/legacy_b0/test_openrouter.py \
+  --image ../data/benchmark/_legacy/test.png \
   --prompt "Hãy giải thích hình này bằng tiếng Việt thật ngắn gọn cho học sinh khiếm thị theo đúng 4 mục: (1) Chủ đề của hình, (2) Các thành phần chính, (3) Chiều mũi tên và quan hệ giữa các giai đoạn, (4) Ý nghĩa tổng quát. Nếu không chắc thì nói không chắc." \
   --max-tokens 600
 ```

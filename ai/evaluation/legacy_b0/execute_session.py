@@ -17,7 +17,7 @@ EVAL_ROOT = AI_ROOT / "evaluation"
 BENCHMARK_ROOT = (AI_ROOT.parent / "data" / "benchmark").resolve()
 SESSION_DIR = EVAL_ROOT / "sessions"
 RUNS_DIR = EVAL_ROOT / "runs"
-SCRIPT = AI_ROOT / "vlm" / "test_openrouter.py"
+SCRIPT = AI_ROOT / "evaluation" / "legacy_b0" / "test_openrouter.py"
 PROMPT_FILE = AI_ROOT / "prompts" / "b0_v1.txt"
 MANIFEST_FILE = BENCHMARK_ROOT / "manifest.json"
 

@@ -6,9 +6,10 @@ Chỉ nhận giấy phép tự do (CC0, Public domain, CC BY, CC BY-SA). Ảnh �
 Một ảnh chỉ được đưa vào benchmark sau khi có ground truth do người kiểm chứng.
 
 Chạy từ thư mục ai/:
-    uv run python evaluation/generators/fetch_commons_candidates.py
+    uv run python evaluation/generators/fetch_commons_candidates.py [--queries en|vi|all]
 """
 
+import argparse
 import hashlib
 import io
 import json
@@ -41,6 +42,24 @@ QUERIES = [
     ("figure", "diagram", "electric circuit diagram simple"),
     ("map", "map", "map of Vietnam"),
     ("map", "map", "map of Southeast Asia"),
+]
+
+
+# Truy vấn tiếng Việt: ảnh có nhãn tiếng Việt (bản đồ, sơ đồ, biểu đồ, hình học); Commons ít có trang SGK thật
+QUERIES_VI = [
+    ("map", "map", "bản đồ hành chính Việt Nam"),
+    ("map", "map", "bản đồ địa hình Việt Nam"),
+    ("map", "map", "bản đồ khí hậu Việt Nam"),
+    ("figure", "cycle_diagram", "vòng tuần hoàn của nước"),
+    ("figure", "cycle_diagram", "vòng đời"),
+    ("figure", "flow_diagram", "chuỗi thức ăn"),
+    ("figure", "diagram", "sơ đồ cơ quan tiêu hóa"),
+    ("figure", "diagram", "sơ đồ mạch điện"),
+    ("chart", "bar_chart", "biểu đồ cột"),
+    ("chart", "pie_chart", "biểu đồ tròn cơ cấu"),
+    ("chart", "line_chart", "biểu đồ đường"),
+    ("figure", "geometry", "hình học tam giác hình vuông"),
+    ("figure", "diagram", "sách giáo khoa Việt Nam"),
 ]
 
 
@@ -78,6 +97,10 @@ def clean(html):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--queries", choices=["en", "vi", "all"], default="en", help="bộ truy vấn (mặc định en, như trước)")
+    args = ap.parse_args()
+    queries = {"en": QUERIES, "vi": QUERIES_VI, "all": QUERIES + QUERIES_VI}[args.queries]
     (OUT / "images").mkdir(parents=True, exist_ok=True)
     index_path = OUT / "candidates.json"
     existing = (json.loads(index_path.read_text(encoding="utf-8"))
@@ -86,7 +109,7 @@ def main():
     items = existing["items"]
 
     with httpx.Client(headers=HEADERS, timeout=60, follow_redirects=True) as client:
-        for group, category, query in QUERIES:
+        for group, category, query in queries:
             taken = 0
             for page in search(client, query):
                 if taken >= PER_QUERY:

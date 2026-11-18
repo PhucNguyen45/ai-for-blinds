@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[3]
-OUTPUT = ROOT / "data" / "local"
+OUTPUT = ROOT / "data" / "benchmark" / "_legacy" / "regen"  # không ghi đè bản chính thức ở benchmark/synthetic
 OUTPUT.mkdir(parents=True, exist_ok=True)
 
 DATA = {"3A": 12, "3B": 18, "3C": 15, "3D": 9}

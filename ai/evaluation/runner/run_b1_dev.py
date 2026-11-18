@@ -25,7 +25,8 @@ from pathlib import Path
 AI_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(AI_ROOT))
 
-from vlm.describer import describe_image, describe_image_b1  # noqa: E402
+from vlm.b1 import describe_image_b1  # noqa: E402
+from vlm.describer import describe_image  # noqa: E402
 
 BENCH = AI_ROOT.parent / "data" / "benchmark"
 

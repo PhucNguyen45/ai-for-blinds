@@ -10,7 +10,7 @@ REPO_ROOT = AI_ROOT.parent
 BENCHMARK_ROOT = (REPO_ROOT / "data" / "benchmark").resolve()
 MANIFEST = BENCHMARK_ROOT / "manifest.json"
 PROMPT_FILE = AI_ROOT / "prompts" / "b0_v1.txt"
-TEST_SCRIPT = AI_ROOT / "vlm" / "test_openrouter.py"
+TEST_SCRIPT = AI_ROOT / "evaluation" / "legacy_b0" / "test_openrouter.py"
 
 TEMPERATURE = 0.2
 MAX_TOKENS = 600
