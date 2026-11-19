@@ -70,7 +70,7 @@ Nguyên tắc: không giả định giấy phép của bộ dữ liệu áp dụ
 ## Rủi ro rò rỉ giữa split (chỉ báo cáo, không xóa)
 
 - **OpenViVQA, ảnh trùng giữa các split gốc:** exact cùng split: 57; exact dev / test: 1; exact dev / train: 8; exact test / train: 19; near cùng split: 87; near dev / train: 22; near test / train: 18. Nên loại các ảnh trùng chéo split khi dùng test gốc để đánh giá.
-- **5CD-AI/Viet-Table-Markdown** so với ViSGKCap, mức `content`: 269 trang ViSGKCap, theo split của ViSGKCap {'test': 28, 'train': 210, 'validation': 31} (ứng viên chưa xác nhận)
+- **5CD-AI/Viet-Table-Markdown** so với ViSGKCap, mức `content`: 269 trang ViSGKCap, theo split của ViSGKCap {'train': 210, 'validation': 31, 'test': 28} (ứng viên chưa xác nhận)
 - **D-Truong/ViEduVQA** so với ViSGKCap, mức `near`: 3 trang ViSGKCap, theo split của ViSGKCap {'train': 3} (đã xác nhận bằng mắt)
 - **D-Truong/ViEduVQA** so với ViSGKCap, mức `content`: 15 trang ViSGKCap, theo split của ViSGKCap {'train': 12, 'validation': 3} (ứng viên chưa xác nhận)
 - **Ouyangxuelili/vlsp2023-vqa-dataset** so với ViSGKCap, mức `near`: 1 trang ViSGKCap, theo split của ViSGKCap {'train': 1}
@@ -78,7 +78,7 @@ Nguyên tắc: không giả định giấy phép của bộ dữ liệu áp dụ
 - **VLAI-AIVN/ViInfographicVQA** so với ViSGKCap, mức `content`: 15 trang ViSGKCap, theo split của ViSGKCap {'train': 12, 'validation': 2, 'test': 1} (ứng viên chưa xác nhận)
 - **huyhuy123/ViOCRVQA** so với ViSGKCap, mức `content`: 172 trang ViSGKCap, theo split của ViSGKCap {'train': 137, 'validation': 20, 'test': 15} (ứng viên chưa xác nhận)
 - **uitnlp/OpenViVQA-dataset** so với ViSGKCap, mức `near`: 1 trang ViSGKCap, theo split của ViSGKCap {'train': 1}
-- **uitnlp/OpenViVQA-dataset** so với ViSGKCap, mức `content`: 8 trang ViSGKCap, theo split của ViSGKCap {'test': 1, 'train': 6, 'validation': 1} (ứng viên chưa xác nhận)
+- **uitnlp/OpenViVQA-dataset** so với ViSGKCap, mức `content`: 8 trang ViSGKCap, theo split của ViSGKCap {'train': 6, 'validation': 1, 'test': 1} (ứng viên chưa xác nhận)
 
 ## Kết luận và khuyến nghị
 
@@ -92,37 +92,38 @@ Nguyên tắc: không giả định giấy phép của bộ dữ liệu áp dụ
 
 ## Lớp phủ train/val/test (overlay)
 
-Giữ nguyên dữ liệu và split gốc; bảng ánh xạ nằm cục bộ ở `data/external/_reports/splits_overlay.csv`. Cụm ảnh = SHA-256 giống hệt hoặc pHash cách <= 4 bit, xuyên mọi bộ và benchmark của nhóm.
+Giữ nguyên dữ liệu và split gốc; bảng ánh xạ nằm cục bộ ở `data/external/_reports/splits_overlay.csv`. Cụm ảnh = SHA-256 giống hệt, pHash cách <= 4 bit, hoặc cặp mức nội dung đã xác nhận bằng NCC >= 0.6 (cùng tranh, khác khung cắt); xuyên mọi bộ và benchmark của nhóm.
 
-- Mẫu có vai trò: 160704; ảnh benchmark của nhóm tham gia gom cụm: 47; số cụm: 113229 (có nhiều mẫu: 18178).
+- Mẫu có vai trò: 160704; ảnh benchmark của nhóm tham gia gom cụm: 47; số cụm: 113220 (có nhiều mẫu: 18185).
 - Cụm quá lớn bị tách và gắn cờ đáng ngờ: 7.
 - **Kiểm tra bất biến (không cụm nào có cả train và val/test; cụm trùng benchmark không còn train/val/test):** ĐẠT.
 
 | Bộ dữ liệu | Split gốc | Vai trò | Lý do | Số mẫu |
 |---|---|---|---|---|
+| 5CD-AI/Viet-Table-Markdown | train | excluded | leak_to_val | 1 |
 | 5CD-AI/Viet-Table-Markdown | train | test | group_split | 3247 |
-| 5CD-AI/Viet-Table-Markdown | train | train | group_split | 58317 |
+| 5CD-AI/Viet-Table-Markdown | train | train | group_split | 58316 |
 | 5CD-AI/Viet-Table-Markdown | train | train | origin | 8 |
 | 5CD-AI/Viet-Table-Markdown | train | val | group_split | 3329 |
 | D-Truong/ViEduVQA | train | test | group_split | 854 |
-| D-Truong/ViEduVQA | train | train | group_split | 16970 |
-| D-Truong/ViEduVQA | train | train | origin | 15 |
+| D-Truong/ViEduVQA | train | train | group_split | 16960 |
+| D-Truong/ViEduVQA | train | train | origin | 25 |
 | D-Truong/ViEduVQA | train | val | group_split | 999 |
 | Ouyangxuelili/vlsp2023-vqa-dataset | khong_ro | excluded | duplicate_of_uitnlp/OpenViVQA-dataset | 9129 |
 | VLAI-AIVN/ViInfographicVQA | train | excluded | leak_to_test | 590 |
 | VLAI-AIVN/ViInfographicVQA | test | test | origin | 2661 |
 | VLAI-AIVN/ViInfographicVQA | train | train | origin | 23905 |
 | bbdontcry/ViSGKCap | train | excluded | leak_to_test | 1 |
-| bbdontcry/ViSGKCap | train | excluded | leak_to_val | 2 |
+| bbdontcry/ViSGKCap | train | excluded | leak_to_val | 4 |
 | bbdontcry/ViSGKCap | test | test | origin | 125 |
-| bbdontcry/ViSGKCap | train | train | origin | 978 |
+| bbdontcry/ViSGKCap | train | train | origin | 976 |
 | bbdontcry/ViSGKCap | val | val | origin | 123 |
-| huyhuy123/ViOCRVQA | train | excluded | leak_to_test | 199 |
+| huyhuy123/ViOCRVQA | train | excluded | leak_to_test | 200 |
 | huyhuy123/ViOCRVQA | val | excluded | leak_to_test | 42 |
-| huyhuy123/ViOCRVQA | train | excluded | leak_to_val | 180 |
+| huyhuy123/ViOCRVQA | train | excluded | leak_to_val | 181 |
 | huyhuy123/ViOCRVQA | khong_ro | excluded | origin_khong_ro | 1 |
 | huyhuy123/ViOCRVQA | test | test | origin | 4238 |
-| huyhuy123/ViOCRVQA | train | train | origin | 19396 |
+| huyhuy123/ViOCRVQA | train | train | origin | 19394 |
 | huyhuy123/ViOCRVQA | val | val | origin | 4195 |
 | uitnlp/OpenViVQA-dataset | train | excluded | leak_to_test | 49 |
 | uitnlp/OpenViVQA-dataset | val | excluded | leak_to_test | 2 |
@@ -133,7 +134,7 @@ Giữ nguyên dữ liệu và split gốc; bảng ánh xạ nằm cục bộ ở
 | uitnlp/OpenViVQA-dataset | val | val | origin | 1068 |
 
 Ghi chú: `group_split` = chia nội bộ theo cụm (5% val, 5% test) cho bộ chỉ có train, KHÔNG so sánh được với số liệu công bố; `leak_to_test/val` = ảnh trùng với tập đánh giá của bộ khác nên loại khỏi huấn luyện;
-`benchmark_overlap` = trùng với benchmark dev/test của nhóm; `duplicate_of_*` = bản sao của bộ khác. Mức `content` (pHash 5-10 bit) chưa được xử lý tự động.
+`benchmark_overlap` = trùng với benchmark dev/test của nhóm; `duplicate_of_*` = bản sao của bộ khác. Mức `content` (pHash 5-10 bit) chỉ được nối khi NCC >= 0.6; các ca NCC 0.5-0.6 (`review`) chưa xử lý, cần xem tay.
 
 ## Ghi chú nguồn gốc theo từng bộ
 

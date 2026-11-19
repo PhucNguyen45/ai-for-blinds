@@ -58,7 +58,7 @@ def main():
     with out_path.open("w", encoding="utf-8") as fh:
         for ds, wanted in by_ds.items():
             spec = SPECS[ds]
-            for sample, row in read_rows(ROOT / spec["dir"], list(wanted), ["image", spec["q"], spec["a"]]):
+            for sample, row in read_rows(hf.dataset_dir(spec["dir"]), list(wanted), ["image", spec["q"], spec["a"]]):
                 r = wanted[sample]
                 q, ans = (row.get(spec["q"]) or "").strip(), (row.get(spec["a"]) or "").strip()
                 if not q or not ans or not row["image"] or not row["image"].get("bytes"):

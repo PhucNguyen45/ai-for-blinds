@@ -113,5 +113,12 @@ Kiểm tra: số dòng khớp lớp phủ; 100% vai trò `train`; 0 cụm lẫn 
 Hai bộ sinh cũ `generate_chart*.py` giờ ghi vào `data/benchmark/_legacy/regen` để không tạo lại `data/local/`.
 
 **Phân loại dữ liệu ngoài thành HỌC TẬP / CUỘC SỐNG (yêu cầu của Phúc):** `external_data/categorize.py`. Không di chuyển dữ liệu: tạo liên kết mềm `data/external/1_hoc_tap/` (ViSGKCap, ViEduVQA, một phần ViInfographicVQA) và `2_cuoc_song/` (OpenViVQA, vlsp2023, ViOCRVQA, Viet-Table-Markdown, phần còn lại ViInfographicVQA);
-bảng ở `data/external/PHAN_LOAI.md` và `ai/evaluation/reports/datasets/phan_loai_hoc_tap_cuoc_song.md`; ánh xạ từng mẫu ở `data/external/_reports/phan_loai_mau.csv`. ViInfographicVQA chia theo chủ đề ("Giáo dục - Khoa Học" 1.320 Q/A vào học tập).
+bảng ở `ai/evaluation/reports/datasets/phan_loai_hoc_tap_cuoc_song.md` (lần làm đầu này đã được thay bằng chuyển thật, xem mục kế tiếp). ViInfographicVQA chia theo chủ đề ("Giáo dục - Khoa Học" 1.320 Q/A vào học tập).
 Số mẫu: học tập 21.835 (train 19.555), cuộc sống 138.869 (train 109.074). Căn cứ: nội dung đã xem (câu hỏi, ảnh mẫu, chủ đề), không theo tên bộ.
+
+**Sửa lại việc phân loại: chuyển THẬT thư mục (19/11/2026):** Phúc muốn chuyển các thư mục bộ dữ liệu vào hai mục; lần trước tôi hiểu sai và chỉ tạo liên kết mềm kèm `PHAN_LOAI.md`, nên `data/external/` vừa có thư mục bộ dữ liệu lẻ vừa có hai thư mục chỉ chứa liên kết.
+Đã làm đúng ý: `data/external/1_hoc_tap/` (ViSGKCap, ViEduVQA), `2_cuoc_song/` (OpenViVQA, vlsp2023, ViOCRVQA, Viet-Table-Markdown), `3_hon_hop/` (ViInfographicVQA: một bộ 9 chủ đề không tách vật lý được, Phúc chọn đặt ở mục thứ ba).
+- Chuyển bằng đổi tên trong cùng ổ đĩa (không sao chép). Kiểm chứng: số tệp và dung lượng của cả 7 bộ khớp bản chụp trước khi chuyển; 16.016 tệp trong `MANIFEST.json` khớp kích thước trên đĩa; 0 liên kết mềm còn lại.
+- Mã tìm thư mục qua `hf.dataset_dir()` / `hf.GROUPS` (nguồn duy nhất cho việc xếp mục), nên chạy được cả bố cục cũ lẫn mới; `categorize.py` mặc định chỉ in kế hoạch, `--apply` mới chuyển.
+- **Đã bỏ hai tệp thừa:** `data/external/PHAN_LOAI.md` (bản sao giống hệt từng byte của báo cáo trong repo, không ai đọc) và `_reports/phan_loai_mau.csv` (13 MB, không ai đọc); thông tin riêng của ViInfographicVQA (chủ đề từng mẫu) giữ ở `_reports/phan_loai_infographic.csv`.
+- Chạy lại sau khi chuyển: `make_splits.py` cho đúng kết quả cũ (160.704 mẫu, 113.220 cụm, bất biến đạt); `report.py`, `to_sft.py`, `verify_content.py`, `download.py` đều tìm đúng thư mục mới.

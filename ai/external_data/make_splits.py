@@ -36,7 +36,7 @@ def dataset_name(stem):
 
 
 def origins_viocrvqa():
-    z = zipfile.ZipFile(ROOT / "huyhuy123__ViOCRVQA" / "data_ViOCRVQA.zip")
+    z = zipfile.ZipFile(hf.dataset_dir("huyhuy123__ViOCRVQA") / "data_ViOCRVQA.zip")
     out = {}
     for split in ("train", "dev", "test"):
         for im in json.loads(z.read(f"data/{split}.json"))["images"]:
@@ -46,7 +46,7 @@ def origins_viocrvqa():
 
 def origins_infographic_jpg():
     out = {}
-    for f in sorted((ROOT / "VLAI-AIVN__ViInfographicVQA" / "data").glob("*.parquet")):
+    for f in sorted((hf.dataset_dir("VLAI-AIVN__ViInfographicVQA") / "data").glob("*.parquet")):
         split = "test" if f.name.startswith(("single_test", "multi_test")) else "train"
         for paths in pq.read_table(f, columns=["images_paths"]).column("images_paths").to_pylist():
             for p in paths or []:

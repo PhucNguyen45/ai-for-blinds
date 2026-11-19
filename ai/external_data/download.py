@@ -88,7 +88,7 @@ def main():
         raise SystemExit(f"Không tải: {a.repo} (HTTP {status}, gated={meta.get('gated')}, private={meta.get('private')}).")
     files = [s for s in meta["siblings"] if any(fnmatch.fnmatch(s["rfilename"], p) for p in a.include) and s["rfilename"] != ".gitattributes"]
     total = sum(s.get("size") or 0 for s in files)
-    dest = hf.ROOT / a.repo.replace("/", "__")
+    dest = hf.dataset_dir(hf.dir_name_of(a.repo), must_exist=False)
     print(f"{a.repo}: {len(files)} tệp, {total / 1e9:.2f} GB -> {dest}", flush=True)
     if a.dry_run:
         return

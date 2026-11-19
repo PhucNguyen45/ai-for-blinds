@@ -32,7 +32,7 @@ DIRS = {"D-Truong/ViEduVQA": "D-Truong__ViEduVQA", "uitnlp/OpenViVQA-dataset": "
 
 def fetch(dataset, sample):
     """Bytes ảnh của một mẫu theo id trong tệp trùng lặp (parquet#n, zip:tên, hoặc đường dẫn tệp)."""
-    src = ROOT / DIRS[dataset]
+    src = hf.dataset_dir(DIRS[dataset])
     if ".parquet#" in sample:
         return read_row(src, sample, ["image"])["image"]["bytes"]
     if ".zip:" in sample:
@@ -44,7 +44,7 @@ def fetch(dataset, sample):
 
 
 def visgkcap_bytes(page_id):
-    for f in sorted((ROOT / "ViSGKCap" / "data").glob("*.parquet")):
+    for f in sorted((hf.dataset_dir("ViSGKCap") / "data").glob("*.parquet")):
         t = pq.read_table(f, columns=["id", "image"]).to_pylist()
         for r in t:
             if r["id"] == page_id:

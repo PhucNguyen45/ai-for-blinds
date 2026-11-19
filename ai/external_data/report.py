@@ -81,7 +81,7 @@ def main():
     rows, manifest = [], {}
     for repo, (decision, reason, note) in DECISIONS.items():
         s = raw.get(repo, {})
-        dest = hf.ROOT / repo.replace("/", "__") if repo != "bbdontcry/ViSGKCap" else hf.ROOT / "ViSGKCap"
+        dest = hf.dataset_dir(hf.dir_name_of(repo), must_exist=False)
         full = index_stats(repo)
         probe = jload(REPORT / f"probe_{repo.replace('/', '__')}.json")
         dl_manifest = jload(dest / "MANIFEST.json", {})
@@ -136,7 +136,7 @@ def main():
     L = ["# Báo cáo tải dữ liệu", "", "Mọi dữ liệu nằm ở `data/external/` (không có trong repo). Tải có resume, kiểm tra SHA-256 (tệp LFS), không ghi đè.", "",
          "| Bộ dữ liệu | Quyết định | Dung lượng khai báo (GB) | Đã có trên đĩa (GB) | Tệp OK / tổng | Lỗi |", "|---|---|---|---|---|---|"]
     for r in rows:
-        dest = hf.ROOT / r["repo_id"].replace("/", "__") if r["repo_id"] != "bbdontcry/ViSGKCap" else hf.ROOT / "ViSGKCap"
+        dest = hf.dataset_dir(hf.dir_name_of(r["repo_id"]), must_exist=False)
         events = [json.loads(x) for x in (dest / "download_log.jsonl").read_text(encoding="utf-8").splitlines()] if (dest / "download_log.jsonl").exists() else []
         ok = sum(e["event"] == "downloaded" for e in events)
         err = [e for e in events if e["event"] == "error"]

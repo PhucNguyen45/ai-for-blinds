@@ -46,7 +46,7 @@ def load_index():
 
 def cmd_index_visgkcap():
     INDEX.parent.mkdir(parents=True, exist_ok=True)
-    data = ROOT / "ViSGKCap" / "data"
+    data = hf.dataset_dir("ViSGKCap") / "data"
     n = 0
     with INDEX.open("w", encoding="utf-8") as out:
         for f in sorted(data.glob("*.parquet")):

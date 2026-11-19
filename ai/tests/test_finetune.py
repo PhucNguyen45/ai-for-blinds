@@ -165,3 +165,15 @@ def test_val_split_is_disjoint_from_train(small_set):
     its = items_of(small_set[0])
     ids = {s: {i["id"] for i in its if i["split"] == s} for s in ("train", "val")}
     assert ids["train"] and ids["val"] and not (ids["train"] & ids["val"])
+
+
+def test_spoken_format_marks_unreadable_with_marker(small_set, tmp_path):
+    from vlm.common import UNREADABLE_RE
+    a, _, _ = small_set
+    lines = export_sft.export(a, tmp_path / "s.jsonl", "spoken", "all", include_ask=True, describe_only=True)
+    assert lines and all(l["kind"] == "describe" for l in lines)
+    flagged = [l for l in lines if UNREADABLE_RE.match(l["messages"][2]["content"])]
+    issues = [i for i in items_of(a) if i["target"]["unreadable"]]
+    assert len(flagged) == len(issues) > 0
+    assert not any(UNREADABLE_RE.match(l["messages"][2]["content"]) for l in lines if l not in flagged)
+    assert all(not l["messages"][2]["content"].lstrip().startswith("{") for l in lines)
