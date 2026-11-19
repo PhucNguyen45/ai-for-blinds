@@ -25,7 +25,7 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test chưa chạ
 
 - **Dữ liệu:** dọn `data/local/` (4 tệp trùng benchmark xóa, `test.png` chuyển sang `data/benchmark/_legacy/`); chuyển **thật** các bộ dữ liệu ngoài vào `data/external/1_hoc_tap/` (ViSGKCap, ViEduVQA), `2_cuoc_song/` (OpenViVQA, vlsp2023, ViOCRVQA, Viet-Table-Markdown), `3_hon_hop/` (ViInfographicVQA, 9 chủ đề; chủ đề giáo dục đánh dấu ở `_reports/phan_loai_infographic.csv`);
   số tệp và dung lượng khớp trước/sau; mã tìm thư mục qua `hf.dataset_dir()`.
-- **Fine-tune:** thử dựng môi trường huấn luyện riêng nhưng Phúc dừng (LM Studio chỉ chạy suy luận, không huấn luyện được); đã gỡ hết. Còn lại trong mã: prompt `ft_describe_v1`, định dạng xuất `--format spoken` của `finetune/export_sft.py`. Hướng fine-tune chờ Phúc quyết.
+- **Fine-tune:** thử dựng môi trường huấn luyện riêng nhưng Phúc dừng (LM Studio chỉ chạy suy luận, không huấn luyện được); đã gỡ hết môi trường và hoàn tác phần mã chuẩn bị (prompt `ft_describe_v1`, định dạng xuất `--format spoken`). Hướng fine-tune chờ Phúc quyết.
 - **Tài liệu:** giảm .md từ 26 xuống 13: gộp báo cáo (ba báo cáo dev → một; cổng ảnh vào báo cáo mô-đun; bốn báo cáo dữ liệu → một), bỏ báo cáo B0 tháng 10, chuyển hai ghi chú dự án cũ ra ngoài repo, gộp README `evaluation/` vào `ai/README.md`, rút gọn nhật ký, viết lại README gốc.
 
 ## Việc tiếp theo

@@ -10,7 +10,7 @@ vlm/                   gọi VLM: providers (OpenRouter/Google/LM Studio), clien
                        b1 (hai bước), ask (hỏi đáp), common (phần dùng chung)
 speech/                chuẩn hóa văn bản cho TTS (số, đơn vị ra chữ); chưa có engine STT/TTS
 contract/              mô hình Pydantic, JSON Schema, ví dụ của DescriptionResult và AnswerResult
-prompts/               prompt có phiên bản (b0_v1, b0e_v1, b0g_v1, b1_*, ask_v1, ask_calc_v1, ft_describe_v1 chuẩn bị cho fine-tune)
+prompts/               prompt có phiên bản (b0_v1, b0e_v1, b0g_v1, b1_*, ask_v1, ask_calc_v1)
 evaluation/            benchmark, chạy thực nghiệm, báo cáo (xem mục Đánh giá bên dưới)
 finetune/              bộ sinh tập huấn luyện tổng hợp (dữ liệu chỉ ở máy tác giả)
 external_data/         khảo sát, tải, kiểm tra trùng, phân mục và phân vai train/val/test các bộ dữ liệu Hugging Face (dữ liệu ở data/external/, không có trong repo)

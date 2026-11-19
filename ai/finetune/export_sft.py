@@ -8,8 +8,6 @@ Mỗi dòng là một hội thoại:
 --format api_v1  Trợ lý trả đúng MỘT đối tượng JSON {"page_type","unreadable","description"} như backend API v1 hiện
                  tại mong đợi. LƯU Ý: hợp đồng API v1 đang được nhóm thống nhất lại; đổi định dạng ở đây khi hợp đồng đổi.
 --format plain   Trợ lý trả thẳng lời diễn giải (văn nói thuần).
---format spoken  Như plain nhưng ảnh có lỗi chụp (unreadable) thì câu trả lời bắt đầu bằng "KHÔNG ĐỌC ĐƯỢC:" (cụm module `vlm/common.py::UNREADABLE_RE`
-                 nhận ra), khớp prompt `prompts/ft_describe_v1.txt`; chỉ xuất mẫu `describe` (dùng với --describe-only).
 
 Prompt hệ thống dùng khi huấn luyện PHẢI giống prompt dùng khi chạy thật: dùng --describe-system-file/--ask-system-file
 để nạp đúng prompt của backend (vd prompts/v1/system.md, ask.md) thay vì bản rút gọn mặc định bên dưới.
@@ -33,8 +31,6 @@ ASK_SYSTEM = (
 )
 DESCRIBE_USER = "Hãy mô tả trang này theo đúng hướng dẫn và trả về JSON."
 DESCRIBE_USER_PLAIN = "Hãy mô tả trang này theo đúng hướng dẫn."
-DESCRIBE_USER_SPOKEN = "Hãy mô tả trang này."
-UNREADABLE_PREFIX = "KHÔNG ĐỌC ĐƯỢC: "
 
 
 def image_part(path):
@@ -43,13 +39,8 @@ def image_part(path):
 
 def describe_line(item, img, fmt, system):
     t = item["target"]
-    if fmt == "api_v1":
-        answer, user = json.dumps(t, ensure_ascii=False, separators=(",", ":")), DESCRIBE_USER
-    elif fmt == "spoken":
-        answer = (UNREADABLE_PREFIX if t["unreadable"] else "") + t["description"]
-        user = DESCRIBE_USER_SPOKEN
-    else:
-        answer, user = t["description"], DESCRIBE_USER_PLAIN
+    answer = (json.dumps(t, ensure_ascii=False, separators=(",", ":")) if fmt == "api_v1" else t["description"])
+    user = DESCRIBE_USER if fmt == "api_v1" else DESCRIBE_USER_PLAIN
     return {"id": item["id"], "kind": "describe", "split": item["split"], "category": item["category"],
             "messages": [{"role": "system", "content": system},
                          {"role": "user", "content": [image_part(img), {"type": "text", "text": user}]},
@@ -73,7 +64,7 @@ def ask_lines(item, img, system):
 
 
 def export(data_dir, out_path, fmt="api_v1", split="train", include_ask=False, image_root=None,
-           describe_system=DESCRIBE_SYSTEM, ask_system=ASK_SYSTEM, describe_only=False):
+           describe_system=DESCRIBE_SYSTEM, ask_system=ASK_SYSTEM):
     data_dir = Path(data_dir)
     lines = []
     for p in sorted(data_dir.glob("tr_*.json")):
@@ -82,7 +73,7 @@ def export(data_dir, out_path, fmt="api_v1", split="train", include_ask=False, i
             continue
         img = (Path(image_root) / item["image"]) if image_root else (data_dir / item["image"]).resolve()
         lines.append(describe_line(item, img, fmt, describe_system))
-        if include_ask and item["qa"] and not describe_only:
+        if include_ask and item["qa"]:
             lines.extend(ask_lines(item, img, ask_system))
     Path(out_path).write_text("".join(json.dumps(l, ensure_ascii=False) + "\n" for l in lines), encoding="utf-8")
     return lines
@@ -92,8 +83,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--format", choices=["api_v1", "plain", "spoken"], default="api_v1")
-    ap.add_argument("--describe-only", action="store_true", help="chỉ xuất mẫu describe (bỏ hỏi đáp)")
+    ap.add_argument("--format", choices=["api_v1", "plain"], default="api_v1")
     ap.add_argument("--split", choices=["train", "val", "all"], default="train")
     ap.add_argument("--include-ask", action="store_true")
     ap.add_argument("--image-root", help="đường dẫn gốc ảnh ghi vào JSONL (mặc định: đường dẫn tuyệt đối)")
@@ -102,7 +92,7 @@ def main():
     a = ap.parse_args()
     ds = Path(a.describe_system_file).read_text(encoding="utf-8").strip() if a.describe_system_file else DESCRIBE_SYSTEM
     ask = Path(a.ask_system_file).read_text(encoding="utf-8").strip() if a.ask_system_file else ASK_SYSTEM
-    lines = export(a.data, a.out, a.format, a.split, a.include_ask, a.image_root, ds, ask, a.describe_only)
+    lines = export(a.data, a.out, a.format, a.split, a.include_ask, a.image_root, ds, ask)
     kinds = {}
     for l in lines:
         kinds[l["kind"]] = kinds.get(l["kind"], 0) + 1
