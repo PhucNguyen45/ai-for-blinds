@@ -58,8 +58,6 @@ chưa được thầy/nhóm xác nhận; đặt `--issue-rate 0` nếu muốn b�
 - Chưa kiểm chứng QLoRA cho Qwen3-VL-4B trên RTX 2070 8 GB (có thể sát giới hạn VRAM).
 - Nếu sau này đưa SGK vào huấn luyện: kiểm tra mức **ghi nhớ/nhả lại nội dung có bản quyền** trước khi phát hành model.
 
-## Việc tiếp theo (đề xuất)
+## Việc tiếp theo
 
-1. Thử fine-tune nhỏ (LoRA/QLoRA) trên một phần tập này, theo dõi loss trên `val`.
-2. Đo trên **benchmark dev** (và test khi đóng băng) bằng cùng công cụ đang dùng, so với model gốc; đưa model vào LM Studio để chạy runner như thường.
-3. Làm chỉ số nhạy hơn (đếm mệnh đề bịa, đúng chiều quan hệ) trước khi kết luận fine-tune có tác dụng.
+Xem mục "Việc tiếp theo" của `README.md` gốc (một danh sách duy nhất).

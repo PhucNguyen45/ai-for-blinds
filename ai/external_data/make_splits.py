@@ -2,7 +2,7 @@
 """Lập lớp phủ (overlay) phân vai train/val/test/excluded cho dữ liệu ngoài, theo cụm ảnh trùng/gần trùng. KHÔNG sửa dữ liệu gốc.
 
 Đầu vào: data/external/_index/*.jsonl (chỉ mục băm, do `dedup.py index` tạo), content_verified_edges.csv (do `verify_content.py --all` tạo), benchmark của nhóm (data/benchmark/manifest.json) và tệp split gốc.
-Đầu ra: data/external/_reports/splits_overlay.csv (cục bộ), splits_overlay_summary.json, ai/evaluation/reports/datasets/splits_overlay_summary.md.
+Đầu ra: data/external/_reports/splits_overlay.csv (cục bộ), splits_overlay_summary.json, data/external/_reports/splits_overlay_summary.md (ghép vào báo cáo công khai bởi report.py).
 
   uv run --with pyarrow --with numpy python external_data/make_splits.py
 """
@@ -25,7 +25,6 @@ from external_data.clusters import Item, assign_roles, build_clusters, check_inv
 ROOT = hf.ROOT
 BENCH = ROOT.parent / "benchmark"
 REPORT = ROOT / "_reports"
-PUBLIC = Path(__file__).resolve().parents[1] / "evaluation" / "reports" / "datasets"
 TRAIN_ONLY = {"D-Truong/ViEduVQA", "5CD-AI/Viet-Table-Markdown"}
 SUBSET_OF = {"Ouyangxuelili/vlsp2023-vqa-dataset": "uitnlp/OpenViVQA-dataset"}
 SPLIT_NAMES = {"train": "train", "training": "train", "validation": "val", "val": "val", "dev": "val", "test": "test"}
@@ -125,8 +124,7 @@ def main():
     L += [f"| {r['dataset']} | {r['origin']} | {r['role']} | {r['reason']} | {r['count']} |" for r in summary["table"]]
     L += ["", "Ghi chú: `group_split` = chia nội bộ theo cụm (5% val, 5% test) cho bộ chỉ có train, KHÔNG so sánh được với số liệu công bố; `leak_to_test/val` = ảnh trùng với tập đánh giá của bộ khác nên loại khỏi huấn luyện;",
           "`benchmark_overlap` = trùng với benchmark dev/test của nhóm; `duplicate_of_*` = bản sao của bộ khác. Mức `content` (pHash 5-10 bit) chỉ được nối khi NCC >= 0.6; các ca NCC 0.5-0.6 (`review`) chưa xử lý, cần xem tay.", ""]
-    PUBLIC.mkdir(parents=True, exist_ok=True)
-    (PUBLIC / "splits_overlay_summary.md").write_text("\n".join(L), encoding="utf-8")
+    (REPORT / "splits_overlay_summary.md").write_text("\n".join(L), encoding="utf-8")
     print("\n".join(L[:12]))
     if problems:
         print("VI PHẠM:", problems[:5])

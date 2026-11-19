@@ -33,7 +33,7 @@ nhìn thấy mà không nói rõ. Phân biệt: *nhận dạng* (có gì), *mô 
 
 ## 4. Quan sát sơ bộ từ thực nghiệm của nhóm (dev, ảnh tổng hợp, n=1, chỉ số từ khóa — KHÔNG phải kết luận)
 
-Nguồn: `ai/evaluation/reports/dev_b0_b0e_b1_20261117.md`. Một model miễn phí.
+Nguồn: `ai/evaluation/reports/so_sanh_phuong_phap_va_model_dev_20261117.md`. Một model miễn phí.
 - Chép sai dấu/chữ tiếng Việt khi đọc nhãn ("Trống lúa", "Rau máu"); B1 không khắc phục.
 - Bịa thành phần ở sơ đồ vòng (`cycle_03`: nút "Hạt mọc" không tồn tại), kể cả khi qua trích xuất có cấu trúc.
 - Bảng: B1 đọc đủ giá trị, B0e đọc một phần, nhưng chỉ có 2 bảng.

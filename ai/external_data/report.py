@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Tổng hợp 5 báo cáo khảo sát/tải/trùng lặp từ dữ liệu trong data/external/_reports và các thư mục đã tải.
+"""Tổng hợp khảo sát, tải, trùng lặp, phân mục và lớp phủ train/val/test của dữ liệu ngoài.
 
-Đầu ra (data/external/_reports/): dataset_inventory.csv, dataset_manifest.json, duplicate_report.csv, download_report.md,
-dataset_overview.md. Bản sao không chứa nội dung dữ liệu của hai tệp .md được đặt ở ai/evaluation/reports/datasets/.
+Đầu ra cục bộ (data/external/_reports/): dataset_inventory.csv, dataset_manifest.json, duplicate_report.csv.
+Đầu ra công khai (không chứa nội dung dữ liệu): MỘT báo cáo ai/evaluation/reports/du_lieu_ngoai_20261118.md, ghép phần phân mục
+(`phan_loai.md`, do categorize.py) và phần lớp phủ (`splits_overlay_summary.md`, do make_splits.py) từ thư mục _reports.
 
 Chạy từ ai/:  uv run python external_data/report.py
 """
@@ -18,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from external_data import hf  # noqa: E402
 
 REPORT = hf.ROOT / "_reports"
-PUBLIC = Path(__file__).resolve().parents[1] / "evaluation" / "reports" / "datasets"
+PUBLIC_FILE = Path(__file__).resolve().parents[1] / "evaluation" / "reports" / "du_lieu_ngoai_20261118.md"
 GATED_NOTE = "bị khóa (gated=manual): cần đăng nhập Hugging Face và được chủ bộ dữ liệu duyệt; không có token nên không truy cập, không tải được"
 
 # repo -> (quyết định, lý do, ghi chú nguồn gốc/quan hệ). Lý do dựa trên dataset card và số liệu khảo sát, không giả định.
@@ -132,35 +133,42 @@ def main():
         w.writeheader()
         w.writerows(dup_rows)
 
-    # download_report.md
-    L = ["# Báo cáo tải dữ liệu", "", "Mọi dữ liệu nằm ở `data/external/` (không có trong repo). Tải có resume, kiểm tra SHA-256 (tệp LFS), không ghi đè.", "",
-         "| Bộ dữ liệu | Quyết định | Dung lượng khai báo (GB) | Đã có trên đĩa (GB) | Tệp OK / tổng | Lỗi |", "|---|---|---|---|---|---|"]
+    # bảng tải: gộp vào cột của bảng thống kê
+    dl_info = {}
     for r in rows:
         dest = hf.dataset_dir(hf.dir_name_of(r["repo_id"]), must_exist=False)
         events = [json.loads(x) for x in (dest / "download_log.jsonl").read_text(encoding="utf-8").splitlines()] if (dest / "download_log.jsonl").exists() else []
-        ok = sum(e["event"] == "downloaded" for e in events)
-        err = [e for e in events if e["event"] == "error"]
+        err = sum(e["event"] == "error" for e in events)
         mf = jload(dest / "MANIFEST.json", {})
-        tot = f"{len(mf)}/{r['files']}" if mf else ("5/5 (tải trước đó)" if r["repo_id"] == "bbdontcry/ViSGKCap" else "-")
-        L.append(f"| {r['repo_id']} | {r['decision']} | {r['size_gb_declared']} | {r['downloaded_gb']} | {tot} (tải mới {ok}) | {len(err)} |")
-    L += ["", "## Bộ không tải được và lý do", ""]
-    for r in rows:
-        if r["decision"] == "khong_tai_duoc":
-            L.append(f"- **{r['repo_id']}**: {r['reason']}")
-    L += ["", "## Ứng viên tìm thêm, chưa xác minh nên KHÔNG tải", ""] + [f"- `{rid}`: {why}" for rid, why in EXTRA]
-    text = "\n".join(L) + "\n"
-    (REPORT / "download_report.md").write_text(text, encoding="utf-8")
+        dl_info[r["repo_id"]] = (f"{len(mf)}/{r['files']}" if mf else ("5/5 (tải trước đó)" if r["repo_id"] == "bbdontcry/ViSGKCap" else "-")) + f" (lỗi {err})"
+    not_dl = ["", "Bộ không tải được và lý do:", ""] + [f"- **{r['repo_id']}**: {r['reason']}" for r in rows if r["decision"] == "khong_tai_duoc"]
+    not_dl += ["", "Ứng viên tìm thêm, chưa xác minh nên **không** tải:", ""] + [f"- `{rid}`: {why}" for rid, why in EXTRA]
 
-    # dataset_overview.md
-    O = ["# Tổng quan các bộ dữ liệu tiếng Việt cho VLM (khảo sát 18/11/2026)", "",
-         "Nguyên tắc: không giả định giấy phép của bộ dữ liệu áp dụng cho ảnh SGK gốc; chú thích do AI sinh không phải ground truth đã kiểm chứng; "
-         "không trộn train/test giữa các nguồn; không xóa dữ liệu trùng khỏi bản gốc.", ""]
-    O += ["## Thống kê theo bộ", "",
-          "Ảnh gốc = số bản ghi ảnh; ảnh duy nhất = theo SHA-256; ảnh trùng = ảnh gốc trừ ảnh duy nhất (với bộ nhiều Q/A mỗi ảnh, phần lớn là CÙNG ẢNH hỏi nhiều lần, không phải rác).", "",
-          "| Nhóm | Bộ dữ liệu | Truy cập | Giấy phép khai báo | Q/A hoặc chú thích | Split gốc | Ảnh gốc | Ảnh duy nhất | Ảnh trùng | Dung lượng thực (GB) | Quyết định |", "|---|---|---|---|---|---|---|---|---|---|---|"]
+    def embed(path, shift=1):
+        """Nội dung một tệp .md cục bộ, bỏ H1 và đoạn mở đầu, hạ cấp tiêu đề `shift` mức."""
+        if not path.exists():
+            return []
+        out = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("# "):
+                continue
+            out.append(("#" * shift + line) if line.startswith("#") else line)
+        return out
+
+    # báo cáo công khai duy nhất
+    O = ["# Dữ liệu ngoài tiếng Việt cho VLM: khảo sát, tải, trùng lặp, phân mục và phân vai", "",
+         "> **Trạng thái:** thăm dò. **Ngày:** 2026-11-18 · **Cập nhật:** 2026-11-19 · **Mảng:** A",
+         "> **Kết luận ngắn:** đã tải và xác minh 7 bộ (~47 GB, 0 lỗi); 6 bộ bị khóa tạm bỏ qua. Có trùng đáng kể giữa các bộ (vlsp2023 là tập con của OpenViVQA; ViEduVQA chứa trang SGK của ViSGKCap; OpenViVQA rò rỉ giữa split),",
+         "> nên đã lập lớp phủ train/val/test theo cụm ảnh, không sửa dữ liệu gốc. Mục HỌC TẬP vẫn nhỏ và lệch (chủ yếu lớp 1-3); chưa có SGK lớp 4-5 hay biểu đồ/bản đồ SGK thật. Chú thích do máy sinh, chưa phải ground truth.",
+         "", "Nguyên tắc: không giả định giấy phép của bộ dữ liệu áp dụng cho ảnh SGK gốc; không trộn train/test giữa các nguồn; không xóa dữ liệu trùng khỏi bản gốc. Dữ liệu nằm ở `data/external/` (không có trong repo); công cụ ở `ai/external_data/`.", ""]
+    O += ["## 1. Thống kê theo bộ", "",
+          "Ảnh gốc = số bản ghi ảnh; ảnh duy nhất = theo SHA-256; ảnh trùng = ảnh gốc trừ ảnh duy nhất (với bộ nhiều Q/A mỗi ảnh, phần lớn là CÙNG ẢNH hỏi nhiều lần, không phải rác). Tải có resume, kiểm SHA-256 (tệp LFS), không ghi đè.", "",
+          "| Nhóm | Bộ dữ liệu | Truy cập | Giấy phép khai báo | Q/A hoặc chú thích | Split gốc | Ảnh gốc | Ảnh duy nhất | Ảnh trùng | Dung lượng thực (GB) | Tệp tải OK/tổng | Quyết định |", "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
-        O.append(f"| {r['group']} | {r['repo_id']} | {r['access']} | {r['license_declared']} | {r['qa_or_captions']} | {r['original_splits']} | {r['images_found']} | {r['unique_sha256']} | {r['duplicate_images']} | {r['downloaded_gb']} | {r['decision']} |")
-    O += ["", "## Mức trùng lặp (so với ViSGKCap và trong nội bộ từng bộ)", "",
+        O.append(f"| {r['group']} | {r['repo_id']} | {r['access']} | {r['license_declared']} | {r['qa_or_captions']} | {r['original_splits']} | {r['images_found']} | {r['unique_sha256']} | {r['duplicate_images']} | {r['downloaded_gb']} | {dl_info[r['repo_id']]} | {r['decision']} |")
+    O += not_dl
+    O += ["", "## 2. Phân mục: học tập, cuộc sống, hỗn hợp", ""] + embed(hf.ROOT / "_reports" / "phan_loai.md")
+    O += ["", "## 3. Trùng lặp", "",
           "- exact: SHA-256 ảnh giống hệt; near: pHash cách nhau tối đa 4 bit (resize, nén lại, quét lại); content: pHash 5 đến 10 bit hoặc cùng nội dung chữ; annotation: cùng văn bản chú thích/câu hỏi sau chuẩn hóa (>= 25 ký tự) nhưng ảnh khác.",
           "- Hạn chế: pHash không bền với ảnh bị cắt mạnh; không có OCR (chưa cài engine), nên trùng nội dung chữ chỉ dò qua văn bản chú thích đi kèm; bộ bị khóa không so sánh được.", ""]
     levels = {}
@@ -170,16 +178,16 @@ def main():
         tgt = "nội bộ" if r["against"].startswith(r["dataset"] + ":") else "ViSGKCap"
         key = (r["dataset"], r["level"], tgt)
         levels[key] = levels.get(key, 0) + 1
-    O += ["### So với ViSGKCap và trong nội bộ từng bộ (quét toàn bộ)", "", "`content` (pHash 5-10 bit) là ỨNG VIÊN chưa xác nhận: ngưỡng lỏng, ảnh thưa thớt hay bị báo nhầm. Đã xác nhận bằng mắt: ViEduVQA `near` (cùng trang SGK, khác kích thước).", ""]
+    O += ["### 3.1. So với ViSGKCap và trong nội bộ từng bộ (quét toàn bộ)", "", "`content` (pHash 5-10 bit) là ỨNG VIÊN: ngưỡng lỏng, ảnh thưa thớt hay bị báo nhầm. Đã kiểm lại bằng NCC (tương quan chuẩn hóa) trên toàn bộ ~1.700 cặp: 9 trùng thật (cùng tranh, khác khung cắt; pHash ≤ 4 bit bỏ sót loại này), 37 cần xem tay, còn lại bác bỏ; 9 cặp đã nối vào lớp phủ. Đã xác nhận bằng mắt: ViEduVQA `near` (cùng trang SGK, khác kích thước).", ""]
     O += ["| Bộ dữ liệu | Mức | So với | Số bản ghi |", "|---|---|---|---|"] + [f"| {k[0]} | {k[1]} | {k[2]} | {v} |" for k, v in sorted(levels.items())] if levels else ["Chưa có bản ghi trùng."]
     if cross:
         agg = {}
         for r in cross:
             k = (r["a"].replace("__", "/"), r["b"].replace("__", "/"), r["level"])
             agg[k] = agg.get(k, 0) + 1
-        O += ["", "### So sánh chéo giữa các bộ (ảnh duy nhất; exact = SHA-256 giống hệt, near = pHash <= 4)", "", "| Bộ A | Bộ B | Mức | Số cặp |", "|---|---|---|---|"] + [f"| {a_} | {b_} | {lv} | {n} |" for (a_, b_, lv), n in sorted(agg.items())]
+        O += ["", "### 3.2. So sánh chéo giữa các bộ (ảnh duy nhất; exact = SHA-256 giống hệt, near = pHash <= 4)", "", "| Bộ A | Bộ B | Mức | Số cặp |", "|---|---|---|---|"] + [f"| {a_} | {b_} | {lv} | {n} |" for (a_, b_, lv), n in sorted(agg.items())]
     # rò rỉ giữa split
-    O += ["", "## Rủi ro rò rỉ giữa split (chỉ báo cáo, không xóa)", ""]
+    O += ["", "### 3.3. Rủi ro rò rỉ giữa split (chỉ báo cáo, không xóa)", ""]
     pair = {}
     for r in dup_rows:
         if r["dataset"] == "uitnlp/OpenViVQA-dataset" and r["against"].startswith("uitnlp/OpenViVQA-dataset:") and r["level"] in ("exact", "near"):
@@ -203,23 +211,22 @@ def main():
                 for pg in pages:
                     cnt[idx.get(pg, "?")] = cnt.get(idx.get(pg, "?"), 0) + 1
                 O.append(f"- **{ds}** so với ViSGKCap, mức `{lv}`: {len(pages)} trang ViSGKCap, theo split của ViSGKCap {cnt}" + (" (đã xác nhận bằng mắt)" if (ds, lv) == ("D-Truong/ViEduVQA", "near") else " (ứng viên chưa xác nhận)" if lv == "content" else ""))
-    O += ["", "## Kết luận và khuyến nghị", "",
+    O += ["", "## 5. Kết luận và khuyến nghị", "",
           "- **Không trộn train/test giữa nguồn:** loại khỏi huấn luyện mọi ảnh trùng hoặc gần trùng với test/validation của ViSGKCap và với benchmark dev/test của nhóm; tạo danh sách loại trừ riêng, không sửa dữ liệu gốc.",
           "- **vlsp2023-vqa là tập con của OpenViVQA** (chú thích và ảnh trùng chính xác): chỉ giữ OpenViVQA để tránh đếm hai lần.",
           "- **ViEduVQA** có trang SGK Cánh Diều; bộ có nhiều Q/A cho mỗi ảnh (3.915 ảnh cho 18.838 Q/A) nên chia theo ảnh, không theo dòng.",
           "- **Khoảng trống chưa được phủ:** lớp 4-5 và biểu đồ/bản đồ SGK thật vẫn thiếu (ViSGKCap chỉ lớp 1-3; ViInfographicVQA là infographic báo chí, không phải SGK).",
           "- Chú thích do AI sinh chưa phải ground truth; giấy phép của bộ dữ liệu không mặc nhiên áp dụng cho ảnh SGK gốc; dữ liệu chỉ dùng nghiên cứu nội bộ.",
           "- Giới hạn: không OCR; pHash không bền với ảnh cắt mạnh; mức `content` chỉ là ứng viên; với ViInfographicVQA, quét so với ViSGKCap ở mức `content` chỉ gồm ảnh trong parquet (6.747 ảnh jpg bổ sung chỉ được so ở mức exact/near qua so sánh chéo).", ""]
-    overlay = PUBLIC / "splits_overlay_summary.md"
-    if overlay.exists():
-        O += ["", "## Lớp phủ train/val/test (overlay)", ""] + overlay.read_text(encoding="utf-8").splitlines()[2:]
-    O += ["", "## Ghi chú nguồn gốc theo từng bộ", ""] + [f"- **{r['repo_id']}**: {r['provenance_note']}" for r in rows]
+    # lớp phủ phải đứng trước kết luận: chèn vào vị trí hợp lý bằng cách dựng danh sách riêng
+    overlay = embed(hf.ROOT / "_reports" / "splits_overlay_summary.md")
+    O += ["", "## 6. Ghi chú nguồn gốc theo từng bộ", ""] + [f"- **{r['repo_id']}**: {r['provenance_note']}" for r in rows]
+    # chèn mục 4 (lớp phủ) trước mục 5 (kết luận)
+    pos = next(i for i, line in enumerate(O) if line.startswith("## 5. Kết luận"))
+    O[pos:pos] = ["## 4. Lớp phủ train/val/test (overlay)", ""] + overlay + [""]
     overview = "\n".join(O) + "\n"
-    (REPORT / "dataset_overview.md").write_text(overview, encoding="utf-8")
-    PUBLIC.mkdir(parents=True, exist_ok=True)
-    (PUBLIC / "dataset_overview.md").write_text(overview, encoding="utf-8")
-    (PUBLIC / "download_report.md").write_text(text, encoding="utf-8")
-    print("Đã tạo 5 báo cáo ở", REPORT, "và bản .md ở", PUBLIC)
+    PUBLIC_FILE.write_text(overview, encoding="utf-8")
+    print("Đã tạo báo cáo công khai", PUBLIC_FILE, "và bảng cục bộ ở", REPORT)
 
 
 if __name__ == "__main__":

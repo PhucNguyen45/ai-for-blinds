@@ -64,9 +64,6 @@ uv run python evaluation/generators/validate_benchmark.py       # kiểm hash, s
 - `line_03_unreadable` vẫn lộ hình dáng đường mờ; chỉ nhãn và số liệu là không đọc được.
 - Chưa có hạng mục STT/TTS.
 
-## Việc tiếp theo (dataset thật)
+## Việc tiếp theo
 
-- Thu thập ảnh có giấy phép mở (Wikimedia Commons, OpenStax…) và/hoặc học liệu Việt Nam dùng
-  nội bộ; ghi `source`, `license`, `sha256`; viết ground truth theo cùng schema `truth_v0.2`.
-- Chụp bằng điện thoại một số trang/hình thật để có điều kiện giống lúc dùng app.
-- Người thứ hai rà soát ground truth của ≥20% mẫu.
+Xem mục "Việc tiếp theo" của `README.md` gốc (một danh sách duy nhất); riêng benchmark: người thứ hai rà soát ground truth của ≥ 20% mẫu.

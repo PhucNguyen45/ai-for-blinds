@@ -1,8 +1,10 @@
-# Báo cáo khảo sát Qwen3-VL Q4 trên LM Studio (RTX 2070 Max-Q 8 GB)
+# Khảo sát Qwen3-VL Q4 (4B và 8B) trên LM Studio, RTX 2070 Max-Q 8 GB
 
-> Phần A: **4B** (đầy đủ, 132 request). Phần B: **8B** (dở dang, 63/132 request, một lần lặp). Cuối phần B có so sánh.
+> **Trạng thái:** thăm dò. **Ngày:** 2026-11-17 · **Cập nhật:** 2026-11-18 · **Mảng:** A
+> **Kết luận ngắn:** 4B Q4 chạy tốt cục bộ (7–9 s mỗi mô tả, phủ 83% → 86% → 87% khi phóng ảnh x0,5 → x1 → x1,5, chênh x1/x1,5 nằm trong dao động); 8B Q4 **không nạp đủ lên GPU 8 GB** nên chậm (20–230 s) và chưa thấy hơn 4B. Bản đồ sơ đồ chỉ 17% ở mọi mức.
+> Phần A: **4B** (đầy đủ, 132 request). Phần B: **8B** (dở dang, 63/132 request, một lần lặp), có so sánh cùng ảnh.
 
-# Phần A — `qwen/qwen3-vl-4b` — đợt `baseline_q4_ctx16k_p1`
+## A. `qwen/qwen3-vl-4b` — đợt `baseline_q4_ctx16k_p1`
 
 - Phương pháp: B0e (b0e_v1); benchmark v0.2.0 (tập dev); mã git `47aaa02`
 - Bắt đầu 2026-11-17T14:39:07.059176+00:00; scales [0.5, 1.0, 1.5]; số lần lặp 2
@@ -12,7 +14,7 @@
 - Ghi chú: Q4_K_M, ctx 16384, parallel 1, FA bat; GPU offload/anh toi da: theo giao dien (khong doc duoc qua API)
 
 
-## Nhận xét (đọc cùng các bảng bên dưới)
+### Nhận xét (đọc cùng các bảng bên dưới)
 
 **Điều quan sát được**
 1. **Phóng ảnh có xu hướng tăng phủ**: 83,3% (x0,5) → 86,2% (x1) → 87,2% (x1,5). Chênh x1 so với x1,5 (+1,5 điểm) **nằm trong dao động giữa hai lần lặp** của chính x1 (120 đến 123 trên 141), nên chưa đủ kết luận. Chênh x0,5 so với x1 rõ hơn nhưng vẫn chỉ 2 lần lặp.
@@ -34,7 +36,7 @@
 - Nâng `max_tokens` lên 800 và lặp ≥3 lần để thu hẹp khoảng dao động.
 - Thử x1,5 so với x2 trên ảnh render gốc ở độ phân giải cao, thay vì phóng nội suy.
 
-## 1. Mức phủ mệnh đề critical theo độ phóng ảnh
+### A1. Mức phủ mệnh đề critical theo độ phóng ảnh
 
 | Scale | Cỡ ảnh | Phủ trung bình | Từng lần lặp | Token vào (TB) | Token ra (TB) | Thời gian TB / p95 (s) | Lỗi |
 |---|---|---|---|---|---|---|---|
@@ -44,7 +46,7 @@
 
 Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh lệch nhỏ giữa các hàng không có ý nghĩa nếu nằm trong độ lệch giữa các lần lặp của cùng một hàng.
 
-## 2. Theo loại hình (phủ trung bình, cộng dồn các lần lặp)
+### A2. Theo loại hình (phủ trung bình, cộng dồn các lần lặp)
 
 | Loại hình | x0.5 | x1 | x1.5 |
 |---|---|---|---|
@@ -57,7 +59,7 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 | schematic_map | 4/24 (16.7%) | 4/24 (16.7%) | 4/24 (16.7%) |
 | table | 66/66 (100.0%) | 66/66 (100.0%) | 66/66 (100.0%) |
 
-## 3. Ổn định, kết thúc, VRAM, ảnh không đọc được
+### A3. Ổn định, kết thúc, VRAM, ảnh không đọc được
 
 | Scale | finish_reason | Lỗi theo mã | Ảnh không đọc được (báo / bỏ sót) | VRAM tối đa (MiB) |
 |---|---|---|---|---|
@@ -65,14 +67,14 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 | x1 | {'stop': 44} | - | 0 / 4 | 7447 |
 | x1.5 | {'stop': 44} | - | 0 / 4 | 7454 |
 
-## 4. Ảnh dao động hoặc khác nhau nhiều giữa các scale
+### A4. Ảnh dao động hoặc khác nhau nhiều giữa các scale
 
 - `cycle_03` (cycle_diagram, 7 mệnh đề): x0.5=3.0, x1=5.0, x1.5=5.0
 - `bar_03` (bar_chart, 7 mệnh đề): x0.5=5.0, x1=7.0, x1.5=7.0
 - `pie_03` (pie_chart, 6 mệnh đề): x0.5=5.5, x1=4.5, x1.5=6.0
 - `cycle_01` (cycle_diagram, 6 mệnh đề): x0.5=3.0, x1=4.0, x1.5=4.0
 
-## 5. Giới hạn
+### A5. Giới hạn
 
 - Phóng to bằng nội suy (LANCZOS) không thêm chi tiết thật; nó chỉ tăng số token thị giác. Ảnh chụp thật ở độ phân giải cao có thể cho kết quả khác. Muốn tách hai yếu tố cần render lại benchmark ở độ phân giải cao.
 - Số lần lặp nhỏ, một model, tập dev tổng hợp: kết quả thăm dò, không khái quát.
@@ -80,7 +82,7 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 
 ---
 
-# Phần B — Khảo sát model `qwen/qwen3-vl-8b` — đợt `baseline_8b_q4_ctx16k_p1`
+## B. `qwen/qwen3-vl-8b` — đợt `baseline_8b_q4_ctx16k_p1`
 
 - Phương pháp: B0e (b0e_v1); benchmark v0.2.0 (tập dev); mã git `47aaa02`
 - Bắt đầu 2026-11-17T15:12:22.095020+00:00; scales [0.5, 1.0, 1.5]; số lần lặp 2
@@ -90,7 +92,7 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 - Ghi chú: 8B Q4_K_M, ctx 16384, parallel 1, FA bat; VRAM nhan thay 7840/8192 MiB luc nhan roi (chi con ~350 MiB)
 
 
-## Nhận xét về 8B (dở dang)
+### Nhận xét về 8B (dở dang)
 
 **Dữ liệu:** 63 trong 132 request đã chạy, gần hết lần lặp 1 (thiếu 3 ảnh cuối ở x1,5, chưa có lần lặp 2). Phúc dừng vì quá chậm. Hai request ở x0,5 (`table_01`, `table_03`) **hết thời gian chờ 300 giây** và không được tính vào độ phủ.
 
@@ -107,7 +109,7 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 **Hệ quả cho đề tài:** giữ **4B** làm baseline và đối tượng fine-tune. Nếu muốn giữ 8B làm ứng viên thì cần chạy lại đủ 22 ảnh × nhiều lần lặp ở cấu hình đã chẩn đoán (ctx 8192), vì dữ liệu hiện có chỉ là một lần lặp ở cấu hình chậm hơn.
 
 
-## Chẩn đoán nguyên nhân chậm (18/11/2026, sau khi nạp lại 8B với context 8192)
+### Chẩn đoán nguyên nhân chậm (2026-11-18, sau khi nạp lại 8B với context 8192)
 
 **Phát hiện từ log LM Studio:** model **không được nạp đủ lên GPU**. Log ghi `n_gpu_layers already set by user to <N>`: lần chạy 132 request dùng **32 lớp** trên GPU (và 30 lớp ở lần nạp thử trước đó), trong khi model có **36 lớp**. Các lớp còn lại chạy trên **CPU với 4 luồng** (`n_threads = 4`), nên mỗi token phải chờ phần CPU. Lần nạp lại (context 8192) dùng **34 lớp**. LM Studio có giới hạn VRAM nghiêm ngặt nên tự giảm số lớp cho vừa 8 GB.
 
@@ -124,9 +126,9 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 - **Hạn chế của chẩn đoán:** đổi hai thứ cùng lúc (context 16384 → 8192 và 32 → 34 lớp trên GPU) nên chưa tách được đóng góp riêng của từng thứ; chỉ 3 request, một lần lặp; chưa chạy lại 22 ảnh.
 - **Kết luận:** nguyên nhân chính khả dĩ nhất là **offload GPU từng phần** (một số lớp chạy trên CPU) do 8B Q4 cộng phần thị giác không vừa 8 GB. 8B vẫn không phù hợp làm model chạy hằng ngày trên máy này.
 
-## Các bảng chi tiết (8B)
+### Các bảng chi tiết (8B)
 
-## 1. Mức phủ mệnh đề critical theo độ phóng ảnh
+### B1. Mức phủ mệnh đề critical theo độ phóng ảnh
 
 | Scale | Cỡ ảnh | Phủ trung bình | Từng lần lặp | Token vào (TB) | Token ra (TB) | Thời gian TB / p95 (s) | Lỗi |
 |---|---|---|---|---|---|---|---|
@@ -136,7 +138,7 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 
 Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh lệch nhỏ giữa các hàng không có ý nghĩa nếu nằm trong độ lệch giữa các lần lặp của cùng một hàng.
 
-## 2. Theo loại hình (phủ trung bình, cộng dồn các lần lặp)
+### B2. Theo loại hình (phủ trung bình, cộng dồn các lần lặp)
 
 | Loại hình | x0.5 | x1 | x1.5 |
 |---|---|---|---|
@@ -149,7 +151,7 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 | schematic_map | 2/12 (16.7%) | 4/12 (33.3%) | 2/12 (16.7%) |
 | table | - | 33/33 (100.0%) | 33/33 (100.0%) |
 
-## 3. Ổn định, kết thúc, VRAM, ảnh không đọc được
+### B3. Ổn định, kết thúc, VRAM, ảnh không đọc được
 
 | Scale | finish_reason | Lỗi theo mã | Ảnh không đọc được (báo / bỏ sót) | VRAM tối đa (MiB) |
 |---|---|---|---|---|
@@ -157,12 +159,12 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 | x1 | {'stop': 20, 'length': 2} | - | 0 / 2 | 7945 |
 | x1.5 | {'stop': 19} | - | 0 / 0 | 7875 |
 
-## 4. Ảnh dao động hoặc khác nhau nhiều giữa các scale
+### B4. Ảnh dao động hoặc khác nhau nhiều giữa các scale
 
 - `map_03` (schematic_map, 6 mệnh đề): x0.5=1.0, x1=3.0, x1.5=1.0
 - `geo_06` (geometry, 3 mệnh đề): x0.5=3.0, x1=2.0, x1.5=2.0
 
-## So khớp cùng ảnh: `baseline_8b_q4_ctx16k_p1` (qwen/qwen3-vl-8b) và `baseline_q4_ctx16k_p1` (qwen/qwen3-vl-4b), chỉ lần lặp 1
+### So khớp cùng ảnh: `baseline_8b_q4_ctx16k_p1` (qwen/qwen3-vl-8b) và `baseline_q4_ctx16k_p1` (qwen/qwen3-vl-4b), chỉ lần lặp 1
 
 Chỉ tính ảnh có kết quả hợp lệ ở cả hai đợt (loại bản ghi lỗi). Một lần lặp: không thấy được dao động.
 
@@ -172,7 +174,7 @@ Chỉ tính ảnh có kết quả hợp lệ ở cả hai đợt (loại bản g
 | x1 | 20 | 141 | 125 | 123 | `map_03` 3 vs 1 |
 | x1.5 | 19 | 138 | 120 | 120 | - |
 
-## 5. Giới hạn
+### B5. Giới hạn
 
 - Phóng to bằng nội suy (LANCZOS) không thêm chi tiết thật; nó chỉ tăng số token thị giác. Ảnh chụp thật ở độ phân giải cao có thể cho kết quả khác. Muốn tách hai yếu tố cần render lại benchmark ở độ phân giải cao.
 - Số lần lặp nhỏ, một model, tập dev tổng hợp: kết quả thăm dò, không khái quát.

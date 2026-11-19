@@ -1,4 +1,0 @@
-﻿run_id,image_id,model,rubric_version,C1,C2,C3,C4,C5,C6,total_score
-20261024T013029_b172df10,chart_02_no_labels,nvidia/nemotron-3.5-super-vl:free,v1,2,2,2,1,2,2,11
-20261024T023116_e0b6482c,chart_01,nvidia/nemotron-3.5-super-vl:free,v1,2,2,2,1,2,2,11
-20261024T023120_fe416863,chart_02_no_labels,nvidia/nemotron-3.5-super-vl:free,v1,2,1,2,1,1,2,9

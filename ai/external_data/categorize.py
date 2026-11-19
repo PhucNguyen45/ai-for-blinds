@@ -5,8 +5,8 @@ Việc xếp mục khai báo ở `hf.GROUPS` (nguồn duy nhất); `hf.dataset_d
 Mặc định chỉ IN danh sách sẽ chuyển (dry run); `--apply` mới chuyển thật bằng `mv` (đổi tên trong cùng ổ đĩa: tức thì, không sao chép, không xóa dữ liệu).
 
 ViInfographicVQA là một bộ 9 chủ đề, không tách vật lý được nên nằm ở 3_hon_hop; chủ đề "Giáo dục - Khoa Học" được đánh dấu theo từng mẫu trong
-_reports/phan_loai_infographic.csv. Căn cứ phân loại là nội dung đã xem (câu hỏi, ảnh mẫu, chủ đề), không chỉ tên bộ; lý do ghi trong bảng tóm tắt công khai
-ai/evaluation/reports/datasets/phan_loai_hoc_tap_cuoc_song.md.
+_reports/phan_loai_infographic.csv. Căn cứ phân loại là nội dung đã xem (câu hỏi, ảnh mẫu, chủ đề), không chỉ tên bộ; lý do ghi trong bản mô tả ghi cục bộ ở
+data/external/_reports/phan_loai.md (external_data/report.py ghép vào báo cáo công khai duy nhất ai/evaluation/reports/du_lieu_ngoai_20261118.md).
 
   uv run --with pyarrow --with numpy python external_data/categorize.py            # dry run
   uv run --with pyarrow --with numpy python external_data/categorize.py --apply    # chuyển thật
@@ -26,9 +26,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from external_data import hf  # noqa: E402
 
 ROOT = hf.ROOT
-PUBLIC = Path(__file__).resolve().parents[1] / "evaluation" / "reports" / "datasets"
 EDU_TOPICS = {"Giáo dục - Khoa Học"}
-TITLES = {"1_hoc_tap": "1. HỌC TẬP (`1_hoc_tap/`)", "2_cuoc_song": "2. CUỘC SỐNG (`2_cuoc_song/`)", "3_hon_hop": "3. HỖN HỢP (`3_hon_hop/`)"}
+TITLES = {"1_hoc_tap": "Mục HỌC TẬP (`1_hoc_tap/`)", "2_cuoc_song": "Mục CUỘC SỐNG (`2_cuoc_song/`)", "3_hon_hop": "Mục HỖN HỢP (`3_hon_hop/`)"}
 
 # thư mục -> (tên hiển thị, lý do phân mục)
 WHY = {
@@ -101,7 +100,6 @@ def main():
     move_all(args.apply)
     if not args.apply:
         print("\n(dry run: chưa chuyển gì; thêm --apply để chuyển)")
-        return
 
     overlay = list(csv.DictReader((ROOT / "_reports" / "splits_overlay.csv").open(encoding="utf-8")))
     dir_of = {v[0]: k for k, v in WHY.items()}
@@ -127,7 +125,7 @@ def main():
     def size_gb(name):
         return sum(p.stat().st_size for p in hf.dataset_dir(name).rglob("*") if p.is_file() and not p.name.endswith(".part")) / 1e9
 
-    L = ["# Dữ liệu ngoài: ba mục HỌC TẬP / CUỘC SỐNG / HỖN HỢP", "",
+    L = ["# Phân mục dữ liệu ngoài", "",
          "Các thư mục bộ dữ liệu nằm thật trong `data/external/1_hoc_tap/`, `2_cuoc_song/`, `3_hon_hop/` (khai báo ở `hf.GROUPS`). `_index/`, `_reports/`, `_sft/` ở cấp trên.",
          "Số mẫu là số dòng/ảnh trong lớp phủ train/val/test (`splits_overlay.csv`), gồm cả mẫu bị loại (`excluded`). Phân loại dựa trên nội dung đã xem, xem cột nội dung.", ""]
     for group, names in hf.GROUPS.items():
@@ -148,8 +146,7 @@ def main():
           "- ViEduVQA xếp HỌC TẬP vì có trang SGK; hình bên trong là cảnh đời thường vẽ cho trẻ em. Tỉ lệ ảnh thuộc SGK trong bộ chưa đo hết.",
           "- Khoảng trống: chưa có SGK lớp 4-5, chưa có biểu đồ/bản đồ SGK thật; mục HỌC TẬP hiện chủ yếu là lớp 1-3.", ""]
     text = "\n".join(L)
-    PUBLIC.mkdir(parents=True, exist_ok=True)
-    (PUBLIC / "phan_loai_hoc_tap_cuoc_song.md").write_text(text, encoding="utf-8")
+    (ROOT / "_reports" / "phan_loai.md").write_text(text, encoding="utf-8")
     for old in (ROOT / "PHAN_LOAI.md", ROOT / "_reports" / "phan_loai_mau.csv"):  # tệp thừa của lần làm trước; đã có tệp thay thế
         if old.exists():
             old.unlink()
