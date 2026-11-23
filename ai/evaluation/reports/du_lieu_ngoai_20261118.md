@@ -55,7 +55,8 @@ Số mẫu là số dòng/ảnh trong lớp phủ train/val/test (`splits_overla
 |---|---|---|---|---|---|---|---|---|
 | bbdontcry/ViSGKCap | `ViSGKCap/` | 1229 | 976 | 123 | 125 | 5 | 1.3 | Trang sách giáo khoa Cánh Diều lớp 1-3 (Toán, Tiếng Việt, Tự nhiên và Xã hội, Đạo đức). |
 | D-Truong/ViEduVQA | `D-Truong__ViEduVQA/` | 18838 | 16985 | 999 | 854 | 0 | 6.8 | Hỏi đáp trên tranh minh họa tiểu học; đã xác nhận có trang SGK Cánh Diều (trùng ViSGKCap). Nội dung tranh là cảnh đời thường vẽ trong SGK. |
-| **Tổng** | | **20067** | 17961 | 1122 | 979 | 5 | | |
+| anvo25/vmmu | `anvo25__vmmu/` | 3598 | 3269 | 165 | 164 | 0 | 1.7 | Ảnh trang đề thi trắc nghiệm có hình (Toán, Lý, Hóa, Sinh, Địa, IQ, thi bằng lái xe), tiếng Việt kèm tiếng Anh; 210 câu hỏi xuất hiện 5 lần dưới dạng ảnh khác nhau (nguyên trang, cắt khung, chỉ chữ), đã nối theo mã câu hỏi khi chia split. |
+| **Tổng** | | **23665** | 21230 | 1287 | 1143 | 5 | | |
 
 ### Mục CUỘC SỐNG (`2_cuoc_song/`)
 
@@ -144,22 +145,22 @@ Tính cả ảnh jpg bổ sung: nội dung học tập 1768 mẫu (train 1594, t
 ### 3.3. Rủi ro rò rỉ giữa split (chỉ báo cáo, không xóa)
 
 - **OpenViVQA, ảnh trùng giữa các split gốc:** exact cùng split: 57; exact dev / test: 1; exact dev / train: 8; exact test / train: 19; near cùng split: 87; near dev / train: 22; near test / train: 18. Nên loại các ảnh trùng chéo split khi dùng test gốc để đánh giá.
-- **5CD-AI/Viet-Table-Markdown** so với ViSGKCap, mức `content`: 269 trang ViSGKCap, theo split của ViSGKCap {'train': 210, 'validation': 31, 'test': 28} (ứng viên chưa xác nhận)
+- **5CD-AI/Viet-Table-Markdown** so với ViSGKCap, mức `content`: 269 trang ViSGKCap, theo split của ViSGKCap {'train': 210, 'test': 28, 'validation': 31} (ứng viên chưa xác nhận)
 - **D-Truong/ViEduVQA** so với ViSGKCap, mức `near`: 3 trang ViSGKCap, theo split của ViSGKCap {'train': 3} (đã xác nhận bằng mắt)
 - **D-Truong/ViEduVQA** so với ViSGKCap, mức `content`: 15 trang ViSGKCap, theo split của ViSGKCap {'validation': 3, 'train': 12} (ứng viên chưa xác nhận)
 - **Ouyangxuelili/vlsp2023-vqa-dataset** so với ViSGKCap, mức `near`: 1 trang ViSGKCap, theo split của ViSGKCap {'train': 1}
 - **Ouyangxuelili/vlsp2023-vqa-dataset** so với ViSGKCap, mức `content`: 3 trang ViSGKCap, theo split của ViSGKCap {'train': 3} (ứng viên chưa xác nhận)
-- **VLAI-AIVN/ViInfographicVQA** so với ViSGKCap, mức `content`: 15 trang ViSGKCap, theo split của ViSGKCap {'train': 12, 'test': 1, 'validation': 2} (ứng viên chưa xác nhận)
+- **VLAI-AIVN/ViInfographicVQA** so với ViSGKCap, mức `content`: 15 trang ViSGKCap, theo split của ViSGKCap {'validation': 2, 'train': 12, 'test': 1} (ứng viên chưa xác nhận)
 - **huyhuy123/ViOCRVQA** so với ViSGKCap, mức `content`: 172 trang ViSGKCap, theo split của ViSGKCap {'train': 137, 'validation': 20, 'test': 15} (ứng viên chưa xác nhận)
 - **uitnlp/OpenViVQA-dataset** so với ViSGKCap, mức `near`: 1 trang ViSGKCap, theo split của ViSGKCap {'train': 1}
-- **uitnlp/OpenViVQA-dataset** so với ViSGKCap, mức `content`: 8 trang ViSGKCap, theo split của ViSGKCap {'train': 6, 'test': 1, 'validation': 1} (ứng viên chưa xác nhận)
+- **uitnlp/OpenViVQA-dataset** so với ViSGKCap, mức `content`: 8 trang ViSGKCap, theo split của ViSGKCap {'validation': 1, 'train': 6, 'test': 1} (ứng viên chưa xác nhận)
 
 ## 4. Lớp phủ train/val/test (overlay)
 
 
 Giữ nguyên dữ liệu và split gốc; bảng ánh xạ nằm cục bộ ở `data/external/_reports/splits_overlay.csv`. Cụm ảnh = SHA-256 giống hệt, pHash cách <= 4 bit, hoặc cặp mức nội dung đã xác nhận bằng NCC >= 0.6 (cùng tranh, khác khung cắt); xuyên mọi bộ và benchmark của nhóm.
 
-- Mẫu có vai trò: 160704; ảnh benchmark của nhóm tham gia gom cụm: 47; số cụm: 113220 (có nhiều mẫu: 18185).
+- Mẫu có vai trò: 164302; ảnh benchmark của nhóm tham gia gom cụm: 47; số cụm: 115897 (có nhiều mẫu: 18438).
 - Cụm quá lớn bị tách và gắn cờ đáng ngờ: 7.
 - **Kiểm tra bất biến (không cụm nào có cả train và val/test; cụm trùng benchmark không còn train/val/test):** ĐẠT.
 
@@ -178,6 +179,9 @@ Giữ nguyên dữ liệu và split gốc; bảng ánh xạ nằm cục bộ ở
 | VLAI-AIVN/ViInfographicVQA | train | excluded | leak_to_test | 590 |
 | VLAI-AIVN/ViInfographicVQA | test | test | origin | 2661 |
 | VLAI-AIVN/ViInfographicVQA | train | train | origin | 23905 |
+| anvo25/vmmu | train | test | group_split | 164 |
+| anvo25/vmmu | train | train | group_split | 3269 |
+| anvo25/vmmu | train | val | group_split | 165 |
 | bbdontcry/ViSGKCap | train | excluded | leak_to_test | 1 |
 | bbdontcry/ViSGKCap | train | excluded | leak_to_val | 4 |
 | bbdontcry/ViSGKCap | test | test | origin | 125 |

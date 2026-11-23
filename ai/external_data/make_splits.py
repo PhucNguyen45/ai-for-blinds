@@ -25,7 +25,7 @@ from external_data.clusters import Item, assign_roles, build_clusters, check_inv
 ROOT = hf.ROOT
 BENCH = ROOT.parent / "benchmark"
 REPORT = ROOT / "_reports"
-TRAIN_ONLY = {"D-Truong/ViEduVQA", "5CD-AI/Viet-Table-Markdown"}
+TRAIN_ONLY = {"D-Truong/ViEduVQA", "5CD-AI/Viet-Table-Markdown", "anvo25/vmmu"}
 SUBSET_OF = {"Ouyangxuelili/vlsp2023-vqa-dataset": "uitnlp/OpenViVQA-dataset"}
 SPLIT_NAMES = {"train": "train", "training": "train", "validation": "val", "val": "val", "dev": "val", "test": "test"}
 
@@ -97,6 +97,11 @@ def main():
     edges_file = REPORT / "content_verified_edges.csv"
     extra = [(r["sha_a"], r["sha_b"]) for r in csv.DictReader(edges_file.open(encoding="utf-8"))] if edges_file.exists() else []
     print("cạnh mức nội dung đã xác nhận bằng NCC:", len(extra), flush=True)
+    vmmu_file = REPORT / "vmmu_question_edges.csv"  # ảnh VMMU cùng một câu hỏi (do vmmu_groups.py tạo)
+    if vmmu_file.exists():
+        vmmu_edges = [(r["sha_a"], r["sha_b"]) for r in csv.DictReader(vmmu_file.open(encoding="utf-8"))]
+        extra += vmmu_edges
+        print("cạnh cùng câu hỏi VMMU:", len(vmmu_edges), flush=True)
     cluster_of, suspicious = build_clusters(items, extra_edges=extra)
     roles = assign_roles(items, cluster_of, train_only=TRAIN_ONLY, subset_of=SUBSET_OF)
     problems = check_invariants(items, cluster_of, roles)

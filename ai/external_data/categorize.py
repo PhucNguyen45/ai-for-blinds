@@ -33,6 +33,7 @@ TITLES = {"1_hoc_tap": "Mục HỌC TẬP (`1_hoc_tap/`)", "2_cuoc_song": "Mục
 WHY = {
     "ViSGKCap": ("bbdontcry/ViSGKCap", "Trang sách giáo khoa Cánh Diều lớp 1-3 (Toán, Tiếng Việt, Tự nhiên và Xã hội, Đạo đức)."),
     "D-Truong__ViEduVQA": ("D-Truong/ViEduVQA", "Hỏi đáp trên tranh minh họa tiểu học; đã xác nhận có trang SGK Cánh Diều (trùng ViSGKCap). Nội dung tranh là cảnh đời thường vẽ trong SGK."),
+    "anvo25__vmmu": ("anvo25/vmmu", "Ảnh trang đề thi trắc nghiệm có hình (Toán, Lý, Hóa, Sinh, Địa, IQ, thi bằng lái xe), tiếng Việt kèm tiếng Anh; 210 câu hỏi xuất hiện 5 lần dưới dạng ảnh khác nhau (nguyên trang, cắt khung, chỉ chữ), đã nối theo mã câu hỏi khi chia split."),
     "VLAI-AIVN__ViInfographicVQA": ("VLAI-AIVN/ViInfographicVQA", "Infographic tin tức, 9 chủ đề; chỉ 'Giáo dục - Khoa Học' liên quan học tập, 8 chủ đề còn lại (kinh tế, y tế, văn hóa, thiên tai, thể thao, thời tiết, quốc phòng, nhân vật) là đời sống. Không tách vật lý được."),
     "uitnlp__OpenViVQA-dataset": ("uitnlp/OpenViVQA-dataset", "Ảnh đời thường ở Việt Nam (phố, quán, nhà, ghe), hỏi đáp mở."),
     "Ouyangxuelili__vlsp2023-vqa-dataset": ("Ouyangxuelili/vlsp2023-vqa-dataset", "Bản sao một phần của OpenViVQA (cảnh đời thường); đã bị loại khỏi vai trò huấn luyện vì trùng."),
