@@ -38,6 +38,8 @@ answer = ask_page("trang.jpg", "Cột nào cao nhất?")            # AnswerResu
 
 Lỗi vận hành (mạng, HTTP, cấu hình, ảnh hỏng) trả `status="error"` kèm `error`, không ném ngoại lệ.
 
+Model có chế độ suy nghĩ (Gemma 4): đặt biến môi trường `LMSTUDIO_REASONING_EFFORT=none` để tắt, nếu không model dùng hết `max_tokens` để nghĩ và trả `empty_response`. Không đặt thì payload không đổi (Qwen).
+
 ## Các trạng thái cần hệ thống xử lý
 
 | `status` | Nghĩa | Việc của app |

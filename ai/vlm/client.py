@@ -63,7 +63,9 @@ def build_messages_payload(
         "max_tokens": max_tokens,
     }
     if provider == "lmstudio":
-        pass  # LM Studio: không gửi tham số reasoning riêng của nhà cung cấp khác
+        # LM Studio: chỉ gửi reasoning_effort khi được đặt (model có chế độ suy nghĩ như Gemma 4 cần "none").
+        if reasoning_effort:
+            payload["reasoning_effort"] = reasoning_effort
     elif provider == "google":
         # Gemini API (tương thích OpenAI) không nhận trường "reasoning" của OpenRouter.
         if reasoning_effort:

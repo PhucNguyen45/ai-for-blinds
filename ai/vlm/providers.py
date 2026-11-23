@@ -129,7 +129,8 @@ def resolve_provider(config: dict, provider: str | None = None,
             raise ConfigError("LM Studio chưa nạp model nào: nạp một model thị giác hoặc đặt "
                               "LMSTUDIO_MODEL.")
         return Provider(name=name, base_url=base, api_key=config.get("LMSTUDIO_API_KEY") or "lm-studio",
-                        model=chosen, timeout=DEFAULT_TIMEOUTS[name])
+                        model=chosen, timeout=DEFAULT_TIMEOUTS[name],
+                        reasoning_effort=(config.get("LMSTUDIO_REASONING_EFFORT") or "").strip() or None)
 
     if name == "openrouter":
         key = config.get("OPENROUTER_API_KEY")
