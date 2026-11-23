@@ -126,43 +126,9 @@ Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh l�
 - **Hạn chế của chẩn đoán:** đổi hai thứ cùng lúc (context 16384 → 8192 và 32 → 34 lớp trên GPU) nên chưa tách được đóng góp riêng của từng thứ; chỉ 3 request, một lần lặp; chưa chạy lại 22 ảnh.
 - **Kết luận:** nguyên nhân chính khả dĩ nhất là **offload GPU từng phần** (một số lớp chạy trên CPU) do 8B Q4 cộng phần thị giác không vừa 8 GB. 8B vẫn không phù hợp làm model chạy hằng ngày trên máy này.
 
-### Các bảng chi tiết (8B)
+### Bảng chi tiết (8B)
 
-### B1. Mức phủ mệnh đề critical theo độ phóng ảnh
-
-| Scale | Cỡ ảnh | Phủ trung bình | Từng lần lặp | Token vào (TB) | Token ra (TB) | Thời gian TB / p95 (s) | Lỗi |
-|---|---|---|---|---|---|---|---|
-| x0.5 | 550×360 | 91.0/108 (84.3%) | r01=91/108 | 444 | 418 | 60.9 / 121.3 | 2 |
-| x1 | 1100×720 | 125.0/141 (88.7%) | r01=125/141 | 1005 | 444 | 96.6 / 161.5 | 0 |
-| x1.5 | 1650×1080 | 120.0/138 (87.0%) | r01=120/138 | 2025 | 435 | 117.8 / 148.5 | 0 |
-
-Chỉ số từ khóa thô, chạm trần và không đo độ bịa; chênh lệch nhỏ giữa các hàng không có ý nghĩa nếu nằm trong độ lệch giữa các lần lặp của cùng một hàng.
-
-### B2. Theo loại hình (phủ trung bình, cộng dồn các lần lặp)
-
-| Loại hình | x0.5 | x1 | x1.5 |
-|---|---|---|---|
-| bar_chart | 27/27 (100.0%) | 27/27 (100.0%) | 27/27 (100.0%) |
-| cycle_diagram | 9/13 (69.2%) | 9/13 (69.2%) | 9/13 (69.2%) |
-| flow_diagram | 13/13 (100.0%) | 13/13 (100.0%) | 13/13 (100.0%) |
-| geometry | 11/12 (91.7%) | 10/12 (83.3%) | 7/9 (77.8%) |
-| line_chart | 17/19 (89.5%) | 17/19 (89.5%) | 17/19 (89.5%) |
-| pie_chart | 12/12 (100.0%) | 12/12 (100.0%) | 12/12 (100.0%) |
-| schematic_map | 2/12 (16.7%) | 4/12 (33.3%) | 2/12 (16.7%) |
-| table | - | 33/33 (100.0%) | 33/33 (100.0%) |
-
-### B3. Ổn định, kết thúc, VRAM, ảnh không đọc được
-
-| Scale | finish_reason | Lỗi theo mã | Ảnh không đọc được (báo / bỏ sót) | VRAM tối đa (MiB) |
-|---|---|---|---|---|
-| x0.5 | {'stop': 20, '-': 2} | {'timeout': 2} | 0 / 2 | 7963 |
-| x1 | {'stop': 20, 'length': 2} | - | 0 / 2 | 7945 |
-| x1.5 | {'stop': 19} | - | 0 / 0 | 7875 |
-
-### B4. Ảnh dao động hoặc khác nhau nhiều giữa các scale
-
-- `map_03` (schematic_map, 6 mệnh đề): x0.5=1.0, x1=3.0, x1.5=1.0
-- `geo_06` (geometry, 3 mệnh đề): x0.5=3.0, x1=2.0, x1.5=2.0
+Các bảng theo scale, theo loại hình và độ ổn định của 8B không giữ ở đây; sinh lại được từ bản ghi bằng `uv run python evaluation/reporting/survey_report.py evaluation/records_survey__baseline_8b_q4_ctx16k_p1`. Số chính đã nêu ở phần nhận xét phía trên.
 
 ### So khớp cùng ảnh: `baseline_8b_q4_ctx16k_p1` (qwen/qwen3-vl-8b) và `baseline_q4_ctx16k_p1` (qwen/qwen3-vl-4b), chỉ lần lặp 1
 
@@ -174,9 +140,4 @@ Chỉ tính ảnh có kết quả hợp lệ ở cả hai đợt (loại bản g
 | x1 | 20 | 141 | 125 | 123 | `map_03` 3 vs 1 |
 | x1.5 | 19 | 138 | 120 | 120 | - |
 
-### B5. Giới hạn
-
-- Phóng to bằng nội suy (LANCZOS) không thêm chi tiết thật; nó chỉ tăng số token thị giác. Ảnh chụp thật ở độ phân giải cao có thể cho kết quả khác. Muốn tách hai yếu tố cần render lại benchmark ở độ phân giải cao.
-- Số lần lặp nhỏ, một model, tập dev tổng hợp: kết quả thăm dò, không khái quát.
-- Temperature 0 không cho kết quả giống hệt giữa hai lần (đã quan sát), nên mọi so sánh cần khoảng dao động.
-
+Giới hạn của phần B như phần A5 (một lần lặp, tập dev tổng hợp, chỉ số từ khóa thô).

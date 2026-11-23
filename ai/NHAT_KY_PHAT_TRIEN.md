@@ -28,6 +28,14 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test chưa chạ
 - **Fine-tune:** thử dựng môi trường huấn luyện riêng nhưng Phúc dừng (LM Studio chỉ chạy suy luận, không huấn luyện được); đã gỡ hết môi trường và hoàn tác phần mã chuẩn bị (prompt `ft_describe_v1`, định dạng xuất `--format spoken`). Hướng fine-tune chờ Phúc quyết.
 - **Tài liệu:** giảm .md từ 26 xuống 13: gộp báo cáo (ba báo cáo dev → một; cổng ảnh vào báo cáo mô-đun; bốn báo cáo dữ liệu → một), bỏ báo cáo B0 tháng 10, chuyển hai ghi chú dự án cũ ra ngoài repo, gộp README `evaluation/` vào `ai/README.md`, rút gọn nhật ký, viết lại README gốc.
 
+## 2026-11-23
+
+- **Model nền:** Phúc chốt chuyển sang `google/gemma-4-e4b` (Q4_K_M, 7,5B, có thị giác, LM Studio, ctx 16384, parallel 1), chấp nhận chậm hơn.
+- **Số đo** (B0e, dev 22 ảnh, 141 mệnh đề, 2 lần lặp, từ khóa thô): Gemma phủ 84,8% / 85,1% / 85,5% ở x0,5 / x1 / x1,5, Qwen 4B 83,3% / 86,2% / 87,2%: ngang nhau, trong dao động. Gemma 10,9–13,7 s mỗi ảnh (Qwen 7–9 s), VRAM đỉnh ~5 GiB (Qwen ~7,5). `schematic_map` ~0%; báo ảnh không đọc được 0/4 với prompt b0e (Qwen cũng 0/4).
+- **Lưu ý kỹ thuật:** Gemma 4 mặc định bật suy nghĩ, dùng hết 600 token nên không trả nội dung (`empty_response`). Gửi `reasoning_effort=none` trong request (biến môi trường `LMSTUDIO_REASONING_EFFORT`, không đổi cài đặt LM Studio); Qwen không bị ảnh hưởng khi không đặt.
+- **Dữ liệu:** tìm thêm bộ VQA tiếng Việt và tiếng Anh (biểu đồ, bảng, sơ đồ khoa học, hình học, bản đồ, VizWiz); tải xong VMMU (MIT, 1,6 GB, chỉ ở máy), xếp vào `1_hoc_tap/`, chia split theo cụm như các bộ khác (train 3.269 / val 165 / test 164, 0 trùng với bộ khác); 210 câu hỏi có 5 ảnh (nguyên trang, cắt khung, chỉ chữ) mà pHash không nối được nên nối theo mã câu hỏi (`external_data/vmmu_groups.py`) để tránh rò rỉ; dừng tải phần còn lại vì mạng hạn chế. Giấy phép GPL/NC (ChartQA, TabMWP, TQA, MapVerse) cần hỏi thầy trước khi dùng huấn luyện.
+- **Chưa làm:** đo `b0g_v1` và hỏi đáp 59 câu cho Gemma; chọn cách huấn luyện cho Gemma (QLoRA trên 8 GiB VRAM chưa kiểm chứng).
+
 ## Việc tiếp theo
 
 Hiệu chỉnh cổng "không đọc được" trên trang SGK thật rồi đo lại; chấm tay (hai người) các câu hỏi đáp "sai" và 37 ca trùng cần xem tay; chọn hướng thu thập SGK lớp 4–5 và biểu đồ/bản đồ thật; quyết định hướng fine-tune; thống nhất API v1 với hợp đồng v0.1 (Phúc, Nam, Toàn).
