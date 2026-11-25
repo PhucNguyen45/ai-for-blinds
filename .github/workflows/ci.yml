@@ -1,18 +1,25 @@
 name: CI
 
+# Ba phần của hệ thống chạy kiểm thử riêng: backend (Nam), module AI (Phúc), app Flutter (Toàn).
+# Backend chạy cả chế độ VLM_MODE=ai (gọi ai/pipeline.py) nên đổi ai/ cũng chạy lại backend.
+
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, phuc, 'toan/**']
     paths:
       - 'backend/**'
+      - 'ai/**'
+      - 'frontend/**'
       - 'prompts/**'
       - 'scripts/**'
       - 'data/library/**'
       - '.github/workflows/ci.yml'
   pull_request:
-    branches: [main]
+    branches: [main, dev, phuc]
     paths:
       - 'backend/**'
+      - 'ai/**'
+      - 'frontend/**'
       - 'prompts/**'
       - 'scripts/**'
       - 'data/library/**'
@@ -32,12 +39,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements-dev.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements*.txt') }}
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r backend/requirements-dev.txt
+          pip install -r backend/requirements-dev.txt -r backend/requirements-ai.txt
 
       - name: Lint with flake8
         run: |
@@ -53,3 +60,50 @@ jobs:
           VLM_MODE: mock
           STT_MODE: mock
         run: pytest -q
+
+      - name: Build Docker image (gồm module AI)
+        run: docker build -f backend/Dockerfile -t sgbe-backend .
+
+      - name: Image chạy được và nạp được module AI
+        run: |
+          docker run --rm -e VLM_MODE=ai sgbe-backend python -c "from app import ai_bridge; ai_bridge._pipeline(); print('ok')"
+
+  ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y fonts-dejavu-core
+          python -m pip install --upgrade pip
+          pip install "httpx>=0.28.1" "pillow>=13.0.0" "pydantic>=2.14" "python-dotenv>=1.2" "pytest>=8.3"
+
+      - name: Run tests (không gọi mạng, không cần khóa API)
+        working-directory: ai
+        env:
+          PYTHONUTF8: '1'
+        run: pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.1'
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test

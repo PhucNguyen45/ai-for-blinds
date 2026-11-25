@@ -2,13 +2,16 @@
 
 Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ảnh ứng dụng mô hình ngôn ngữ thị giác (VLM), hỗ trợ học sinh khiếm thị học tập kiến thức trực quan.
 
-> **Nhánh `phuc` (phần AI, Mảng A) — cập nhật 2026-11-19.** `backend/` (Nam) và `frontend/` (Toàn) ở nhánh này chưa có mã (xem [Nhánh](#nhánh)). Mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test chưa chạy.
+> **Nhánh `toan/tich-hop` — bản ghép cả hệ thống, 2026-11-25:** module AI (Phúc, nhánh `phuc`) + backend API v1 (Nam, nhánh `dev`) + app Flutter (Toàn, nhánh `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Phần trạng thái AI bên dưới giữ nguyên theo nhánh `phuc` (2026-11-19): mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test chưa chạy.
 
 ## Thành phần
 
 - `ai/`: VLM, prompt, cổng chất lượng ảnh, hỏi đáp, hợp đồng đầu ra, đánh giá, chuẩn bị TTS: xem [`ai/README.md`](ai/README.md). Lịch sử theo ngày: [`ai/NHAT_KY_PHAT_TRIEN.md`](ai/NHAT_KY_PHAT_TRIEN.md).
 - `data/`: **chỉ ở máy tác giả, không có trong repo** (xem [Dữ liệu](#dữ-liệu)).
-- `docs/bao_cao/`: tài liệu nộp của Mảng A. `backend/`, `frontend/`: Nam, Toàn (nhánh này rỗng).
+- `backend/`: FastAPI, hợp đồng [`docs/API_v1.md`](docs/API_v1.md) (Nam). Chế độ `mock` / `openai` / `ai`.
+- `frontend/`: app Flutter cho học sinh khiếm thị (Toàn): xem [`frontend/README.md`](frontend/README.md).
+- `data/library/`: kho sách đã số hóa phục vụ `/v1/library` (có trong repo). `prompts/`, `scripts/`: của backend.
+- `docs/bao_cao/`: tài liệu nộp của Mảng A. `docs/TICH_HOP.md`: tài liệu ghép hệ thống.
 
 ## Điều cần biết ngay
 
@@ -32,7 +35,19 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 | Chuẩn hóa văn bản TTS | Có; **chưa có engine STT/TTS** (để phần mềm quyết định) | [`ai/README.md`](ai/README.md) |
 | Đánh giá bằng người (rubric), người khiếm thị | Chưa có | [`rubric_v1.md`](ai/evaluation/rubrics/rubric_v1.md) |
 
-## Chạy nhanh
+## Chạy cả hệ thống
+
+```powershell
+py -3.12 -m venv .venv
+.venv\Scripts\pip install -r backend\requirements-dev.txt -r backend\requirements-ai.txt
+$env:VLM_MODE="mock"     # hoặc "ai" (điền ai\.env trước)
+.venv\Scripts\python -X utf8 -m uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port 8000
+cd frontend; flutter run  # emulator tự trỏ http://10.0.2.2:8000
+```
+
+Hoặc `docker compose up --build`. Chi tiết: [`docs/TICH_HOP.md`](docs/TICH_HOP.md).
+
+## Chạy riêng phần AI
 
 ```bash
 cd ai
@@ -61,11 +76,14 @@ SGK và học liệu có bản quyền **không** đưa lên repo công khai; kh
 | Nhánh | Nội dung |
 |---|---|
 | `main` | Bản cũ (2026-05, SgBe Vision); nhánh mặc định, chưa cập nhật |
+| `phuc` | Module AI (Phúc) |
 | `dev`, `nam` | Backend FastAPI `/v1/*`, `docs/API_v1.md` (Nam): hợp đồng API v1 hiện hành |
-| `toan/app-mvp` | App Flutter MVP theo API v1 (Toàn) |
+| `toan/frontend` | App Flutter giao diện mới (Toàn) |
+| `toan/tich-hop` | **Bản ghép `phuc` + `dev` + `toan/frontend`**, chạy thông app → backend → module AI |
+| `toan/app-mvp` | App Flutter MVP cũ (đã thay bằng `toan/frontend`) |
 | `fix/e2e-vlm-stt-rag` | Bản chạy thông cũ (2026-08), có thể lỗi thời |
 
-Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh trên; việc hợp nhất chưa thực hiện. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
+Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh trên; `toan/tich-hop` ghép bằng `--allow-unrelated-histories` (2026-11-25), chờ cả nhóm duyệt. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
 
 ## Việc tiếp theo
 
@@ -73,7 +91,7 @@ Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc 
 2. Thu thập và gán nhãn SGK lớp 4–5, biểu đồ/bản đồ thật (cần người gán nhãn, người rà soát thứ hai, văn bản cho phép của thầy).
 3. Chấm tay (rubric, hai người) và thiết kế chỉ số nhạy hơn; chạy tập test khi đóng băng cấu hình.
 4. Quyết định hướng fine-tune (QLoRA trên 8 GB VRAM chưa kiểm chứng).
-5. Đối chiếu hợp đồng AI v0.1 với API v1 (Phúc, Nam, Toàn) và hợp nhất các nhánh.
+5. ~~Đối chiếu hợp đồng AI v0.1 với API v1 và hợp nhất các nhánh~~: đã làm ở `toan/tich-hop`, chờ duyệt ([`docs/TICH_HOP.md`](docs/TICH_HOP.md)).
 
 ---
 *Cập nhật README: (1) chỉ sửa dòng trạng thái đã đổi; (2) đổi ngày ở đầu; (3) thêm mục vào `ai/NHAT_KY_PHAT_TRIEN.md`.*

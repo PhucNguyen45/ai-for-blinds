@@ -45,6 +45,10 @@ Kết quả `data`:
 - Giữ `image_id` để hỏi tiếp ở `/v1/ask`.
 - `unreadable = true`: có chỗ mô hình không đọc được → app có thể gợi ý "Bạn có muốn chụp lại không?".
 - `cached = true`: ảnh giống hệt đã gửi trước đó, trả ngay, không tốn tiền gọi mô hình.
+- Khi máy chủ chạy `VLM_MODE=ai` (module AI của Phúc), `data` có thêm các trường hợp đồng AI v0.1:
+  `status` (`ok`/`partial`/`unreadable`/`unsupported`), `summary_vi`, `interpretation_vi`, `image_type`,
+  `uncertainties`, `question_answering_ready`. `partial` = lời mô tả bị cắt ngắn, KHÔNG phải ảnh hỏng.
+  Cách đối chiếu: [`docs/TICH_HOP.md`](TICH_HOP.md).
 
 ## POST /v1/ask
 
@@ -80,15 +84,18 @@ Kết quả `data`: `{ "book", "title", "pages": [ ... ] }`, mỗi trang:
 {
   "book": "demo", "page": 2, "page_type": "map",
   "description": "...", "image_sha256": "...",
-  "model": "mock", "prompt_version": "v1", "reviewed": false
+  "model": "mock", "prompt_version": "v1", "reviewed": false,
+  "title": "Lược đồ vùng núi"
 }
 ```
 
+`title` không bắt buộc (tên mục trên trang); app thiếu thì đọc tên loại trang.
 App tải về và lưu máy để nghe offline. Nên ưu tiên đọc trang có `reviewed = true` (đã có người kiểm tra).
 
 ## GET /health
 
-Kiểm tra máy chủ sống, đang ở chế độ nào: `{ "status", "vlm_mode", "model", "prompt_version", "stt_mode" }`.
+Kiểm tra máy chủ sống, đang ở chế độ nào: `{ "status", "vlm_mode", "model", "ai_module", "prompt_version", "stt_mode" }`.
+`vlm_mode`: `mock` | `openai` | `ai`; `ai_module = true` khi máy chủ gọi module AI của nhóm (`model` dạng `nhà_cung_cấp:tên_model`).
 App nên gọi khi mở hoặc khi đổi địa chỉ máy chủ trong Cài đặt.
 
 ## Bảng mã lỗi
@@ -105,6 +112,7 @@ App nên gọi khi mở hoặc khi đổi địa chỉ máy chủ trong Cài đ�
 | 503 | `STT_UNAVAILABLE` | STT chưa bật | ẩn nút hỏi bằng giọng |
 | 504 | `VLM_TIMEOUT` | mô hình quá 120 giây | đọc message, cho thử lại |
 | 502 | `VLM_ERROR` | mô hình lỗi, hết credit, mất mạng | đọc message, cho thử lại |
+| 503 | `AI_NOT_CONFIGURED` | `VLM_MODE=ai` mà `ai/.env` thiếu khóa/model | báo người hỗ trợ kiểm tra máy chủ |
 | 500 | `INTERNAL` | lỗi khác | đọc message |
 
 ## Ghi chú cho Phúc khi kết nối từ điện thoại

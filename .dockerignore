@@ -1,0 +1,14 @@
+# Không đưa khóa, dữ liệu, bản build vào image
+**/.env
+**/.env.*
+!**/.env.example
+.git
+.venv
+**/__pycache__
+**/*.pyc
+data/
+frontend/
+ai/tests/
+ai/evaluation/
+ai/finetune/
+ai/external_data/
