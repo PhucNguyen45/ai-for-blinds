@@ -75,3 +75,11 @@ Thumbs.db
 
 # Bộ dữ liệu ngoài tải về để nghiên cứu (chỉ ở máy; có thể có bản quyền)
 /data/external/
+
+# Backend (Nam): ảnh, bộ nhớ đệm, nhật ký sinh ra lúc chạy
+*.pyc
+backend/.env
+data/images/
+data/cache/
+data/logs/
+data/news_cache/

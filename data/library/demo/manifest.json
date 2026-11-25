@@ -1,0 +1,36 @@
+{
+  "book": "demo",
+  "title": "Sách mẫu để thử ứng dụng",
+  "pages": [
+    {
+      "book": "demo",
+      "page": 1,
+      "page_type": "text",
+      "description": "Đây là dữ liệu thử. Trang một có tên bài là Quê hương em. Trang có hai đoạn chữ ngắn và hai câu hỏi ở cuối trang. Bạn có muốn nghe đọc nguyên văn không?",
+      "image_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+      "model": "mock",
+      "prompt_version": "v1",
+      "reviewed": false
+    },
+    {
+      "book": "demo",
+      "page": 2,
+      "page_type": "map",
+      "description": "Đây là dữ liệu thử. Trang hai có một lược đồ một vùng của Việt Nam. Phía trên lược đồ là hướng Bắc. Có một con sông lớn chảy từ phía Tây Bắc xuống phía Đông Nam rồi đổ ra biển. Bạn có muốn nghe tên các tỉnh không?",
+      "image_sha256": "0000000000000000000000000000000000000000000000000000000000000002",
+      "model": "mock",
+      "prompt_version": "v1",
+      "reviewed": false
+    },
+    {
+      "book": "demo",
+      "page": 3,
+      "page_type": "mixed",
+      "description": "Đây là dữ liệu thử. Trang ba có một đoạn chữ và hai hình. Đoạn chữ nói về vùng đồng bằng. Hình một là lược đồ vùng đồng bằng. Hình hai là ảnh một cánh đồng lúa. Bạn muốn nghe phần chữ hay phần hình trước?",
+      "image_sha256": "0000000000000000000000000000000000000000000000000000000000000003",
+      "model": "mock",
+      "prompt_version": "v1",
+      "reviewed": false
+    }
+  ]
+}

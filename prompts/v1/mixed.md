@@ -1,0 +1,1 @@
+Đây là trang có cả chữ và hình. Nói trang có mấy hình. Tóm tắt phần chữ trong một đến hai câu. Sau đó mô tả ngắn từng hình theo thứ tự từ trên xuống dưới, mỗi hình một đến hai câu, gọi là hình một, hình hai. Cuối cùng hỏi học sinh muốn nghe kỹ phần nào.
