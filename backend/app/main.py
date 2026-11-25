@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from . import library, prompts, storage, stt
+from . import ai_bridge, library, prompts, storage, stt
 from .config import settings
 from .schemas import (
     AskRequest,
@@ -80,6 +80,7 @@ async def health():
             "status": "ok",
             "vlm_mode": settings.vlm_mode,
             "model": settings.model_name,
+            "ai_module": settings.vlm_mode == "ai",
             "prompt_version": settings.prompt_version,
             "stt_mode": settings.stt_mode,
         },
@@ -106,6 +107,9 @@ async def describe(image: UploadFile = File(...), page_type: PageType = Form("au
                             model=result.model, prompt_version=result.prompt_version,
                             latency_ms=result.latency_ms, cached=True, ok=True)
         return {"data": result, "error": None}
+
+    if settings.vlm_mode == "ai":
+        return await _describe_with_ai(image_id, sha, jpeg, page_type, t0)
 
     try:
         messages = prompts.describe_messages(jpeg, page_type)
@@ -139,6 +143,31 @@ async def describe(image: UploadFile = File(...), page_type: PageType = Form("au
     return {"data": result, "error": None}
 
 
+async def _describe_with_ai(image_id: str, sha: str, jpeg: bytes, page_type: str, t0: float):
+    """VLM_MODE=ai: lưu ảnh trước (module AI đọc từ đường dẫn), gọi ai/pipeline.describe_page."""
+    storage.save_image(image_id, jpeg, "")
+    try:
+        fields = await run_in_threadpool(ai_bridge.describe, storage.image_path(image_id), image_id, page_type)
+    except ai_bridge.AiFailure as exc:
+        storage.log_request(endpoint="describe", image_id=image_id, page_type=page_type,
+                            model=settings.model_name, prompt_version="ai", latency_ms=_ms(t0),
+                            cached=False, ok=False, error=exc.detail)
+        raise ApiError(exc.status, exc.code, exc.message)
+    fields["description"] = clean_for_speech(fields["description"])
+    if not fields["description"]:
+        fields["description"], fields["unreadable"] = UNREADABLE_FALLBACK, True
+    result = DescribeResult(image_id=image_id, latency_ms=_ms(t0), cached=False, **fields)
+    storage.save_image(image_id, jpeg, result.description)
+    # Không lưu đệm kết quả "ảnh hỏng": cổng chất lượng của Phúc còn đang hiệu chỉnh, lần sau có thể khác.
+    if result.status != "unreadable":
+        storage.cache_put(sha, page_type, result.model_dump(exclude={"image_id", "latency_ms", "cached"}))
+    storage.log_request(endpoint="describe", image_id=image_id, page_type=result.page_type,
+                        model=result.model, prompt_version=result.prompt_version,
+                        latency_ms=result.latency_ms, cached=False, ok=True, unreadable=result.unreadable,
+                        status=result.status)
+    return {"data": result, "error": None}
+
+
 @app.post("/v1/ask", response_model=Envelope[AskResult])
 async def ask(req: AskRequest):
     t0 = time.perf_counter()
@@ -146,6 +175,21 @@ async def ask(req: AskRequest):
     if not found:
         raise ApiError(404, "IMAGE_NOT_FOUND", "Mình không còn giữ ảnh này. Bạn chụp lại giúp mình nhé.")
     jpeg, description = found
+    if settings.vlm_mode == "ai":
+        try:
+            fields = await run_in_threadpool(ai_bridge.ask, storage.image_path(req.image_id), req.image_id,
+                                             req.question, [t.model_dump() for t in req.history])
+        except ai_bridge.AiFailure as exc:
+            storage.log_request(endpoint="ask", image_id=req.image_id, model=settings.model_name,
+                                prompt_version="ai", latency_ms=_ms(t0), ok=False, error=exc.detail)
+            raise ApiError(exc.status, exc.code, exc.message)
+        result = AskResult(image_id=req.image_id, latency_ms=_ms(t0),
+                           answer=clean_for_speech(fields["answer"]) or "Mình chưa trả lời được câu này. Bạn hỏi lại theo cách khác nhé.",
+                           model=fields["model"], prompt_version=fields["prompt_version"])
+        storage.log_request(endpoint="ask", image_id=req.image_id, model=result.model,
+                            prompt_version=result.prompt_version, latency_ms=result.latency_ms, ok=True,
+                            question=req.question)
+        return {"data": result, "error": None}
     try:
         messages = prompts.ask_messages(jpeg, description, req.question, [t.model_dump() for t in req.history])
         answer = clean_for_speech(await get_vlm().ask(messages))

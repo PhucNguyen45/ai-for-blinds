@@ -1,0 +1,29 @@
+{
+  "book": "lsdl4-mau",
+  "title": "Lịch sử và Địa lí 4",
+  "note": "Bản mẫu do nhóm tự viết lời mô tả (không chép SGK), để thử Thư viện. Thay bằng sách số hóa thật bằng scripts/digitize_book.py.",
+  "pages": [
+    {
+      "book": "lsdl4-mau",
+      "page": 15,
+      "title": "Lược đồ vùng Trung du và miền núi Bắc Bộ",
+      "page_type": "map",
+      "description": "Trang có một lược đồ tô màu. Vùng Trung du và miền núi Bắc Bộ được tô màu cam, nằm ở phía bắc nước ta. Phía bắc của vùng giáp Trung Quốc, phía tây giáp Lào. Trên lược đồ có các dãy núi vẽ bằng hình tam giác nhỏ và các con sông vẽ bằng đường màu xanh. Chú giải ở góc dưới giải thích ý nghĩa các màu và kí hiệu.",
+      "image_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "model": "viet-tay",
+      "prompt_version": "mau",
+      "reviewed": false
+    },
+    {
+      "book": "lsdl4-mau",
+      "page": 16,
+      "title": "Ruộng bậc thang",
+      "page_type": "figure",
+      "description": "Trang có một ảnh chụp ruộng bậc thang trên sườn núi. Các thửa ruộng xếp thành nhiều tầng, uốn lượn theo sườn đồi, giống như những bậc cầu thang lớn. Đoạn chữ cạnh ảnh giải thích: người dân làm ruộng bậc thang để giữ nước và chống xói mòn đất trên đồi núi.",
+      "image_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "model": "viet-tay",
+      "prompt_version": "mau",
+      "reviewed": false
+    }
+  ]
+}

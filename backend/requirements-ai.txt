@@ -1,0 +1,3 @@
+# VLM_MODE=ai: backend gọi module AI của Phúc (ai/pipeline.py). Thêm phụ thuộc của ai/pyproject.toml.
+-r requirements.txt
+pydantic>=2.14

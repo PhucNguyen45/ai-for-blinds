@@ -60,6 +60,11 @@ def save_image(image_id: str, jpeg: bytes, description: str) -> None:
     )
 
 
+def image_path(image_id: str) -> Path:
+    """Đường dẫn ảnh đã lưu (module AI của Phúc đọc ảnh từ đường dẫn)."""
+    return _dir("images") / f"{image_id}.jpg"
+
+
 def load_image(image_id: str) -> Optional[Tuple[bytes, str]]:
     if not _IMAGE_ID.match(image_id):
         return None

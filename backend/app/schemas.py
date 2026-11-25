@@ -30,6 +30,14 @@ class DescribeResult(BaseModel):
     latency_ms: int
     cached: bool = Field(description="Kết quả lấy từ bộ nhớ đệm, không gọi lại mô hình")
 
+    # Trường của hợp đồng AI v0.1 (ai/contract), chỉ có khi VLM_MODE=ai; chế độ khác để null.
+    status: Optional[str] = Field(default=None, description="ok | partial (bị cắt ngắn) | unreadable | unsupported")
+    summary_vi: Optional[str] = Field(default=None, description="Tóm tắt; với unreadable là lời hướng dẫn chụp lại")
+    interpretation_vi: Optional[str] = Field(default=None, description="Lời diễn giải đầy đủ")
+    image_type: Optional[str] = Field(default=None, description="bar_chart, map, table, ... (hợp đồng v0.1)")
+    uncertainties: List[str] = Field(default_factory=list, description="Điều mô hình chưa chắc chắn")
+    question_answering_ready: Optional[bool] = Field(default=None, description="Đủ căn cứ để hỏi tiếp không")
+
 
 class Turn(BaseModel):
     question: str
@@ -70,6 +78,7 @@ class PageRecord(BaseModel):
     model: str
     prompt_version: str
     reviewed: bool = Field(description="Đã có người kiểm tra nội dung hay chưa")
+    title: Optional[str] = Field(default=None, description="Tên bài hoặc tên trang, nếu có")
 
 
 class BookPages(BaseModel):
