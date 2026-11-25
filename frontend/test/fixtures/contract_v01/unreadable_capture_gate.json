@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1",
+  "image_id": "img-005",
+  "image_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "image_type": "unknown",
+  "status": "unreadable",
+  "summary_vi": "Ảnh quá tối nên mình không đọc được. Bạn bật đèn hoặc đưa trang sách ra chỗ sáng hơn rồi chụp lại nhé.",
+  "facts": [],
+  "interpretation_vi": "",
+  "uncertainties": [
+    "capture_gate:dark"
+  ],
+  "question_answering_ready": false
+}

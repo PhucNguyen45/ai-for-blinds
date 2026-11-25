@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api_client.dart';
 import '../api/demo_api.dart';
+import '../library/library_data.dart';
 
 /// Một mức tốc độ đọc chọn nhanh trong Cài đặt (thang của flutter_tts: 0,5 là bình thường).
 @immutable
@@ -13,7 +14,7 @@ class RatePreset {
 }
 
 /// Cài đặt lưu trên máy. Đổi địa chỉ máy chủ không phải build lại app.
-class SettingsStore extends ChangeNotifier {
+class SettingsStore extends ChangeNotifier implements LibraryCache {
   SettingsStore(this._prefs);
 
   static Future<SettingsStore> load() async => SettingsStore(await SharedPreferences.getInstance());
@@ -64,6 +65,13 @@ class SettingsStore extends ChangeNotifier {
   Future<void> setSoundOn(bool v) => _set(() => _prefs.setBool('sound_on', v));
   Future<void> setVibrateOn(bool v) => _set(() => _prefs.setBool('vibrate_on', v));
   Future<void> setTutorialDone(bool v) => _set(() => _prefs.setBool('tutorial_done', v));
+
+  /// Bản thư viện tải lần trước (JSON), để nghe khi mất mạng. Không báo đổi cài đặt.
+  @override
+  String? get libraryCache => _prefs.getString('library_cache');
+
+  @override
+  Future<void> setLibraryCache(String json) => _prefs.setString('library_cache', json);
 
   Future<void> _set(Future<bool> Function() write) async {
     await write();

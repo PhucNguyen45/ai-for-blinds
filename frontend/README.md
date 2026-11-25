@@ -2,7 +2,7 @@
 
 App Flutter cho học sinh khiếm thị: chụp trang sách, nghe mô tả bằng giọng tiếng Việt, hỏi thêm về trang, nghe sách đã số hóa. Người phụ trách: Toàn (Mảng C).
 
-**Hợp đồng dữ liệu:** theo hợp đồng đầu ra AI v0.1 của Phúc (`../ai/contract/`): `status`, `summary_vi`, `interpretation_vi`, `image_type`, `question_answering_ready`, lỗi ở `status="error"` + `error`. App nhận cả kết quả gốc lẫn khi backend bọc trong `{data, error}`. Vẫn đọc được API v1 cũ của Nam (`docs/API_v1.md` trên nhánh `dev`) để chạy với backend hiện có. Gọi máy chủ qua `POST /v1/describe` và `POST /v1/ask`.
+**Hợp đồng dữ liệu:** theo hợp đồng đầu ra AI v0.1 của Phúc (`../ai/contract/`): `status`, `summary_vi`, `interpretation_vi`, `image_type`, `question_answering_ready`, lỗi ở `status="error"` + `error`. App nhận cả kết quả gốc lẫn khi backend bọc trong `{data, error}`. Đọc được cả API v1 của Nam (`../docs/API_v1.md`). Gọi máy chủ qua `POST /v1/describe`, `POST /v1/ask`, `GET /v1/library`, `GET /health`. Trên nhánh `toan/tich-hop` app chạy thông với backend `VLM_MODE=ai` gọi module AI của Phúc: xem [`../docs/TICH_HOP.md`](../docs/TICH_HOP.md) (gồm ba điểm nghĩa đã thống nhất: `partial` = bị cắt ngắn, cổng chất lượng ảnh, cờ `question_answering_ready`).
 
 | Màn hình chính | Đang đọc trang | Kết quả | Hỏi | Thư viện | Cài đặt |
 |---|---|---|---|---|---|

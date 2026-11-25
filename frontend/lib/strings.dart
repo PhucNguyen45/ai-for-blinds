@@ -35,6 +35,7 @@ class S {
   static const stillWorking = 'Vẫn đang đọc trang này, xin chờ thêm.';
   static const unreadableHint = 'Có chỗ mình không đọc được. Bạn có thể chụp lại, giữ máy thẳng và đủ sáng.';
   static const retakeHint = 'Bạn thử chụp lại, giữ máy thẳng, cách trang sách khoảng ba mươi phân và đủ sáng.';
+  static const truncatedHint = 'Phần mô tả bị ngắt giữa chừng. Bạn có thể bấm Hỏi để hỏi thêm về phần còn lại.';
   static const nothingToRepeat = 'Chưa có trang nào. Hãy chụp một trang sách trước.';
   static const cameraNotReady = 'Camera chưa sẵn sàng. Bạn thử lại sau giây lát.';
   static const cameraOpening = 'Đang mở camera…';
@@ -125,7 +126,15 @@ class S {
 
   // Thư viện
   static const sampleBadge = 'Bản mẫu';
-  static const libraryOpen = 'Thư viện, bản mẫu. Có hai cuốn sách. Nút Quay lại ở mép dưới.';
+  static String libraryCount(int n) => 'Thư viện. Có $n cuốn sách.';
+  static const originServer = 'Sách lấy từ máy chủ của nhóm.';
+  static const originCache = 'Chưa kết nối được máy chủ, đang dùng bản đã lưu trên máy.';
+  static const originSample = 'Đây là sách mẫu để thử.';
+  static const backAtBottom = 'Nút Quay lại ở mép dưới.';
+  static const badgeServer = 'Máy chủ';
+  static const badgeCache = 'Đã lưu';
+  static const noteServer = 'Sách do nhóm số hóa. Sách ghi "chưa duyệt" là lời mô tả chưa có người kiểm tra lại.';
+  static const noteCache = 'Đang dùng bản đã lưu từ lần trước, nghe được cả khi không có mạng.';
   static const libraryEmpty = 'Thư viện chưa có sách.';
   static const libraryNote = 'Sách mẫu để thử cách nghe sách. Kho sách thật sẽ tải từ máy chủ của nhóm.';
   static const prevPage = 'Trang trước';
@@ -159,6 +168,10 @@ class S {
   static const checkServer = 'Kiểm tra kết nối';
   static const serverOkPrefix = 'Đã kết nối máy chủ.';
   static const serverModeMock = 'Máy chủ đang ở chế độ thử, câu trả lời chưa phải từ mô hình thật.';
+  static const serverAiModule = 'Máy chủ đang dùng mô hình thật của nhóm.';
+  static const serverUnreachableStart = 'Chưa kết nối được máy chủ, nên chưa chụp và đọc trang được. '
+      'Thư viện đã lưu vẫn nghe được. Người hỗ trợ có thể kiểm tra trong Cài đặt.';
+  static const serverMockStart = 'Lưu ý: máy chủ đang chạy dữ liệu thử, câu trả lời chưa phải từ mô hình thật.';
   static const speechRateFine = 'Tốc độ đọc chỉnh tinh';
   static const tryVoice = 'Nghe thử';
   static const pageType = 'Loại trang';

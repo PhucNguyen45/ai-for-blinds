@@ -48,6 +48,13 @@ class DemoApi implements SgbeApi {
     return ApiOk(AskResult(imageId: imageId, answer: answer, latencyMs: delay.inMilliseconds));
   }
 
+  /// Chế độ demo không có máy chủ: báo không có, nguồn thư viện tự dùng sách mẫu đóng gói trong app.
+  @override
+  Future<ApiResult<List<LibraryBookInfo>>> library() async => const ApiFail('DEMO', '');
+
+  @override
+  Future<ApiResult<LibraryBookPages>> bookPages(String book) async => const ApiFail('DEMO', '');
+
   @override
   Future<ApiResult<HealthInfo>> health() async =>
       const ApiOk(HealthInfo(status: 'ok', vlmMode: 'demo', model: 'demo', sttMode: 'demo'));

@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "book": "demo",
+      "title": "Sách mẫu để thử ứng dụng",
+      "page_count": 3
+    },
+    {
+      "book": "lsdl4-mau",
+      "title": "Lịch sử và Địa lí 4",
+      "page_count": 2
+    },
+    {
+      "book": "tnxh3-mau",
+      "title": "Tự nhiên và Xã hội 3",
+      "page_count": 3
+    }
+  ],
+  "error": null
+}

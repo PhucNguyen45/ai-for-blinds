@@ -35,9 +35,10 @@ void main() {
   });
 
   test('thư viện mẫu đóng gói trong app đọc được, sách nào cũng có trang và lời mô tả', () async {
-    final books = await const AssetLibrarySource().load();
-    expect(books, isNotEmpty);
-    for (final b in books) {
+    final data = await const AssetLibrarySource().load();
+    expect(data.origin, LibraryOrigin.sample);
+    expect(data.books, isNotEmpty);
+    for (final b in data.books) {
       expect(b.pages, isNotEmpty, reason: b.title);
       for (final p in b.pages) {
         expect(p.text.length, greaterThan(40), reason: '${b.title} trang ${p.number}');

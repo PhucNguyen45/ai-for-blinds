@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'api/models.dart';
 import 'app_services.dart';
+import 'library/library_data.dart';
 import 'reader/reader_controller.dart';
 import 'services/capture_source.dart';
 import 'services/earcons.dart';
@@ -54,6 +56,7 @@ Future<void> main() async {
     bridge: PlatformBridge(),
     earcons: earcons,
     haptics: Haptics(enabled: () => settings.vibrateOn),
+    library: ApiLibrarySource(api: () => settings.api, cache: settings),
   );
 
   runApp(SgbeApp(services: services, voiceReady: voiceReady));
@@ -66,6 +69,22 @@ Future<void> main() async {
     unawaited(controller.readText(S.tutorial, id: 'help'));
   } else {
     await controller.announce(S.greeting);
+    if (!settings.demoMode) unawaited(_checkServer(settings, controller));
+  }
+}
+
+/// Kiểm máy chủ một lần khi mở app: học sinh biết ngay nếu chưa chụp-đọc được (mất mạng, sai địa chỉ),
+/// hoặc máy chủ đang trả dữ liệu thử. Kết nối tốt thì im lặng.
+Future<void> _checkServer(SettingsStore settings, ReaderController controller) async {
+  final health = await settings.api.health();
+  if (controller.status != ReaderStatus.idle) return; // người dùng đã bắt đầu dùng app: không chen ngang
+  switch (health) {
+    case ApiFail():
+      await controller.announce(S.serverUnreachableStart);
+    case ApiOk(:final value) when value.isMock:
+      await controller.announce(S.serverMockStart);
+    case ApiOk():
+      break;
   }
 }
 

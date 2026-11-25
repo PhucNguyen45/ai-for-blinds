@@ -16,7 +16,8 @@ Color _bookColor(String key) => switch (key) {
   _ => AppTheme.lib,
 };
 
-/// Thư viện sách đã số hóa (hiện là BẢN MẪU đóng gói trong app, xem `assets/library/`).
+/// Thư viện sách đã số hóa: lấy từ máy chủ của nhóm (`/v1/library`), mất mạng thì dùng bản đã lưu,
+/// chưa từng tải được thì dùng sách mẫu trong app (xem `library/library_data.dart`).
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key, required this.services});
   final AppServices services;
@@ -26,14 +27,31 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
-  late final Future<List<Book>> _books = widget.services.library.load();
+  late final Future<LibraryData> _data = widget.services.library.load();
+  LibraryData? _loaded;
   ReaderController get _c => widget.services.controller;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _c.announce(S.libraryOpen));
+    _data.then((d) {
+      _loaded = d;
+      if (mounted) _c.announce(_intro(d));
+    });
   }
+
+  /// "Thư viện. Có 3 cuốn sách. Sách lấy từ máy chủ của nhóm. Nút Quay lại ở mép dưới."
+  static String _intro(LibraryData d) {
+    if (d.books.isEmpty) return '${S.libraryEmpty} ${S.backAtBottom}';
+    final origin = switch (d.origin) {
+      LibraryOrigin.server => S.originServer,
+      LibraryOrigin.cache => S.originCache,
+      LibraryOrigin.sample => S.originSample,
+    };
+    return '${S.libraryCount(d.books.length)} $origin ${S.backAtBottom}';
+  }
+
+  String get _introNow => _loaded == null ? S.library : _intro(_loaded!);
 
   Future<void> _back() async {
     await _c.stopSpeaking();
@@ -48,7 +66,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         builder: (_) => BookScreen(services: widget.services, book: book),
       ),
     );
-    if (mounted) await _c.announce(S.libraryOpen);
+    if (mounted) await _c.announce(_introNow);
   }
 
   @override
@@ -62,18 +80,31 @@ class _LibraryScreenState extends State<LibraryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ScreenHeader(
-                  title: S.library,
-                  intro: S.libraryOpen,
-                  badge: S.sampleBadge,
-                  onIntro: () => _c.announce(S.libraryOpen),
+                FutureBuilder<LibraryData>(
+                  future: _data,
+                  builder: (context, snap) => ScreenHeader(
+                    title: S.library,
+                    intro: _introNow,
+                    badge: switch (snap.data?.origin) {
+                      LibraryOrigin.server => S.badgeServer,
+                      LibraryOrigin.cache => S.badgeCache,
+                      LibraryOrigin.sample => S.sampleBadge,
+                      null => null,
+                    },
+                    onIntro: () => _c.announce(_introNow),
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Expanded(
-                  child: FutureBuilder<List<Book>>(
-                    future: _books,
+                  child: FutureBuilder<LibraryData>(
+                    future: _data,
                     builder: (context, snap) {
-                      final books = snap.data ?? const <Book>[];
+                      final books = snap.data?.books ?? const <Book>[];
+                      final note = switch (snap.data?.origin) {
+                        LibraryOrigin.server => S.noteServer,
+                        LibraryOrigin.cache => S.noteCache,
+                        _ => S.libraryNote,
+                      };
                       if (snap.connectionState != ConnectionState.done) {
                         return const Center(child: CircularProgressIndicator(color: AppTheme.guide));
                       }
@@ -90,17 +121,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                               height: 150,
                               child: _BookCard(book: b, onOpen: () => _open(b)),
                             ),
-                          // Ghi chú bản mẫu ở đáy phần trống; màn hình chật thì bị cắt bớt, không tràn.
-                          const Expanded(
+                          // Ghi chú nguồn sách ở đáy phần trống; màn hình chật thì bị cắt bớt, không tràn.
+                          Expanded(
                             child: ClipRect(
                               child: Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 8, 10, 10),
+                                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
                                   child: Text(
-                                    S.libraryNote,
+                                    note,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 15, height: 1.4, color: AppTheme.mute),
+                                    style: const TextStyle(fontSize: 15, height: 1.4, color: AppTheme.mute),
                                   ),
                                 ),
                               ),

@@ -45,11 +45,47 @@ void main() {
         expect(r.canAsk, isFalse);
       });
 
-      test('partial: đọc phần diễn giải có được và đánh dấu thiếu', () {
+      test('partial: lời diễn giải bị cắt ngắn, KHÔNG phải ảnh hỏng, vẫn hỏi tiếp được', () {
         final r = (parse(transform(example('partial_truncated'))) as ApiOk<DescribeResult>).value;
         expect(r.description, startsWith('Bảng có năm hàng'));
-        expect(r.unreadable, isTrue);
+        expect(r.unreadable, isFalse);
+        expect(r.truncated, isTrue);
         expect(r.status, 'partial');
+        expect(r.canAsk, isTrue);
+      });
+
+      test('B0 để question_answering_ready=false (dành cho B1): vẫn hỏi tiếp được', () {
+        final body = (jsonDecode(example('ok_bar_chart')) as Map<String, dynamic>)
+          ..['question_answering_ready'] = false;
+        final r = (parse(transform(jsonEncode(body))) as ApiOk<DescribeResult>).value;
+        expect(r.canAsk, isTrue);
+      });
+
+      test('cổng chất lượng ảnh chặn: câu hướng dẫn chụp lại, không cho hỏi tiếp', () {
+        final r = (parse(transform(example('unreadable_capture_gate'))) as ApiOk<DescribeResult>).value;
+        expect(r.description, startsWith('Ảnh quá tối'));
+        expect(r.wholeUnreadable, isTrue);
+        expect(r.uncertainties, ['capture_gate:dark']);
+        expect(r.canAsk, isFalse);
+      });
+
+      test('trả lời câu hỏi (AnswerResult): đọc answer_vi', () {
+        final r = ApiClient.parseEnvelope(
+          utf8.encode(transform(example('answer_ok'))),
+          (d) => AskResult.fromJson(d as Map<String, dynamic>),
+        );
+        final a = (r as ApiOk<AskResult>).value;
+        expect(a.answer, 'Cột Thứ Hai cao nhất, với bốn mươi quyển.');
+        expect(a.imageId, 'img-001');
+        expect(a.latencyMs, 3400);
+      });
+
+      test('trả lời lỗi: thành lỗi, đọc câu báo', () {
+        final r = ApiClient.parseEnvelope(
+          utf8.encode(transform(example('answer_error_timeout'))),
+          (d) => AskResult.fromJson(d as Map<String, dynamic>),
+        );
+        expect((r as ApiFail<AskResult>).message, 'Hết thời gian chờ mô hình.');
       });
 
       test('error: thành lỗi, đọc câu báo của module AI', () {
@@ -85,10 +121,17 @@ void main() {
       expect(s, isNot(contains(S.unreadableHint)));
     });
 
-    test('ảnh bị cắt một phần: đọc phần có được rồi báo có chỗ không đọc được', () async {
+    test('lời diễn giải bị cắt ngắn: đọc phần có được rồi gợi ý hỏi thêm', () async {
       final s = await spokenFor('partial_truncated');
       expect(s, startsWith('Bảng có năm hàng'));
-      expect(s, endsWith(S.unreadableHint));
+      expect(s, endsWith(S.truncatedHint));
+      expect(s, isNot(contains(S.unreadableHint)));
+    });
+
+    test('cổng chất lượng ảnh đã hướng dẫn chụp lại: không nhắc lại lần hai', () async {
+      final s = await spokenFor('unreadable_capture_gate');
+      expect(s, contains('chụp lại nhé'));
+      expect(s, isNot(contains(S.retakeHint)));
     });
 
     test('lỗi: đọc nguyên câu báo lỗi', () async {

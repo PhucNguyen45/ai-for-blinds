@@ -1,0 +1,42 @@
+{
+  "data": {
+    "book": "tnxh3-mau",
+    "title": "Tự nhiên và Xã hội 3",
+    "pages": [
+      {
+        "book": "tnxh3-mau",
+        "page": 42,
+        "page_type": "figure",
+        "description": "Trang có tiêu đề: Cây đậu lớn lên như thế nào. Giữa trang là sơ đồ vòng đời cây đậu, gồm bốn hình nối với nhau bằng mũi tên thành một vòng tròn. Hình thứ nhất là hạt đậu nằm trong đất. Hình thứ hai là cây mầm có hai lá nhỏ. Hình thứ ba là cây đậu trưởng thành đang ra hoa. Hình thứ tư là quả đậu, bên trong có hạt mới. Mũi tên từ quả đậu quay về hạt đậu, cho thấy vòng đời lặp lại.",
+        "image_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "model": "viet-tay",
+        "prompt_version": "mau",
+        "reviewed": false,
+        "title": "Cây đậu lớn lên như thế nào"
+      },
+      {
+        "book": "tnxh3-mau",
+        "page": 43,
+        "page_type": "figure",
+        "description": "Trang có hình vẽ một cây xanh lớn, mỗi bộ phận có một nhãn chữ. Dưới cùng là rễ cây, tỏa ra trong đất. Ở giữa là thân cây, thẳng và cứng. Trên thân có nhiều cành, trên cành có lá màu xanh. Một cành có hoa màu vàng. Cuối trang có câu hỏi: Rễ cây có nhiệm vụ gì?",
+        "image_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "model": "viet-tay",
+        "prompt_version": "mau",
+        "reviewed": false,
+        "title": "Các bộ phận của cây"
+      },
+      {
+        "book": "tnxh3-mau",
+        "page": 44,
+        "page_type": "figure",
+        "description": "Trang có ba hình nhỏ đặt cạnh nhau. Hình thứ nhất là chậu cây được tưới nước. Hình thứ hai là chậu cây đặt cạnh cửa sổ có ánh nắng. Hình thứ ba là chậu cây để trong tủ tối, lá cây bị úa vàng. Đoạn chữ dưới hình cho biết cây cần nước, ánh sáng và không khí để sống.",
+        "image_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "model": "viet-tay",
+        "prompt_version": "mau",
+        "reviewed": false,
+        "title": "Cây cần gì để sống"
+      }
+    ]
+  },
+  "error": null
+}

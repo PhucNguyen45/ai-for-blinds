@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sgbe/app_services.dart';
+import 'package:sgbe/library/library_data.dart';
 import 'package:sgbe/main.dart';
 import 'package:sgbe/reader/reader_controller.dart';
 import 'package:sgbe/services/capture_source.dart';
@@ -36,6 +37,7 @@ void main() {
     bool sttOk = true,
     Size size = const Size(1080, 2340),
     double ratio = 3,
+    LibrarySource library = const FakeLibrary(),
   }) async {
     SharedPreferences.setMockInitialValues({'tutorial_done': true});
     settings = await SettingsStore.load();
@@ -55,7 +57,7 @@ void main() {
       bridge: bridge,
       earcons: earcons,
       haptics: Haptics(),
-      library: FakeLibrary(),
+      library: library,
       speechInput: stt,
     );
     tester.view.physicalSize = size;
@@ -394,6 +396,23 @@ void main() {
       await tester.pumpAndSettle();
       expect(label(S.captureLabel), findsOneWidget);
       handle.dispose();
+    });
+
+    testWidgets('sách tải từ máy chủ: ghi "Máy chủ", lời giới thiệu nói rõ nguồn', (tester) async {
+      await pumpApp(tester, library: const FakeLibrary(LibraryOrigin.server));
+      await doubleTap(tester, label(S.library));
+      await tester.pumpAndSettle();
+      expect(find.text(S.badgeServer), findsOneWidget);
+      expect(find.text(S.sampleBadge), findsNothing);
+      expect(speaker.spoken, contains('${S.libraryCount(2)} ${S.originServer} ${S.backAtBottom}'));
+    });
+
+    testWidgets('mất mạng, nghe bản đã lưu: ghi "Đã lưu"', (tester) async {
+      await pumpApp(tester, library: const FakeLibrary(LibraryOrigin.cache));
+      await doubleTap(tester, label(S.library));
+      await tester.pumpAndSettle();
+      expect(find.text(S.badgeCache), findsOneWidget);
+      expect(speaker.spoken, contains('${S.libraryCount(2)} ${S.originCache} ${S.backAtBottom}'));
     });
   });
 

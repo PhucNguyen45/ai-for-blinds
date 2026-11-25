@@ -99,6 +99,24 @@ class FakeApi implements SgbeApi {
   @override
   Future<ApiResult<HealthInfo>> health() async =>
       const ApiOk(HealthInfo(status: 'ok', vlmMode: 'mock', model: 'mock', sttMode: 'mock'));
+
+  /// Thư viện trên máy chủ giả; null = máy chủ không trả lời.
+  List<LibraryBookPages>? serverBooks;
+  int libraryCalls = 0;
+
+  @override
+  Future<ApiResult<List<LibraryBookInfo>>> library() async {
+    libraryCalls++;
+    final books = serverBooks;
+    if (books == null) return const ApiFail('NETWORK', 'mất mạng');
+    return ApiOk([for (final b in books) LibraryBookInfo(book: b.book, title: b.title, pageCount: b.pages.length)]);
+  }
+
+  @override
+  Future<ApiResult<LibraryBookPages>> bookPages(String book) async {
+    final found = serverBooks?.where((b) => b.book == book).firstOrNull;
+    return found == null ? const ApiFail('BOOK_NOT_FOUND', 'không có') : ApiOk(found);
+  }
 }
 
 class FakeCapture implements CaptureSource {
@@ -143,8 +161,11 @@ class FakeBridge extends PlatformBridge {
 }
 
 class FakeLibrary implements LibrarySource {
+  const FakeLibrary([this.origin = LibraryOrigin.sample]);
+  final LibraryOrigin origin;
+
   @override
-  Future<List<Book>> load() async => const [
+  Future<LibraryData> load() async => LibraryData(const [
     Book(
       id: 'a',
       title: 'Sách A',
@@ -162,7 +183,7 @@ class FakeLibrary implements LibrarySource {
       color: 'ask',
       pages: [BookPage(number: 9, title: 'Trang chín', text: 'Nội dung trang chín.')],
     ),
-  ];
+  ], origin);
 }
 
 /// Nhận giọng nói giả: trả lần lượt [results]; hết thì trả câu mặc định.
@@ -216,4 +237,13 @@ class FakeSpeechInput implements SpeechInput {
 
   @override
   Stream<String> get partials => partialCtl.stream;
+}
+
+/// Nơi lưu thư viện trong bộ nhớ (thay SharedPreferences).
+class MemoryLibraryCache implements LibraryCache {
+  @override
+  String? libraryCache;
+
+  @override
+  Future<void> setLibraryCache(String json) async => libraryCache = json;
 }

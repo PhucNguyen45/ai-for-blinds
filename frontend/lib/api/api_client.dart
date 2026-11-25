@@ -14,6 +14,12 @@ abstract class SgbeApi {
   Future<ApiResult<DescribeResult>> describe(Uint8List image, {String pageType = 'auto'});
   Future<ApiResult<AskResult>> ask(String imageId, String question, {List<AskTurn> history = const []});
   Future<ApiResult<HealthInfo>> health();
+
+  /// Danh sách sách đã số hóa trên máy chủ.
+  Future<ApiResult<List<LibraryBookInfo>>> library();
+
+  /// Các trang của một cuốn.
+  Future<ApiResult<LibraryBookPages>> bookPages(String book);
 }
 
 /// Gọi máy chủ theo hợp đồng API v1.
@@ -27,6 +33,7 @@ class ApiClient implements SgbeApi {
     http.Client? client,
     this.slowTimeout = const Duration(seconds: 130),
     this.fastTimeout = const Duration(seconds: 8),
+    this.libraryTimeout = const Duration(seconds: 20),
   }) : baseUrl = normalizeBaseUrl(baseUrl),
        _client = client ?? http.Client();
 
@@ -39,6 +46,9 @@ class ApiClient implements SgbeApi {
 
   /// Cho `/health`.
   final Duration fastTimeout;
+
+  /// Cho `/v1/library` (đọc file trên máy chủ, không gọi mô hình).
+  final Duration libraryTimeout;
 
   static String normalizeBaseUrl(String raw) {
     var url = raw.trim();
@@ -85,6 +95,20 @@ class ApiClient implements SgbeApi {
     () => _client.get(Uri.parse('$baseUrl/health')),
     fastTimeout,
     (data) => HealthInfo.fromJson(data as Map<String, dynamic>),
+  );
+
+  @override
+  Future<ApiResult<List<LibraryBookInfo>>> library() => _run(
+    () => _client.get(Uri.parse('$baseUrl/v1/library')),
+    libraryTimeout,
+    (data) => [for (final b in data as List) LibraryBookInfo.fromJson(b as Map<String, dynamic>)],
+  );
+
+  @override
+  Future<ApiResult<LibraryBookPages>> bookPages(String book) => _run(
+    () => _client.get(Uri.parse('$baseUrl/v1/library/${Uri.encodeComponent(book)}/pages')),
+    libraryTimeout,
+    (data) => LibraryBookPages.fromJson(data as Map<String, dynamic>),
   );
 
   Future<ApiResult<T>> _run<T>(

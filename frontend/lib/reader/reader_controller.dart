@@ -118,18 +118,26 @@ class ReaderController extends ChangeNotifier {
     switch (result) {
       case ApiOk(:final value):
         _last = value;
-        // Ảnh hỏng hẳn: mô tả đã là câu giải thích, chỉ cần hướng dẫn chụp lại.
-        // Ảnh đọc được một phần: báo có chỗ không đọc được.
-        final whole = value.status == 'unreadable' || value.status == 'unsupported';
-        _pageText = !value.unreadable
-            ? value.description
-            : '${value.description} ${whole ? S.retakeHint : S.unreadableHint}';
+        _pageText = _spokenFor(value);
         _pageSentences = splitSentences(_pageText);
         await earcons.play(Earcon.done);
         await readText(_pageText, id: pageId);
       case ApiFail(:final message):
         await fail(message);
     }
+  }
+
+  /// Câu đọc cho một kết quả mô tả:
+  /// - bị cắt ngắn (`partial`): đọc phần có được, gợi ý hỏi thêm;
+  /// - ảnh hỏng hẳn: mô tả là câu giải thích; thêm hướng dẫn chụp lại, trừ khi câu đó đã hướng dẫn
+  ///   (cổng chất lượng ảnh của module AI đã viết sẵn "… rồi chụp lại nhé");
+  /// - có chỗ không đọc được (API v1 `unreadable=true`): báo có chỗ chưa đọc được.
+  static String _spokenFor(DescribeResult value) {
+    final text = value.description;
+    if (value.truncated) return '$text ${S.truncatedHint}';
+    if (!value.unreadable) return text;
+    if (value.wholeUnreadable) return text.contains('chụp lại') ? text : '$text ${S.retakeHint}';
+    return '$text ${S.unreadableHint}';
   }
 
   /// Hỏi tiếp về trang vừa chụp, gửi kèm các lượt hỏi trước (hợp đồng API v1 `/v1/ask`).

@@ -182,7 +182,9 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
     if (!mounted) return;
     setState(() => _checking = false);
     final spoken = switch (result) {
-      ApiOk(:final value) => value.isMock ? '${S.serverOkPrefix} ${S.serverModeMock}' : S.serverOkPrefix,
+      ApiOk(:final value) when value.isMock => '${S.serverOkPrefix} ${S.serverModeMock}',
+      ApiOk(:final value) when value.aiModule => '${S.serverOkPrefix} ${S.serverAiModule}',
+      ApiOk() => S.serverOkPrefix,
       ApiFail(:final message) => message,
     };
     await _c.announce(spoken);
