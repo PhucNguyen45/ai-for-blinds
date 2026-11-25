@@ -63,6 +63,17 @@ chỉ ghi log, không đọc cho người dùng.
    mô hình nên hỏi được với mọi ảnh `ok`/`partial`. App chỉ chặn hỏi khi ảnh hỏng hoặc lỗi.
    *Nếu không sửa điểm này, app sẽ chặn Hỏi sau MỌI lần mô tả thật.*
 
+### Chặn lặp trước khi đọc to (thêm 25/11/2026)
+
+Mô hình nhỏ giải mã tham lam đôi khi lặp một câu tới hết giới hạn token (thẻ mô hình Peppercorn-0.3b đo
+2,8% trang). `backend/app/repetition.py` cắt phần lặp ở cả ba chế độ, cho cả mô tả lẫn câu trả lời:
+khối 1–4 câu giống nhau liền nhau từ 3 lần (hoặc từ 2 lần mà kéo tới hết văn bản), hay một đoạn ký tự lặp
+từ 4 lần ở đuôi. Giữ một bản, giữ phần sau nếu mô hình đã thoát vòng lặp. Khi có cắt: `status` `ok` →
+`partial`, thêm `"loop_cut"` vào `uncertainties`, không lưu đệm (chụp lại sẽ gọi mô hình lần nữa).
+Mã viết riêng, không chép mã Peppercorn (giấy phép của họ chỉ cho nghiên cứu, đánh giá).
+Kiểm: `tests/test_repetition.py` (ca lặp mô phỏng, ca không được cắt, mọi lời mô tả mẫu trong repo);
+ngoài repo: 0 cắt nhầm trên 6 đầu ra thật của Qwen3-VL 8B/30B.
+
 ## Thư viện
 
 `data/library/` có ba cuốn: `demo` (Nam), `tnxh3-mau`, `lsdl4-mau` (chuyển từ sách mẫu đóng gói của app sang định
@@ -94,7 +105,7 @@ Docker: `docker compose up --build` (image gồm `ai/` rút gọn; khóa lấy t
 
 | Phần | Lệnh | Kết quả 25/11/2026 |
 |---|---|---|
-| Backend (gồm 14 test cầu nối AI) | `cd backend; ..\.venv\Scripts\python -X utf8 -m pytest -q` | 28 passed |
+| Backend (gồm 17 test cầu nối AI, 12 test chặn lặp) | `cd backend; ..\.venv\Scripts\python -X utf8 -m pytest -q` | 43 passed |
 | Module AI | `cd ai; ..\.venv\Scripts\python -X utf8 -m pytest -q --ignore=tests/test_finetune.py` | 157 passed |
 | App | `cd frontend; flutter analyze; flutter test` | No issues; 84 passed, 3 skipped (cần backend thật) |
 

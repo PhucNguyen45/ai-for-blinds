@@ -136,6 +136,37 @@ def test_b0_result_unknown_type_is_mixed_and_flag_passed_through(client, fake):
     assert d["question_answering_ready"] is False and d["unreadable"] is False
 
 
+def test_looping_description_is_cut_marked_partial_and_not_cached(client, fake):
+    """Mô hình nhỏ lặp một câu tới hết token: chỉ đọc một lần, báo bị cắt ngắn, lần sau gọi lại mô hình."""
+    loop = "Cột thứ Hai cao nhất, bốn mươi quyển."
+    fake.describe_result = DescriptionResult(
+        status="partial", summary_vi="Biểu đồ cột.", meta=_meta(),
+        interpretation_vi="Biểu đồ cột có năm cột. " + " ".join([loop] * 15) + " Cột thứ",
+        uncertainties=["Câu trả lời bị cắt do giới hạn độ dài."])
+    d = describe(client).json()["data"]
+    assert d["description"] == "Biểu đồ cột có năm cột. " + loop
+    assert d["status"] == "partial" and d["unreadable"] is False
+    assert "loop_cut" in d["uncertainties"]
+    assert describe(client).json()["data"]["cached"] is False
+    assert len(fake.describe_calls) == 2
+
+
+def test_looping_ok_result_becomes_partial(client, fake):
+    fake.describe_result = DescriptionResult(
+        status="ok", summary_vi="Lược đồ.", meta=_meta(),
+        interpretation_vi="Lược đồ vùng núi. " + "Phía tây có dãy Hoàng Liên Sơn. " * 4)
+    d = describe(client).json()["data"]
+    assert d["status"] == "partial" and d["description"] == "Lược đồ vùng núi. Phía tây có dãy Hoàng Liên Sơn."
+
+
+def test_looping_answer_is_cut(client, fake):
+    image_id = describe(client).json()["data"]["image_id"]
+    fake.answer_result = AnswerResult(status="ok", meta=_meta("ask_calc_v1"),
+                                      answer_vi="Cột thứ Hai cao nhất. " * 8)
+    r = client.post("/v1/ask", json={"image_id": image_id, "question": "Cột nào cao nhất?"})
+    assert r.json()["data"]["answer"] == "Cột thứ Hai cao nhất."
+
+
 @pytest.mark.parametrize("code,http,api_code", [
     ("timeout", 504, "VLM_TIMEOUT"),
     ("config_error", 503, "AI_NOT_CONFIGURED"),

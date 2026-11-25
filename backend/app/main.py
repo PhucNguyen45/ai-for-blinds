@@ -24,6 +24,7 @@ from .schemas import (
     PageType,
     SttResult,
 )
+from .repetition import cut_repetition
 from .speech import clean_for_speech
 from .vlm import VLMError, VLMTimeout, get_vlm, parse_describe_output
 
@@ -121,7 +122,7 @@ async def describe(image: UploadFile = File(...), page_type: PageType = Form("au
         raise _vlm_failure(exc)
 
     description, resolved_type, unreadable = parse_describe_output(raw_text, page_type)
-    description = clean_for_speech(description)
+    description, looped = cut_repetition(clean_for_speech(description))
     if not description:
         description, unreadable = UNREADABLE_FALLBACK, True
 
@@ -136,10 +137,12 @@ async def describe(image: UploadFile = File(...), page_type: PageType = Form("au
         cached=False,
     )
     storage.save_image(image_id, jpeg, description)
-    storage.cache_put(sha, page_type, result.model_dump(exclude={"image_id", "latency_ms", "cached"}))
+    if not looped:  # bị lặp: lần chụp lại nên gọi mô hình lần nữa, không trả bản lỗi từ đệm
+        storage.cache_put(sha, page_type, result.model_dump(exclude={"image_id", "latency_ms", "cached"}))
     storage.log_request(endpoint="describe", image_id=image_id, page_type=resolved_type,
                         model=result.model, prompt_version=result.prompt_version,
-                        latency_ms=result.latency_ms, cached=False, ok=True, unreadable=unreadable)
+                        latency_ms=result.latency_ms, cached=False, ok=True, unreadable=unreadable,
+                        loop_cut=looped)
     return {"data": result, "error": None}
 
 
@@ -153,18 +156,24 @@ async def _describe_with_ai(image_id: str, sha: str, jpeg: bytes, page_type: str
                             model=settings.model_name, prompt_version="ai", latency_ms=_ms(t0),
                             cached=False, ok=False, error=exc.detail)
         raise ApiError(exc.status, exc.code, exc.message)
-    fields["description"] = clean_for_speech(fields["description"])
+    fields["description"], looped = cut_repetition(clean_for_speech(fields["description"]))
+    if looped:
+        # Phần còn lại là lời mô tả bị cắt ngắn: đúng nghĩa "partial" của hợp đồng v0.1.
+        if fields["status"] == "ok":
+            fields["status"] = "partial"
+        fields["uncertainties"] = [*fields["uncertainties"], "loop_cut"]
     if not fields["description"]:
         fields["description"], fields["unreadable"] = UNREADABLE_FALLBACK, True
     result = DescribeResult(image_id=image_id, latency_ms=_ms(t0), cached=False, **fields)
     storage.save_image(image_id, jpeg, result.description)
-    # Không lưu đệm kết quả "ảnh hỏng": cổng chất lượng của Phúc còn đang hiệu chỉnh, lần sau có thể khác.
-    if result.status != "unreadable":
+    # Không lưu đệm kết quả "ảnh hỏng" (cổng chất lượng của Phúc còn đang hiệu chỉnh, lần sau có thể khác)
+    # và kết quả bị lặp (gọi lại có thể ra bản tốt).
+    if result.status != "unreadable" and not looped:
         storage.cache_put(sha, page_type, result.model_dump(exclude={"image_id", "latency_ms", "cached"}))
     storage.log_request(endpoint="describe", image_id=image_id, page_type=result.page_type,
                         model=result.model, prompt_version=result.prompt_version,
                         latency_ms=result.latency_ms, cached=False, ok=True, unreadable=result.unreadable,
-                        status=result.status)
+                        status=result.status, loop_cut=looped)
     return {"data": result, "error": None}
 
 
@@ -184,7 +193,7 @@ async def ask(req: AskRequest):
                                 prompt_version="ai", latency_ms=_ms(t0), ok=False, error=exc.detail)
             raise ApiError(exc.status, exc.code, exc.message)
         result = AskResult(image_id=req.image_id, latency_ms=_ms(t0),
-                           answer=clean_for_speech(fields["answer"]) or "Mình chưa trả lời được câu này. Bạn hỏi lại theo cách khác nhé.",
+                           answer=cut_repetition(clean_for_speech(fields["answer"]))[0] or "Mình chưa trả lời được câu này. Bạn hỏi lại theo cách khác nhé.",
                            model=fields["model"], prompt_version=fields["prompt_version"])
         storage.log_request(endpoint="ask", image_id=req.image_id, model=result.model,
                             prompt_version=result.prompt_version, latency_ms=result.latency_ms, ok=True,
@@ -192,7 +201,7 @@ async def ask(req: AskRequest):
         return {"data": result, "error": None}
     try:
         messages = prompts.ask_messages(jpeg, description, req.question, [t.model_dump() for t in req.history])
-        answer = clean_for_speech(await get_vlm().ask(messages))
+        answer = cut_repetition(clean_for_speech(await get_vlm().ask(messages)))[0]
     except VLMError as exc:
         storage.log_request(endpoint="ask", image_id=req.image_id, model=settings.model_name,
                             prompt_version=settings.prompt_version, latency_ms=_ms(t0), ok=False,
