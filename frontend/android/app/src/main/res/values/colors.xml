@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nền gần đen của app (AppTheme.ink): mở app không bị chớp trắng, đỡ lóa cho người nhìn kém -->
+    <color name="sgbe_ink">#FF0B0B0C</color>
+    <!-- Vàng gạch dẫn đường (AppTheme.guide): nền biểu tượng app -->
+    <color name="sgbe_yellow">#FFFFD400</color>
+</resources>

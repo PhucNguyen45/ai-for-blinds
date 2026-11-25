@@ -1,0 +1,46 @@
+{
+  "note": "Dữ liệu MẪU để thử giao diện Thư viện. Lời mô tả do nhóm tự viết, không chép từ sách giáo khoa. Thay bằng kho mô tả thật của Mảng B (/v1/library) khi có.",
+  "books": [
+    {
+      "id": "tnxh3",
+      "title": "Tự nhiên và Xã hội 3",
+      "subtitle": "Lớp 3 · 3 trang mẫu",
+      "color": "lib",
+      "pages": [
+        {
+          "number": 42,
+          "title": "Cây đậu lớn lên như thế nào",
+          "text": "Trang có tiêu đề: Cây đậu lớn lên như thế nào. Giữa trang là sơ đồ vòng đời cây đậu, gồm bốn hình nối với nhau bằng mũi tên thành một vòng tròn. Hình thứ nhất là hạt đậu nằm trong đất. Hình thứ hai là cây mầm có hai lá nhỏ. Hình thứ ba là cây đậu trưởng thành đang ra hoa. Hình thứ tư là quả đậu, bên trong có hạt mới. Mũi tên từ quả đậu quay về hạt đậu, cho thấy vòng đời lặp lại."
+        },
+        {
+          "number": 43,
+          "title": "Các bộ phận của cây",
+          "text": "Trang có hình vẽ một cây xanh lớn, mỗi bộ phận có một nhãn chữ. Dưới cùng là rễ cây, tỏa ra trong đất. Ở giữa là thân cây, thẳng và cứng. Trên thân có nhiều cành, trên cành có lá màu xanh. Một cành có hoa màu vàng. Cuối trang có câu hỏi: Rễ cây có nhiệm vụ gì?"
+        },
+        {
+          "number": 44,
+          "title": "Cây cần gì để sống",
+          "text": "Trang có ba hình nhỏ đặt cạnh nhau. Hình thứ nhất là chậu cây được tưới nước. Hình thứ hai là chậu cây đặt cạnh cửa sổ có ánh nắng. Hình thứ ba là chậu cây để trong tủ tối, lá cây bị úa vàng. Đoạn chữ dưới hình cho biết cây cần nước, ánh sáng và không khí để sống."
+        }
+      ]
+    },
+    {
+      "id": "lsdl4",
+      "title": "Lịch sử và Địa lí 4",
+      "subtitle": "Lớp 4 · 2 trang mẫu",
+      "color": "ask",
+      "pages": [
+        {
+          "number": 15,
+          "title": "Lược đồ vùng Trung du và miền núi Bắc Bộ",
+          "text": "Trang có một lược đồ tô màu. Vùng Trung du và miền núi Bắc Bộ được tô màu cam, nằm ở phía bắc nước ta. Phía bắc của vùng giáp Trung Quốc, phía tây giáp Lào. Trên lược đồ có các dãy núi vẽ bằng hình tam giác nhỏ và các con sông vẽ bằng đường màu xanh. Chú giải ở góc dưới giải thích ý nghĩa các màu và kí hiệu."
+        },
+        {
+          "number": 16,
+          "title": "Ruộng bậc thang",
+          "text": "Trang có một ảnh chụp ruộng bậc thang trên sườn núi. Các thửa ruộng xếp thành nhiều tầng, uốn lượn theo sườn đồi, giống như những bậc cầu thang lớn. Đoạn chữ cạnh ảnh giải thích: người dân làm ruộng bậc thang để giữ nước và chống xói mòn đất trên đồi núi."
+        }
+      ]
+    }
+  ]
+}

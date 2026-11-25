@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "image_id": "img-002",
+  "image_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "image_type": "unknown",
+  "status": "partial",
+  "summary_vi": "Bảng số liệu về số ngày có mưa.",
+  "facts": [],
+  "interpretation_vi": "Bảng có năm hàng tháng và ba cột miền. Số liệu ở các ô chưa được đọc",
+  "uncertainties": [
+    "Câu trả lời bị cắt do giới hạn độ dài."
+  ],
+  "question_answering_ready": false,
+  "meta": {
+    "model": "example/model",
+    "method": "B0",
+    "prompt_id": "b0_v1",
+    "prompt_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "temperature": 0.2,
+    "max_tokens": 600,
+    "finish_reason": "stop",
+    "latency_seconds": 3.4,
+    "usage": {
+      "prompt_tokens": 800,
+      "completion_tokens": 250
+    },
+    "created_at_utc": "2026-11-17T05:00:00Z"
+  }
+}
