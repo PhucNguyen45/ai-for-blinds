@@ -2,7 +2,7 @@
 
 Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ảnh ứng dụng mô hình ngôn ngữ thị giác (VLM), hỗ trợ học sinh khiếm thị học tập kiến thức trực quan.
 
-> **Nhánh `toan/tich-hop` — bản ghép cả hệ thống, 2026-11-25:** module AI (Phúc, nhánh `phuc`) + backend API v1 (Nam, nhánh `dev`) + app Flutter (Toàn, nhánh `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Phần trạng thái AI bên dưới giữ nguyên theo nhánh `phuc` (2026-11-19): mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test chưa chạy.
+> **Nhánh `phuc` — cập nhật 2026-11-25.** Từ hôm nay nhánh này đã gồm bản ghép cả hệ thống (fast-forward từ `toan/tich-hop`, Toàn ghép): module AI (Phúc) + backend API v1 (Nam, từ `dev`) + app Flutter (Toàn, từ `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`; `ai/` không bị đổi. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Test backend (`backend/tests/`) chưa chạy lại sau khi ghép. Phần trạng thái AI bên dưới tính đến 2026-11-23: mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test chưa chạy.
 
 ## Thành phần
 
@@ -23,7 +23,7 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 
 | Hạng mục | Trạng thái | Chi tiết |
 |---|---|---|
-| Hợp đồng đầu ra | Nháp v0.1, chưa đối chiếu với API v1 của Nam | [`ai/contract/`](ai/contract/README.md) |
+| Hợp đồng đầu ra | Nháp v0.1; đã đối chiếu với API v1 trong `backend/app/ai_bridge.py` (Toàn ghép), **chờ cả nhóm duyệt** | [`ai/contract/`](ai/contract/README.md) |
 | Module AI (`describe_page`, `ask_page`) | Chạy được, có kiểm thử, không ném ngoại lệ | [`ai/README.md`](ai/README.md) |
 | Nhà cung cấp VLM | OpenRouter, Google AI Studio, LM Studio (cục bộ) | [`ai/README.md`](ai/README.md) |
 | Cổng chất lượng ảnh | Bắt tối/mờ trên ảnh tổng hợp; chưa hiệu chỉnh trên ảnh thật | [mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md) |
@@ -76,14 +76,14 @@ SGK và học liệu có bản quyền **không** đưa lên repo công khai; kh
 | Nhánh | Nội dung |
 |---|---|
 | `main` | Bản cũ (2026-05, SgBe Vision); nhánh mặc định, chưa cập nhật |
-| `phuc` | Module AI (Phúc) |
+| `phuc` | Module AI (Phúc) **+ bản ghép backend/app** (trùng `toan/tich-hop` từ 2026-11-25) |
 | `dev`, `nam` | Backend FastAPI `/v1/*`, `docs/API_v1.md` (Nam): hợp đồng API v1 hiện hành |
 | `toan/frontend` | App Flutter giao diện mới (Toàn) |
-| `toan/tich-hop` | **Bản ghép `phuc` + `dev` + `toan/frontend`**, chạy thông app → backend → module AI |
+| `toan/tich-hop` | Bản ghép `phuc` + `dev` + `toan/frontend` (Toàn); `phuc` đã fast-forward tới đây |
 | `toan/app-mvp` | App Flutter MVP cũ (đã thay bằng `toan/frontend`) |
 | `fix/e2e-vlm-stt-rag` | Bản chạy thông cũ (2026-08), có thể lỗi thời |
 
-Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh trên; `toan/tich-hop` ghép bằng `--allow-unrelated-histories` (2026-11-25), chờ cả nhóm duyệt. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
+Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh trên; bản ghép dùng `--allow-unrelated-histories` (2026-11-25), chờ cả nhóm duyệt; `dev`, `nam`, `toan/frontend` đã nằm trọn trong `phuc`, chờ chủ nhánh quyết định dọn. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
 
 ## Việc tiếp theo
 
@@ -91,7 +91,8 @@ Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc 
 2. Thu thập và gán nhãn SGK lớp 4–5, biểu đồ/bản đồ thật (cần người gán nhãn, người rà soát thứ hai, văn bản cho phép của thầy).
 3. Chấm tay (rubric, hai người) và thiết kế chỉ số nhạy hơn; chạy tập test khi đóng băng cấu hình.
 4. Quyết định hướng fine-tune (QLoRA trên 8 GB VRAM chưa kiểm chứng).
-5. ~~Đối chiếu hợp đồng AI v0.1 với API v1 và hợp nhất các nhánh~~: đã làm ở `toan/tich-hop`, chờ duyệt ([`docs/TICH_HOP.md`](docs/TICH_HOP.md)).
+5. ~~Đối chiếu hợp đồng AI v0.1 với API v1 và hợp nhất các nhánh~~: đã làm ở `toan/tich-hop`, nay nằm trên `phuc`, chờ cả nhóm duyệt ([`docs/TICH_HOP.md`](docs/TICH_HOP.md)).
+6. Chạy test backend và CI sau khi ghép; thống nhất với Toàn, Nam việc dọn các nhánh thừa (`dev`, `nam`, `toan/frontend`, `toan/app-mvp`, `fix/e2e-vlm-stt-rag`).
 
 ---
 *Cập nhật README: (1) chỉ sửa dòng trạng thái đã đổi; (2) đổi ngày ở đầu; (3) thêm mục vào `ai/NHAT_KY_PHAT_TRIEN.md`.*
