@@ -38,7 +38,7 @@ answer = ask_page("trang.jpg", "Cột nào cao nhất?")            # AnswerResu
 
 Lỗi vận hành (mạng, HTTP, cấu hình, ảnh hỏng) trả `status="error"` kèm `error`, không ném ngoại lệ.
 
-Model có chế độ suy nghĩ (Gemma 4): đặt biến môi trường `LMSTUDIO_REASONING_EFFORT=none` để tắt, nếu không model dùng hết `max_tokens` để nghĩ và trả `empty_response`. Không đặt thì payload không đổi (Qwen).
+Model có chế độ suy nghĩ (Gemma 4): đặt biến môi trường `LMSTUDIO_REASONING_EFFORT=none` để tắt, nếu không model dùng hết `max_tokens` để nghĩ và trả `empty_response`. Không đặt thì payload không đổi (Qwen). Đo ngày 2026-11-26: ở `max_tokens` 2000, bật và tắt reasoning ngang nhau trên dev; ở 600 thì bật không dùng được (xem [báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md)).
 
 ## Các trạng thái cần hệ thống xử lý
 
@@ -55,8 +55,8 @@ Mọi lệnh chạy từ thư mục `ai/` (`uv run python ...`). Dữ liệu ben
 | Thư mục | Vai trò |
 |---|---|
 | `generators/` | sinh và kiểm tra benchmark tổng hợp, nạp ảnh SGK (`ingest_textbook.py`), tải ảnh Wikimedia (`fetch_commons_candidates.py`) |
-| `runner/` | `run_b1_dev.py` (B0e/B1 trên tập dev), `survey_lmstudio.py` (khảo sát model LM Studio theo độ phóng ảnh/prompt), `run_qa_dev.py` (hỏi đáp trên câu hỏi dev) |
-| `reporting/` | `proposition_check.py`, `repeat_stats.py`, `survey_report.py`, `qa_score.py`, `capture_gate_eval.py`, `archive_runs.py`, bộ chấm rubric (`create_scorecards`, `validate_score`, `finalize_score`, `summarize_scores`) |
+| `runner/` | `run_b1_dev.py` (`--method b0e|b0g|b1` trên tập dev; `--reps`, `--max-tokens` mặc định 600), `survey_lmstudio.py` (khảo sát model LM Studio theo độ phóng ảnh/prompt), `run_qa_dev.py` (hỏi đáp trên câu hỏi dev; mặc định model Qwen, truyền `--model` để chạy model khác) |
+| `reporting/` | `proposition_check.py` (chuẩn hóa dấu "8 phẩy 5" và nhãn "Thứ Hai" ↔ "Thứ 2" từ 26/11; vẫn chỉ đếm số và tên, không chấm quan hệ), `repeat_stats.py`, `survey_report.py`, `qa_score.py`, `capture_gate_eval.py`, `archive_runs.py`, bộ chấm rubric (`create_scorecards`, `validate_score`, `finalize_score`, `summarize_scores`) |
 | `reports/` | báo cáo Markdown |
 | `rubrics/` | `rubric_v1.md` (C1–C6, chấm tay) |
 | `legacy_b0/` | quy trình B0 theo phiên (2026-10) và script thử OpenRouter gốc; chỉ để tái hiện số liệu cũ |

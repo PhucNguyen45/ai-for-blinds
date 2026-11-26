@@ -36,6 +36,16 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test chưa chạ
 - **Dữ liệu:** tìm thêm bộ VQA tiếng Việt và tiếng Anh (biểu đồ, bảng, sơ đồ khoa học, hình học, bản đồ, VizWiz); tải xong VMMU (MIT, 1,6 GB, chỉ ở máy), xếp vào `1_hoc_tap/`, chia split theo cụm như các bộ khác (train 3.269 / val 165 / test 164, 0 trùng với bộ khác); 210 câu hỏi có 5 ảnh (nguyên trang, cắt khung, chỉ chữ) mà pHash không nối được nên nối theo mã câu hỏi (`external_data/vmmu_groups.py`) để tránh rò rỉ; dừng tải phần còn lại vì mạng hạn chế. Giấy phép GPL/NC (ChartQA, TabMWP, TQA, MapVerse) cần hỏi thầy trước khi dùng huấn luyện.
 - **Chưa làm:** đo `b0g_v1` và hỏi đáp 59 câu cho Gemma; chọn cách huấn luyện cho Gemma (QLoRA trên 8 GiB VRAM chưa kiểm chứng).
 
+## 2026-11-26
+
+- **Làm:** thêm `--max-tokens` vào `evaluation/runner/run_b1_dev.py` (mặc định 600) và `--method b0g` (cổng "không đọc được"); chạy Gemma 4 E4B dev, B0e, 3 lần lặp, reasoning tắt/bật, ở 600 và 2000 token; sửa `proposition_check.py` (dấu "phẩy" và nhãn "Thứ Hai" ↔ "Thứ 2"); chấm rubric mẫu 4 ca lỗi; kiểm tra các bộ dữ liệu ngoài.
+- **Số đo** ([báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md), bộ chấm đã sửa): tắt 121,3/141 (86,1%) ở cả 600 và 2000 token; bật 0/141 ở 600 token (`empty_response`), 120,0/141 (85,1%) ở 2000 token.
+- **Kết luận:** reasoning bật và tắt ngang nhau ở 2000 token (chênh 1,3 điểm, trong dao động), reasoning bật tốn ~4 lần token đầu ra. Giữ reasoning tắt. Kết luận "tắt tốt hơn rõ rệt" của bản đầu là sai do lỗi bộ chấm, đã đính chính trong báo cáo.
+- **Chấm rubric mẫu** ([báo cáo](evaluation/reports/cham_rubric_gemma_sample_20261126.md)): 4 ca lỗi × 2 điều kiện; do trợ lý AI chấm, không phải người, chưa đối chiếu ảnh gốc.
+- **Kiểm tra dữ liệu ngoài** (xem [báo cáo dữ liệu](evaluation/reports/du_lieu_ngoai_20261118.md), mục 7): các bộ đọc được; bộ VizWiz chưa có trong báo cáo cũ.
+- **Cổng và hỏi đáp (Gemma, dev):** `b0g_v1` báo đúng 6/6 lượt ảnh mờ, 0/60 báo nhầm trên ảnh đọc được (chỉ 2 ảnh mờ tổng hợp); hỏi đáp ảnh-only 42/59 (71%) so với Qwen 40/59 (68%), trong nhiễu ([báo cáo](evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md)).
+- **Việc còn lại:** điều tra đầy đủ lỗi quan hệ (chiều mũi tên) bằng người; chấm rubric hai người; trang SGK thật với Gemma (chưa có script tương ứng trong repo); hỏi đáp có mô tả; tập test.
+
 ## Việc tiếp theo
 
 Hiệu chỉnh cổng "không đọc được" trên trang SGK thật rồi đo lại; chấm tay (hai người) các câu hỏi đáp "sai" và 37 ca trùng cần xem tay; chọn hướng thu thập SGK lớp 4–5 và biểu đồ/bản đồ thật; quyết định hướng fine-tune; thống nhất API v1 với hợp đồng v0.1 (Phúc, Nam, Toàn).

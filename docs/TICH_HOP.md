@@ -121,11 +121,11 @@ trên laptop RTX 5060 8 GB: nạp 9,9 giây, dùng 5,9/8,1 GB bộ nhớ GPU. `a
 ```
 VLM_PROVIDER=lmstudio
 LMSTUDIO_BASE_URL=http://localhost:1234/v1
-LMSTUDIO_MODEL=gemma-4-e4b          # đặt rõ: bỏ trống thì module AI lấy mô hình đầu tiên, có thể là mô hình embedding
+LMSTUDIO_MODEL=google/gemma-4-e4b   # đặt rõ: bỏ trống thì module AI lấy mô hình đầu tiên, có thể là mô hình embedding
 LMSTUDIO_REASONING_EFFORT=none
 ```
 
-Nạp: `lms load gemma-4-e4b-it --identifier gemma-4-e4b --gpu max --context-length 8192`, rồi `lms server start`.
+Nạp: `lms load gemma-4-e4b-it --identifier google/gemma-4-e4b --gpu max --context-length 8192` (cùng tên mô hình với lệnh benchmark của Phúc), rồi `lms server start`.
 
 | Ảnh (Wikimedia Commons) | Thời gian phía máy chủ | Nhận xét |
 |---|---|---|
@@ -135,6 +135,10 @@ Nạp: `lms load gemma-4-e4b-it --identifier gemma-4-e4b --gpu max --context-len
 | Hỏi "Năm nào dân số cao nhất…" | 3,5 s | Đúng năm, số "khoảng chín mươi triệu" hơi thấp (ảnh ~95 triệu) |
 
 Trên app (máy ảo, "Đọc ảnh có sẵn"): ảnh → máy chủ → lời mô tả đọc từng câu, nhãn loại trang đúng ("Biểu đồ").
+
+Lỗi bỏ sót mũi tên trùng với phát hiện của Phúc cùng ngày: lỗi lớn nhất của Gemma là quan hệ, chiều mũi tên, và
+chỉ số từ khóa không bắt được ([chấm rubric mẫu](../ai/evaluation/reports/cham_rubric_gemma_sample_20261126.md), ca
+`cycle_03`). Reasoning để tắt theo [báo cáo reasoning](../ai/evaluation/reports/reasoning_gemma4_dev_20261126.md).
 
 Hai lỗi tìm ra khi chạy thật:
 
@@ -148,6 +152,10 @@ Hai lỗi tìm ra khi chạy thật:
 
 - Đo thời gian trên điện thoại thật.
 - Phúc: sửa prompt `ask_calc_v1` theo lỗi 2 ở trên.
+- Phúc: cổng chất lượng chặn nhầm hình nền đen. "Vòng đời Mặt Trời" (Commons, rõ nét) bị báo "Ảnh quá tối": độ sáng
+  trung bình 24,9 < `dark_mean` 60, nhưng std 61,2 và độ nét Laplacian 1.467,8 rất cao; sơ đồ vòng đời phần mềm suýt bị
+  chặn (độ sáng 64,3). Hình vũ trụ, ban đêm trong SGK hay có nền đen. Đề xuất: quy tắc "tối" xét cả độ tương phản như quy
+  tắc "cháy sáng" (ví dụ tối khi độ sáng thấp VÀ std thấp).
 - Hỏi bằng giọng nói: chỉ kiểm được trên điện thoại thật (STT của emulator không có micro/mạng).
 - Phúc: hai test của `ai/` hỏng trên Windows do môi trường (thiếu font DejaVu; đọc file không chỉ định
   `encoding="utf-8"`), chạy được với `-X utf8`; trên CI (Ubuntu) cài `fonts-dejavu-core`.

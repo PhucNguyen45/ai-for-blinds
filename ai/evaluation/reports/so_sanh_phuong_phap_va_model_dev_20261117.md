@@ -4,6 +4,7 @@
 > **Kết luận ngắn:** trên 22 ảnh dev tổng hợp, `qwen3-vl-4b` chạy cục bộ (miễn phí) đạt 123/141 mệnh đề critical, ngang `gemini-3.1-flash-lite` và hơn nemotron (106); B1 giúp bảng với nemotron
 > nhưng không giúp model 4B. Một lần chạy mỗi ảnh, chỉ số từ khóa thô, tập test chưa chạy: **không đủ để kết luận model hay phương pháp nào tốt hơn**.
 > (Báo cáo này gộp ba báo cáo cùng ngày: B0 trên nemotron, so sánh B0/B0e/B1, so sánh model miễn phí.)
+> **Cập nhật 2026-11-26:** bộ chấm `proposition_check.py` đã sửa (số "8 phẩy 5" và nhãn "Thứ Hai" ↔ "Thứ 2"). Chấm lại Qwen B0e 3 lần lặp: vẫn 123/141 mỗi lần, nên các số trong báo cáo này không đổi. Các số của nemotron và Gemini chưa chấm lại; có thể thay đổi nhẹ nếu bản ghi có các dạng viết trên.
 
 ## 1. Điều kiện
 

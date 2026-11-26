@@ -1,6 +1,6 @@
 # Dữ liệu ngoài tiếng Việt cho VLM: khảo sát, tải, trùng lặp, phân mục và phân vai
 
-> **Trạng thái:** thăm dò. **Ngày:** 2026-11-18 · **Cập nhật:** 2026-11-19 · **Mảng:** A
+> **Trạng thái:** thăm dò. **Ngày:** 2026-11-18 · **Cập nhật:** 2026-11-19; kiểm tra lại khả năng sử dụng 2026-11-26 (mục 7) · **Mảng:** A
 > **Kết luận ngắn:** đã tải và xác minh 7 bộ (~47 GB, 0 lỗi); 6 bộ bị khóa tạm bỏ qua. Có trùng đáng kể giữa các bộ (vlsp2023 là tập con của OpenViVQA; ViEduVQA chứa trang SGK của ViSGKCap; OpenViVQA rò rỉ giữa split),
 > nên đã lập lớp phủ train/val/test theo cụm ảnh, không sửa dữ liệu gốc. Mục HỌC TẬP vẫn nhỏ và lệch (chủ yếu lớp 1-3); chưa có SGK lớp 4-5 hay biểu đồ/bản đồ SGK thật. Chú thích do máy sinh, chưa phải ground truth.
 
@@ -230,3 +230,25 @@ Ghi chú: `group_split` = chia nội bộ theo cụm (5% val, 5% test) cho bộ 
 - **Ouyangxuelili/vlsp2023-vqa-dataset**: Không phải kho chính thức của cuộc thi (do cá nhân duy trì). TỆP CHÚ THÍCH vlsp2023_train_data.json và vlsp2023_dev_data.json có SHA-256 GIỐNG HỆT hai tệp cùng tên trong uitnlp/OpenViVQA-dataset: đây là bản sao một phần (train+dev) của OpenViVQA, không phải dữ liệu mới.
 - **uitnlp/OpenViVQA-dataset**: Kho của nhóm UIT-NLP; ảnh đời thường, VQA mở tiếng Việt.
 - **5CD-AI/Viet-Table-Markdown**: Không có card và không khai báo giấy phép: nguồn ảnh chưa xác minh.
+- **VizWiz-VQA** (có trên đĩa nhưng chưa có trong bảng kiểm kê `dataset_inventory.csv` và không có trong báo cáo này trước 2026-11-26; tệp zip có thời gian sửa 18/11, nên không rõ bộ được tải theo quy trình nào): nằm ở `2_cuoc_song/VizWiz-VQA/`; xem mục 7.
+
+## 7. Kiểm tra khả năng sử dụng (2026-11-26)
+
+Kiểm tra chỉ đọc, không sửa dữ liệu: parquet (metadata, so số dòng với khai báo), zip (đếm entry; `testzip` cho zip dưới 2 GB), JSON/JSONL (parse), mở thử 200 ảnh mỗi bộ bằng PIL, đối chiếu ảnh được JSON tham chiếu với zip, và kiểm tra bất biến của lớp phủ `splits_overlay.csv`.
+
+| Bộ | Kết quả kiểm tra | Dùng được? |
+|---|---|---|
+| D-Truong/ViEduVQA | 13 parquet đọc được, 18.838 dòng = khai báo | Có (giấy phép CC BY-NC 4.0) |
+| bbdontcry/ViSGKCap | 5 parquet, 1.229 dòng = khai báo | Có (chú thích do máy sinh, chưa kiểm chứng) |
+| anvo25/vmmu | 7 parquet, 3.598 dòng = khai báo | Có |
+| VLAI-AIVN/ViInfographicVQA | 7 parquet, 20.409 dòng; 6.747 jpg, đủ 6.747 ảnh được tham chiếu (0 thiếu) | Có |
+| uitnlp/OpenViVQA-dataset | 3 zip (train 9.130, dev 1.071, test 1.001 entry), `testzip` OK; JSON OK; ảnh chưa giải nén | Có, sau khi giải nén |
+| huyhuy123/ViOCRVQA | zip 28.256 entry (>2 GB, chưa `testzip`); `data/train|dev|test.json` đọc được; ảnh chưa giải nén | Có, sau khi giải nén |
+| VizWiz-VQA | `annotations/` train 20.523 / val 4.319 / test 8.000 đọc được; mọi ảnh JSON tham chiếu đều có trong zip (0 thiếu); ảnh đã giải nén 23.954 / 7.750 / 8.000; 200 ảnh mẫu mở được | Có. Zip train và val có thêm 3.431 ảnh không được chú thích; không dùng, không phải lỗi |
+| Ouyangxuelili/vlsp2023-vqa-dataset | JSON đọc được nhưng là bản sao của OpenViVQA (SHA-256 trùng) | Không dùng song song với OpenViVQA |
+| 5CD-AI/Viet-Table-Markdown | 103 parquet, 64.902 dòng = khai báo | Đọc được, nhưng không có giấy phép và nguồn ảnh chưa xác minh: chưa dùng để huấn luyện |
+| 5CD-AI/Viet-Doc-VQA (3 bản), Viet-OCR-VQA-flash2, Viet-Handwriting-OCR-v2, ViTextVQA | Bị khóa (gated), không truy cập được | Không |
+
+Lớp phủ train/val/test (`_reports/splits_overlay.csv`, 164.302 dòng): không có cụm nào vừa có train vừa có val/test; không có SHA-256 nào vừa ở train vừa ở val/test. Vai trò: train 131.898, test 12.289, val 9.879, loại 10.236.
+
+**Kết luận:** các bộ đã tải đọc được và số liệu khớp khai báo, trừ những bộ ghi chú ở trên. Trước khi huấn luyện vẫn cần: xác minh giấy phép (ViEduVQA là CC BY-NC; các bộ khác không khai báo), kiểm chứng chú thích và Q/A do máy sinh, và giải nén các zip còn lại để kiểm tra ảnh. Khoảng trống về lớp 4–5 và biểu đồ SGK thật vẫn còn.
