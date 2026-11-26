@@ -36,6 +36,13 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test chưa chạ
 - **Dữ liệu:** tìm thêm bộ VQA tiếng Việt và tiếng Anh (biểu đồ, bảng, sơ đồ khoa học, hình học, bản đồ, VizWiz); tải xong VMMU (MIT, 1,6 GB, chỉ ở máy), xếp vào `1_hoc_tap/`, chia split theo cụm như các bộ khác (train 3.269 / val 165 / test 164, 0 trùng với bộ khác); 210 câu hỏi có 5 ảnh (nguyên trang, cắt khung, chỉ chữ) mà pHash không nối được nên nối theo mã câu hỏi (`external_data/vmmu_groups.py`) để tránh rò rỉ; dừng tải phần còn lại vì mạng hạn chế. Giấy phép GPL/NC (ChartQA, TabMWP, TQA, MapVerse) cần hỏi thầy trước khi dùng huấn luyện.
 - **Chưa làm:** đo `b0g_v1` và hỏi đáp 59 câu cho Gemma; chọn cách huấn luyện cho Gemma (QLoRA trên 8 GiB VRAM chưa kiểm chứng).
 
+## 2026-11-26
+
+- **Làm:** thêm `--max-tokens` vào `evaluation/runner/run_b1_dev.py` (mặc định 600, chưa commit); chạy Gemma 4 E4B dev, B0e, 3 lần lặp, reasoning tắt/bật, ở 600 và 2000 token.
+- **Số đo** ([báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md)): tắt 121,3/141 (86,1%) ở cả 600 và 2000 token; bật 0/141 ở 600 token (`empty_response`), 110,7/141 (78,5%) ở 2000 token sau khi chuẩn hóa dấu thập phân.
+- **Kết luận:** giữ reasoning tắt cho Gemma. Hai lỗi cần sửa trước khi tin các số này: `proposition_check.py` không nhận "8 phẩy 5"; điểm 0 ở `bar_01` và `bar_01_hard` chưa giải thích.
+- **Việc còn lại:** sửa bộ chấm (dấu "phẩy"), điều tra `bar_01`, chấm rubric bằng người.
+
 ## Việc tiếp theo
 
 Hiệu chỉnh cổng "không đọc được" trên trang SGK thật rồi đo lại; chấm tay (hai người) các câu hỏi đáp "sai" và 37 ca trùng cần xem tay; chọn hướng thu thập SGK lớp 4–5 và biểu đồ/bản đồ thật; quyết định hướng fine-tune; thống nhất API v1 với hợp đồng v0.1 (Phúc, Nam, Toàn).

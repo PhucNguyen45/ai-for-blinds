@@ -16,7 +16,7 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 ## Điều cần biết ngay
 
 - **Cổng "ảnh không đọc được" chưa dùng được trên ảnh thật:** `b0g_v1` đúng trên ảnh tổng hợp (4/4 ảnh mờ, 0/40 báo nhầm) nhưng **báo nhầm 5/32 trang SGK thật sạch** → [báo cáo mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md), mục 6.
-- **Model nền: đang chuyển từ Qwen3-VL-4B sang Gemma 4 E4B** (Q4, chạy cục bộ qua LM Studio, miễn phí; cần gửi `reasoning_effort=none`, xem `LMSTUDIO_REASONING_EFFORT` ở `ai/README.md`). Trên dev, Gemma phủ ngang Qwen (~85%) nhưng chậm hơn (11–14 s so với 7–9 s mỗi mô tả); chưa đo `b0g_v1` và hỏi đáp cho Gemma. Các số đo đến nay là của Qwen 4B; bản 8B không nạp đủ lên GPU 8 GB nên bị loại → [khảo sát Qwen](ai/evaluation/reports/survey_qwen3vl_q4_20261117.md).
+- **Model nền: đang chuyển từ Qwen3-VL-4B sang Gemma 4 E4B** (Q4, chạy cục bộ qua LM Studio, miễn phí; cần gửi `reasoning_effort=none`, xem `LMSTUDIO_REASONING_EFFORT` ở `ai/README.md`). Trên dev, Gemma phủ ngang Qwen (~85%) nhưng chậm hơn (11–14 s so với 7–9 s mỗi mô tả); chưa đo `b0g_v1` và hỏi đáp cho Gemma. Ngày 2026-11-26, Gemma với reasoning tắt đạt 121,3/141 (86%) ở cả 600 và 2000 token; reasoning bật ở 600 token không trả nội dung (0/141), ở 2000 token đạt 110,7/141 sau khi chuẩn hóa (bộ chấm còn lỗi dấu "phẩy") → [báo cáo](ai/evaluation/reports/reasoning_gemma4_dev_20261126.md). Bản 8B của Qwen không nạp đủ lên GPU 8 GB nên bị loại → [khảo sát Qwen](ai/evaluation/reports/survey_qwen3vl_q4_20261117.md).
 - **Chưa fine-tune** (hướng huấn luyện cho Gemma chưa chọn). Chưa có chấm bằng người, chưa có người khiếm thị đánh giá, chưa có SGK lớp 4–5 hay biểu đồ/bản đồ SGK thật.
 
 ## Trạng thái phần AI

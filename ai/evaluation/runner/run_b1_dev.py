@@ -42,6 +42,8 @@ def main():
     ap.add_argument("--model", help="ghi đè model (mặc định lấy từ .env hoặc LM Studio)")
     ap.add_argument("--reps", type=int, default=1, help="số lần lặp mỗi ảnh (1 = bản ghi đơn)")
     ap.add_argument("--sleep", type=float, default=0.0, help="giây chờ giữa các request")
+    ap.add_argument("--max-tokens", type=int, default=600,
+                    help="giới hạn token đầu ra của B0e (mặc định 600; reasoning bật cần lớn hơn)")
     ap.add_argument("--retry-429", type=int, default=0,
                     help="số lần thử lại CHỈ khi gặp HTTP 429 (chờ 20s, 40s, ...)")
     args = ap.parse_args()
@@ -99,7 +101,8 @@ def main():
                                            model=args.model, provider=args.provider)
             else:
                 result = describe_image(image, image_id=item["id"], prompt_id="b0e_v1",
-                                        model=args.model, provider=args.provider)
+                                        model=args.model, provider=args.provider,
+                                        max_tokens=args.max_tokens)
             rate_limited = bool(result.error and result.error.http_status == 429)
             if not (rate_limited and attempts <= args.retry_429):
                 break
