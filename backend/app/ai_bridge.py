@@ -9,6 +9,7 @@ question_answering_ready) để app phân biệt "ảnh hỏng, chụp lại" v�
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -27,6 +28,24 @@ TYPE_TO_PAGE = {
     "map": "map",
     "text": "text",
 }
+
+# B0 của module AI chưa phân loại (image_type="unknown") nhưng câu đầu lời mô tả thường nói rõ
+# "Đây là một biểu đồ đường...": lấy loại hình từ từ khóa xuất hiện SỚM NHẤT trong câu đó.
+_KIND_WORDS = [
+    ("biểu đồ", "chart"),
+    ("bản đồ", "map"),
+    ("lược đồ", "map"),
+    ("sơ đồ", "figure"),
+    ("hình vẽ", "figure"),
+    ("bảng", "table"),
+]
+
+
+def guess_page_type(text: str) -> str | None:
+    """Loại trang theo câu đầu của lời mô tả; None nếu không có từ khóa nào."""
+    first = re.split(r"(?<=[.!?…])\s|\n", (text or "").strip(), maxsplit=1)[0].lower()
+    found = [(first.find(w), kind) for w, kind in _KIND_WORDS if re.search(rf"\b{w}\b", first)]
+    return min(found)[1] if found else None
 
 # error.code (hợp đồng v0.1) -> (HTTP, mã API v1, câu đọc cho người dùng)
 _ERRORS = {
@@ -66,9 +85,14 @@ def describe(image_path: Path, image_id: str, page_type: str) -> Dict[str, Any]:
     if res.status == "error":
         raise _failure(res.error)
     meta = res.meta
+    description = (res.interpretation_vi or res.summary_vi or "").strip()
+    resolved = TYPE_TO_PAGE.get(res.image_type)
+    if not resolved and page_type == "auto":
+        # câu đầu lời diễn giải ("Chủ đề: Đây là một biểu đồ...") nói loại hình rõ hơn phần tóm tắt
+        resolved = guess_page_type(description) or guess_page_type(res.summary_vi) or "mixed"
     return {
-        "description": (res.interpretation_vi or res.summary_vi or "").strip(),
-        "page_type": TYPE_TO_PAGE.get(res.image_type) or ("mixed" if page_type == "auto" else page_type),
+        "description": description,
+        "page_type": resolved or page_type,
         # partial = lời diễn giải bị cắt do giới hạn độ dài, KHÔNG phải ảnh hỏng
         "unreadable": res.status in ("unreadable", "unsupported"),
         "model": meta.model if meta else settings.model_name,

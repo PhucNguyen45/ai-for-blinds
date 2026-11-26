@@ -103,20 +103,51 @@ Docker: `docker compose up --build` (image gồm `ai/` rút gọn; khóa lấy t
 
 ## Kiểm thử
 
-| Phần | Lệnh | Kết quả 25/11/2026 |
+| Phần | Lệnh | Kết quả 26/11/2026 |
 |---|---|---|
-| Backend (gồm 17 test cầu nối AI, 12 test chặn lặp) | `cd backend; ..\.venv\Scripts\python -X utf8 -m pytest -q` | 43 passed |
+| Backend (gồm 26 test cầu nối AI, 12 test chặn lặp) | `cd backend; ..\.venv\Scripts\python -X utf8 -m pytest -q` | 52 passed |
 | Module AI | `cd ai; ..\.venv\Scripts\python -X utf8 -m pytest -q --ignore=tests/test_finetune.py` | 157 passed |
 | App | `cd frontend; flutter analyze; flutter test` | No issues; 84 passed, 3 skipped (cần backend thật) |
 
 Chạy thử đầu-cuối trên emulator với backend mock: thư viện tải từ máy chủ (3 cuốn, nhãn "Máy chủ"), chụp → mô tả
 → đọc từng câu tô vàng. Chế độ `ai` với pipeline thật: `/health` báo đúng model, ảnh tối bị cổng chặn đúng câu
-hướng dẫn; lỗi mô hình (khóa hết hạn, HTTP 401) ra 502 `VLM_ERROR` câu tiếng Việt. **Chưa chạy được mô tả bằng mô
-hình thật** vì khóa OpenRouter hiện có đã bị thu hồi và máy chưa cài LM Studio.
+hướng dẫn; lỗi mô hình (khóa hết hạn, HTTP 401) ra 502 `VLM_ERROR` câu tiếng Việt.
+
+### Chạy với mô hình thật (26/11/2026)
+
+Gemma 4 E4B (`lmstudio-community/gemma-4-E4B-it-GGUF`, Q4_K_M 5,34 GB + mmproj 0,99 GB) chạy bằng LM Studio 0.4.29
+trên laptop RTX 5060 8 GB: nạp 9,9 giây, dùng 5,9/8,1 GB bộ nhớ GPU. `ai/.env` (không có khóa, không lên git):
+
+```
+VLM_PROVIDER=lmstudio
+LMSTUDIO_BASE_URL=http://localhost:1234/v1
+LMSTUDIO_MODEL=gemma-4-e4b          # đặt rõ: bỏ trống thì module AI lấy mô hình đầu tiên, có thể là mô hình embedding
+LMSTUDIO_REASONING_EFFORT=none
+```
+
+Nạp: `lms load gemma-4-e4b-it --identifier gemma-4-e4b --gpu max --context-length 8192`, rồi `lms server start`.
+
+| Ảnh (Wikimedia Commons) | Thời gian phía máy chủ | Nhận xét |
+|---|---|---|
+| Biểu đồ dân số Việt Nam 1950–2017 | 22,5 s lần đầu (mô hình vừa nạp), 9,6 s qua app | Đúng loại, trục, khoảng năm, xu hướng |
+| Sơ đồ vòng đời phần mềm | 6,8–7,0 s | Đúng 6 khối và tỉ lệ; gọi nhầm là "biểu đồ"; **bỏ sót hai mũi tên quay vòng** |
+| Bản đồ hành chính Việt Nam | 7,4 s | Đọc đúng chú giải 1–10 |
+| Hỏi "Năm nào dân số cao nhất…" | 3,5 s | Đúng năm, số "khoảng chín mươi triệu" hơi thấp (ảnh ~95 triệu) |
+
+Trên app (máy ảo, "Đọc ảnh có sẵn"): ảnh → máy chủ → lời mô tả đọc từng câu, nhãn loại trang đúng ("Biểu đồ").
+
+Hai lỗi tìm ra khi chạy thật:
+
+1. Loại trang luôn là `mixed` vì B0 trả `image_type="unknown"`. Đã sửa ở cầu nối: `guess_page_type()` lấy loại từ câu
+   đầu lời mô tả ("Chủ đề: Đây là một biểu đồ…"), sau đó mới tới phần tóm tắt.
+2. Prompt `ask_calc_v1` (dòng 11) bảo mô hình **tự viết số bằng chữ**; cùng một câu hỏi, lần thì "hai nghìn mười bảy",
+   lần thì "hai không hai mốt bảy" (sai). Hàm `speech.vn_numbers.words(2017)` của module AI đọc đúng "hai nghìn không
+   trăm mười bảy". Đề xuất cho Phúc: prompt để mô hình giữ chữ số, mã đổi sang chữ bằng `prepare_for_speech()`.
 
 ## Việc còn lại
 
-- Chạy chế độ `ai` với mô hình thật (cần khóa mới hoặc LM Studio + Gemma 4 E4B) và đo thời gian trên điện thoại.
+- Đo thời gian trên điện thoại thật.
+- Phúc: sửa prompt `ask_calc_v1` theo lỗi 2 ở trên.
 - Hỏi bằng giọng nói: chỉ kiểm được trên điện thoại thật (STT của emulator không có micro/mạng).
 - Phúc: hai test của `ai/` hỏng trên Windows do môi trường (thiếu font DejaVu; đọc file không chỉ định
   `encoding="utf-8"`), chạy được với `-X utf8`; trên CI (Ubuntu) cài `fonts-dejavu-core`.

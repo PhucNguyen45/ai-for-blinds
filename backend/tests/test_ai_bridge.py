@@ -125,15 +125,46 @@ def test_partial_means_truncated_not_unreadable(client, fake):
     assert d["description"].startswith("Bảng có năm hàng")
 
 
-def test_b0_result_unknown_type_is_mixed_and_flag_passed_through(client, fake):
-    """B0 (phương pháp hiện tại của module AI): image_type="unknown", question_answering_ready=False."""
+def test_b0_result_unknown_type_guessed_from_first_sentence(client, fake):
+    """B0 (phương pháp hiện tại của module AI): image_type="unknown", question_answering_ready=False.
+    Loại trang lấy từ câu đầu lời mô tả để app không gắn "Chữ và hình" cho mọi ảnh."""
     fake.describe_result = DescriptionResult(
         image_type="unknown", status="ok", summary_vi="Lược đồ vùng núi.",
         interpretation_vi="Lược đồ vùng núi phía Bắc. Phía tây có dãy Hoàng Liên Sơn.",
         question_answering_ready=False, meta=_meta())
     d = describe(client).json()["data"]
-    assert d["page_type"] == "mixed" and d["image_type"] == "unknown"
+    assert d["page_type"] == "map" and d["image_type"] == "unknown"
     assert d["question_answering_ready"] is False and d["unreadable"] is False
+
+
+@pytest.mark.parametrize("text,kind", [
+    ("Chủ đề: Đây là một biểu đồ đường thể hiện số người qua các năm.", "chart"),
+    ("Đây là một bản đồ hành chính Việt Nam.", "map"),
+    ("Đây là sơ đồ vòng đời của cây đậu, gồm bốn giai đoạn.", "figure"),
+    ("Trang có một bảng số ngày mưa.", "table"),
+    ("Sơ đồ khối mô tả các bước; mỗi bước kèm một biểu đồ nhỏ.", "figure"),  # từ đến trước thắng
+    ("Trang có hai đoạn chữ ngắn.", None),
+    ("Câu đầu không có gì. Câu sau mới nói biểu đồ.", None),  # chỉ xét câu đầu
+])
+def test_guess_page_type(text, kind):
+    assert ai_bridge.guess_page_type(text) == kind
+
+
+def test_b0_type_from_description_when_summary_has_no_keyword(client, fake):
+    """Tóm tắt của B0 lấy từ mục "Ý nghĩa", thường không nêu loại hình; câu "Chủ đề" thì có (đo thật 26/11)."""
+    fake.describe_result = DescriptionResult(
+        image_type="unknown", status="ok",
+        summary_vi="Hình ảnh này minh họa rằng giai đoạn vận hành chiếm tỷ trọng lớn nhất.",
+        interpretation_vi="Chủ đề: Đây là một biểu đồ thể hiện tỷ trọng các giai đoạn. Thành phần: sáu giai đoạn.",
+        meta=_meta())
+    assert describe(client).json()["data"]["page_type"] == "chart"
+
+
+def test_b0_without_keyword_stays_mixed(client, fake):
+    fake.describe_result = DescriptionResult(
+        image_type="unknown", status="ok", summary_vi="Trang có hai đoạn chữ.",
+        interpretation_vi="Trang có hai đoạn chữ ngắn về quê hương.", meta=_meta())
+    assert describe(client).json()["data"]["page_type"] == "mixed"
 
 
 def test_looping_description_is_cut_marked_partial_and_not_cached(client, fake):
