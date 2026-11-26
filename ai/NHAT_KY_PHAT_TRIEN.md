@@ -38,10 +38,13 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test chưa chạ
 
 ## 2026-11-26
 
-- **Làm:** thêm `--max-tokens` vào `evaluation/runner/run_b1_dev.py` (mặc định 600, chưa commit); chạy Gemma 4 E4B dev, B0e, 3 lần lặp, reasoning tắt/bật, ở 600 và 2000 token.
-- **Số đo** ([báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md)): tắt 121,3/141 (86,1%) ở cả 600 và 2000 token; bật 0/141 ở 600 token (`empty_response`), 110,7/141 (78,5%) ở 2000 token sau khi chuẩn hóa dấu thập phân.
-- **Kết luận:** giữ reasoning tắt cho Gemma. Hai lỗi cần sửa trước khi tin các số này: `proposition_check.py` không nhận "8 phẩy 5"; điểm 0 ở `bar_01` và `bar_01_hard` chưa giải thích.
-- **Việc còn lại:** sửa bộ chấm (dấu "phẩy"), điều tra `bar_01`, chấm rubric bằng người.
+- **Làm:** thêm `--max-tokens` vào `evaluation/runner/run_b1_dev.py` (mặc định 600) và `--method b0g` (cổng "không đọc được"); chạy Gemma 4 E4B dev, B0e, 3 lần lặp, reasoning tắt/bật, ở 600 và 2000 token; sửa `proposition_check.py` (dấu "phẩy" và nhãn "Thứ Hai" ↔ "Thứ 2"); chấm rubric mẫu 4 ca lỗi; kiểm tra các bộ dữ liệu ngoài.
+- **Số đo** ([báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md), bộ chấm đã sửa): tắt 121,3/141 (86,1%) ở cả 600 và 2000 token; bật 0/141 ở 600 token (`empty_response`), 120,0/141 (85,1%) ở 2000 token.
+- **Kết luận:** reasoning bật và tắt ngang nhau ở 2000 token (chênh 1,3 điểm, trong dao động), reasoning bật tốn ~4 lần token đầu ra. Giữ reasoning tắt. Kết luận "tắt tốt hơn rõ rệt" của bản đầu là sai do lỗi bộ chấm, đã đính chính trong báo cáo.
+- **Chấm rubric mẫu** ([báo cáo](evaluation/reports/cham_rubric_gemma_sample_20261126.md)): 4 ca lỗi × 2 điều kiện; do trợ lý AI chấm, không phải người, chưa đối chiếu ảnh gốc.
+- **Kiểm tra dữ liệu ngoài** (xem [báo cáo dữ liệu](evaluation/reports/du_lieu_ngoai_20261118.md), mục 7): các bộ đọc được; bộ VizWiz chưa có trong báo cáo cũ.
+- **Cổng và hỏi đáp (Gemma, dev):** `b0g_v1` báo đúng 6/6 lượt ảnh mờ, 0/60 báo nhầm trên ảnh đọc được (chỉ 2 ảnh mờ tổng hợp); hỏi đáp ảnh-only 42/59 (71%) so với Qwen 40/59 (68%), trong nhiễu ([báo cáo](evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md)).
+- **Việc còn lại:** điều tra đầy đủ lỗi quan hệ (chiều mũi tên) bằng người; chấm rubric hai người; trang SGK thật với Gemma (chưa có script tương ứng trong repo); hỏi đáp có mô tả; tập test.
 
 ## Việc tiếp theo
 

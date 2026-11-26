@@ -26,7 +26,14 @@ STRIP_ACCENTS = False
 
 
 def norm(text):
-    text = unicodedata.normalize("NFC", text).lower().replace(",", ".")
+    text = unicodedata.normalize("NFC", text).lower()
+    # số viết thành chữ kiểu tiếng Việt: "8 phẩy 5" -> "8.5" (lỗi chấm đã ghi ở báo cáo 2026-11-26)
+    text = re.sub(r"(\d)\s*phẩy\s*(\d)", r"\1.\2", text)
+    # nhãn ngày: ground truth ghi "Thứ 2", model hay viết "Thứ Hai" (bar_01: 0/7 do lệch nhãn, không do số liệu)
+    text = re.sub(r"thứ\s+(hai|ba|tư|năm|sáu)\b",
+                  lambda m: "thứ " + {"hai": "2", "ba": "3", "tư": "4", "năm": "5", "sáu": "6"}[m.group(1)],
+                  text)
+    text = text.replace(",", ".")
     if STRIP_ACCENTS:
         text = text.replace("đ", "d")
         text = "".join(c for c in unicodedata.normalize("NFD", text)

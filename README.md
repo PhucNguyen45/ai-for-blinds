@@ -2,7 +2,7 @@
 
 Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ảnh ứng dụng mô hình ngôn ngữ thị giác (VLM), hỗ trợ học sinh khiếm thị học tập kiến thức trực quan.
 
-> **Nhánh `phuc` — cập nhật 2026-11-25.** Từ hôm nay nhánh này đã gồm bản ghép cả hệ thống (fast-forward từ `toan/tich-hop`, Toàn ghép): module AI (Phúc) + backend API v1 (Nam, từ `dev`) + app Flutter (Toàn, từ `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`; `ai/` không bị đổi. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Test backend (`backend/tests/`) chưa chạy lại sau khi ghép. Phần trạng thái AI bên dưới tính đến 2026-11-23: mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test chưa chạy.
+> **Nhánh `phuc` — cập nhật 2026-11-25.** Từ hôm nay nhánh này đã gồm bản ghép cả hệ thống (fast-forward từ `toan/tich-hop`, Toàn ghép): module AI (Phúc) + backend API v1 (Nam, từ `dev`) + app Flutter (Toàn, từ `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`; `ai/` không bị đổi. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Test backend (`backend/tests/`) chưa chạy lại sau khi ghép. Phần trạng thái AI bên dưới tính đến 2026-11-26: mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test chưa chạy.
 
 ## Thành phần
 
@@ -16,7 +16,7 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 ## Điều cần biết ngay
 
 - **Cổng "ảnh không đọc được" chưa dùng được trên ảnh thật:** `b0g_v1` đúng trên ảnh tổng hợp (4/4 ảnh mờ, 0/40 báo nhầm) nhưng **báo nhầm 5/32 trang SGK thật sạch** → [báo cáo mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md), mục 6.
-- **Model nền: đang chuyển từ Qwen3-VL-4B sang Gemma 4 E4B** (Q4, chạy cục bộ qua LM Studio, miễn phí; cần gửi `reasoning_effort=none`, xem `LMSTUDIO_REASONING_EFFORT` ở `ai/README.md`). Trên dev, Gemma phủ ngang Qwen (~85%) nhưng chậm hơn (11–14 s so với 7–9 s mỗi mô tả); chưa đo `b0g_v1` và hỏi đáp cho Gemma. Ngày 2026-11-26, Gemma với reasoning tắt đạt 121,3/141 (86%) ở cả 600 và 2000 token; reasoning bật ở 600 token không trả nội dung (0/141), ở 2000 token đạt 110,7/141 sau khi chuẩn hóa (bộ chấm còn lỗi dấu "phẩy") → [báo cáo](ai/evaluation/reports/reasoning_gemma4_dev_20261126.md). Bản 8B của Qwen không nạp đủ lên GPU 8 GB nên bị loại → [khảo sát Qwen](ai/evaluation/reports/survey_qwen3vl_q4_20261117.md).
+- **Model nền: đang chuyển từ Qwen3-VL-4B sang Gemma 4 E4B** (Q4, chạy cục bộ qua LM Studio, miễn phí; cần gửi `reasoning_effort=none`, xem `LMSTUDIO_REASONING_EFFORT` ở `ai/README.md`). Trên dev, Gemma phủ ngang Qwen (~85%) nhưng chậm hơn (11–14 s so với 7–9 s mỗi mô tả); chưa đo `b0g_v1` và hỏi đáp cho Gemma. Ngày 2026-11-26, Gemma với reasoning tắt đạt 121,3/141 (86%) ở cả 600 và 2000 token; reasoning bật ở 600 token không trả nội dung (0/141), ở 2000 token đạt 120,0/141 (85%), ngang reasoning tắt trong dao động → [báo cáo](ai/evaluation/reports/reasoning_gemma4_dev_20261126.md). Cùng ngày, Gemma với `b0g_v1` báo đúng 6/6 ảnh mờ và không báo nhầm trên 60 lượt ảnh đọc được (chỉ 2 ảnh mờ tổng hợp); hỏi đáp ảnh-only 71% so với Qwen 68% → [báo cáo](ai/evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md). Chưa kiểm tra trên trang SGK thật. Bộ chấm đã sửa cùng ngày (dấu "phẩy", nhãn "Thứ Hai"); bản đầu của báo cáo đó kết luận sai và đã đính chính. Bản 8B của Qwen không nạp đủ lên GPU 8 GB nên bị loại → [khảo sát Qwen](ai/evaluation/reports/survey_qwen3vl_q4_20261117.md).
 - **Chưa fine-tune** (hướng huấn luyện cho Gemma chưa chọn). Chưa có chấm bằng người, chưa có người khiếm thị đánh giá, chưa có SGK lớp 4–5 hay biểu đồ/bản đồ SGK thật.
 
 ## Trạng thái phần AI
@@ -30,10 +30,10 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 | Hỏi đáp theo hình | Tính toán bằng mã; 68% → 90% trên dev (từ khóa thô, có thể lạc quan) | [mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md) |
 | So sánh phương pháp / model (dev) | 4B cục bộ ngang gemini-3.1-flash-lite, hơn nemotron; B1 không giúp 4B | [so sánh](ai/evaluation/reports/so_sanh_phuong_phap_va_model_dev_20261117.md) |
 | Benchmark | 47 ảnh tổng hợp (dev 24 / test 23); 74 ảnh Wikimedia ứng viên chưa có ground truth | [`data/benchmark/`](data/benchmark/README.md) |
-| Dữ liệu ngoài (Hugging Face) | 7 bộ đã tải (~47 GB), phân 3 mục, có lớp phủ train/val/test chống rò rỉ | [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md) |
+| Dữ liệu ngoài (Hugging Face) | 7 bộ đã tải (~47 GB), phân 3 mục, có lớp phủ train/val/test chống rò rỉ; kiểm tra 26/11: các bộ đọc được và khớp khai báo; VizWiz có trên đĩa nhưng chưa có trong kiểm kê; cần xác minh giấy phép trước khi huấn luyện | [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md) |
 | Tập huấn luyện tổng hợp / fine-tune | Bộ sinh đã có; **chưa huấn luyện** | [`ai/finetune/`](ai/finetune/README.md) |
 | Chuẩn hóa văn bản TTS | Có; **chưa có engine STT/TTS** (để phần mềm quyết định) | [`ai/README.md`](ai/README.md) |
-| Đánh giá bằng người (rubric), người khiếm thị | Chưa có | [`rubric_v1.md`](ai/evaluation/rubrics/rubric_v1.md) |
+| Đánh giá bằng người (rubric), người khiếm thị | Chưa có người chấm. Ngày 26/11, AI chấm sơ bộ 4 ca lỗi × 2 điều kiện (không thay người chấm) | [`rubric_v1.md`](ai/evaluation/rubrics/rubric_v1.md); [mẫu](ai/evaluation/reports/cham_rubric_gemma_sample_20261126.md) |
 
 ## Chạy cả hệ thống
 

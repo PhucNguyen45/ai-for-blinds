@@ -101,11 +101,11 @@ Docker: `docker compose up --build` (image gồm `ai/` rút gọn; khóa lấy t
 Chạy thử đầu-cuối trên emulator với backend mock: thư viện tải từ máy chủ (3 cuốn, nhãn "Máy chủ"), chụp → mô tả
 → đọc từng câu tô vàng. Chế độ `ai` với pipeline thật: `/health` báo đúng model, ảnh tối bị cổng chặn đúng câu
 hướng dẫn; lỗi mô hình (khóa hết hạn, HTTP 401) ra 502 `VLM_ERROR` câu tiếng Việt. **Chưa chạy được mô tả bằng mô
-hình thật** vì khóa OpenRouter hiện có đã bị thu hồi và máy chưa cài LM Studio.
+hình thật** vì khóa OpenRouter hiện có đã bị thu hồi và máy chưa cài LM Studio. (Cập nhật 2026-11-26: LM Studio đã chạy trên máy phát triển với Gemma 4 E4B; xem mục Việc còn lại.)
 
 ## Việc còn lại
 
-- Chạy chế độ `ai` với mô hình thật (cần khóa mới hoặc LM Studio + Gemma 4 E4B) và đo thời gian trên điện thoại.
+- Chạy chế độ `ai` với mô hình thật và đo thời gian trên điện thoại. Cập nhật 2026-11-26: LM Studio và Gemma 4 E4B đã chạy được trên máy phát triển (`LMSTUDIO_REASONING_EFFORT=none`); chưa chạy backend chế độ `ai` với model này.
 - Hỏi bằng giọng nói: chỉ kiểm được trên điện thoại thật (STT của emulator không có micro/mạng).
 - Phúc: hai test của `ai/` hỏng trên Windows do môi trường (thiếu font DejaVu; đọc file không chỉ định
   `encoding="utf-8"`), chạy được với `-X utf8`; trên CI (Ubuntu) cài `fonts-dejavu-core`.
