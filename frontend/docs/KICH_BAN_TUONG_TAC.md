@@ -60,6 +60,22 @@ Máy chưa có giọng tiếng Việt: app nói một câu tiếng Anh hướng 
 
 Ảnh đọc được một phần: sau mô tả app nói thêm "Có chỗ mình không đọc được…". Ảnh hỏng hẳn: app giải thích rồi hướng dẫn chụp lại.
 
+## Kịch bản 2a — Hướng dẫn chụp (thêm 27/11/2026, chưa kiểm trên máy thật)
+
+Bật sẵn; tắt ở Cài đặt → Cho người hỗ trợ → Hướng dẫn chụp.
+
+| Tình huống | App nói | Âm / rung |
+|---|---|---|
+| Đang ngắm, tối kéo dài | "Hơi tối. Bạn đưa ra chỗ sáng hơn." | — |
+| Đang ngắm, chói kéo dài | "Bị chói. Bạn nghiêng máy một chút." | — |
+| Đang ngắm, mờ kéo dài | "Ảnh đang mờ. Bạn đưa máy ra xa một chút." | — |
+| Đang ngắm, máy rung kéo dài | "Bạn giữ yên máy." | — |
+| Khung hình đã ổn | (không nói) | âm tách + rung nhẹ, một lần |
+| Ảnh vừa chụp hỏng rõ (ví dụ tối) | "Ảnh vừa chụp quá tối. Bạn bật đèn hoặc đưa ra chỗ sáng hơn, rồi chụp lại. Nếu lần chụp tới vẫn vậy, mình sẽ cứ gửi đi đọc." | lỗi |
+| Chụp lại vẫn vậy | Gửi đi như bình thường | như kịch bản 2 |
+
+Lưu ý: âm "khung hình ổn" đang dùng chung âm tách với "chạm một lần"; cần nghe thử xem có lẫn không.
+
 ## Kịch bản 3 — Dừng, nghe lại, chụp trang mới
 
 | Bước | Người dùng | App nói | Âm |
@@ -88,7 +104,7 @@ Chạm khi app đang chờ máy chủ: "Đang đọc trang, xin chờ.", không 
 - Nhận giọng nói dùng dịch vụ có sẵn của Android (Google), tiếng Việt. Có mạng là chạy; muốn chạy không cần mạng thì tải gói "Nhận dạng giọng nói ngoại tuyến" tiếng Việt trong cài đặt Google của điện thoại.
 - Máy không có dịch vụ nhận giọng nói: màn hình hiện ba câu hỏi gợi ý thay cho nút nói.
 
-## Kịch bản 5 — Thư viện (bản mẫu)
+## Kịch bản 5 — Thư viện
 
 | Bước | Người dùng | App nói |
 |---|---|---|
@@ -97,7 +113,7 @@ Chạm khi app đang chờ máy chủ: "Đang đọc trang, xin chờ.", không 
 | 3 | Chạm hai lần **Trang sau** / **Trang trước** | Đọc trang kế; ở trang cuối: "Đây là trang cuối." |
 | 4 | Chạm hai lần **Đọc trang** hoặc thẻ trang | Đọc lại trang hiện tại |
 
-Sách và lời mô tả hiện là dữ liệu mẫu do nhóm tự viết (`assets/library/sach_mau.json`), màn hình ghi rõ "Bản mẫu". Thay bằng kho của Mảng B (`/v1/library`) khi có.
+App tải theo ba tầng: kho của máy chủ (`/v1/library`) → bản đã lưu lần trước (nghe được khi mất mạng) → sách mẫu trong app (`assets/library/sach_mau.json`). Màn hình và câu giới thiệu nói rõ nguồn: "Máy chủ", "Đã lưu" hoặc "Bản mẫu". Bảng trên là ví dụ với sách mẫu.
 
 ## Kịch bản 6 — Cài đặt
 

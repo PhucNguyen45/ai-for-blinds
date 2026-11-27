@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'api/models.dart';
 import 'app_services.dart';
+import 'capture/photo_check.dart';
 import 'library/library_data.dart';
 import 'reader/reader_controller.dart';
 import 'services/capture_source.dart';
@@ -47,6 +48,9 @@ Future<void> main() async {
     speaker: speaker,
     earcons: earcons,
     pageType: () => settings.pageType,
+    photoCheck: checkPhoto,
+    guideOn: () => settings.captureGuideOn,
+    onCaptureEvent: (event) => unawaited(settings.countCapture(event)),
   );
   final services = AppServices(
     controller: controller,

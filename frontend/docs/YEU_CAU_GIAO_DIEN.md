@@ -64,3 +64,13 @@ Mức ưu tiên: **B** = bắt buộc cho Cổng 1 (13/12/2026), **N** = nên c�
 | UI-42 | App phải giữ `image_id` của lần mô tả gần nhất. | B | Cần cho hỏi tiếp ở Giai đoạn 2. | Test "thành công…" |
 | UI-43 | App phải cho hỏi tiếp trên cùng ảnh BẰNG GIỌNG NÓI (nhận giọng nói có sẵn của Android, tiếng Việt), gửi kèm lịch sử hỏi đáp; nút âm lượng bật nghe; không bao giờ kẹt ở trạng thái đang nghe; máy không nhận được giọng nói thì có câu hỏi gợi ý. | B | Tính năng mạnh nhất của Be My AI mà đề tài cần có; học sinh không gõ phím được. | Test nhóm "Hỏi" (nói, không nghe rõ, chạm để dừng, hết giờ, không có STT); kiểm tay trên điện thoại |
 | UI-44 | App phải tải kho mô tả SGK về máy và đọc offline. Thư viện tải từ máy chủ (`/v1/library`, kho `data/library/` của nhóm), lưu bản đã tải để nghe khi mất mạng, chưa từng kết nối thì dùng sách mẫu trong app; màn hình ghi rõ nguồn. | N | Học sinh ở nơi mạng yếu vẫn học được. | `test/library_source_test.dart` (máy chủ → đã lưu → mẫu); test "mở sách, đọc trang đầu…", "sách tải từ máy chủ", "mất mạng, nghe bản đã lưu" |
+
+## 6. Hướng dẫn chụp (thêm 27/11/2026; mức ưu tiên là đề xuất, chờ Toàn duyệt)
+
+| Mã | Yêu cầu | Ưu tiên | Lý do | Kiểm chứng |
+|---|---|---|---|---|
+| UI-50 | Khi đang ngắm, app phải nhắc bằng giọng nói nếu khung hình tối, chói, mờ hoặc rung kéo dài; mỗi lần một lỗi, không nhắc liên tục, không chen khi app đang nói. | N | Người dùng không thấy khung hình; Mảng B đề nghị hướng dẫn ngay, không đợi mô hình. | `test/live_guide_test.dart`; test nhóm "Hướng dẫn chụp"; kiểm tay B12, B13 |
+| UI-51 | Khi khung hình đã ổn, app phải báo bằng một âm ngắn và rung, không nói. | N | Báo được "chụp đi" mà không chiếm kênh giọng nói. | test "khung hình ổn…"; kiểm tay B14 |
+| UI-52 | App phải kiểm ảnh vừa chụp ngay trên máy; ảnh hỏng rõ thì chưa gửi và đọc cách chụp lại. | N | Biết ảnh hỏng ngay, không đợi máy chủ; bớt lượt gọi mô hình. | `test/capture_flow_test.dart` |
+| UI-53 | App không được khóa việc chụp: không giữ hai ảnh liên tiếp; không kiểm được thì gửi đi. | B (khi có UI-52) | Bộ kiểm có thể sai (bảng đen, ảnh nền tối). | `test/capture_flow_test.dart` |
+| UI-54 | Hướng dẫn chụp phải tắt được; số liệu chụp chỉ là số đếm trên máy, không lưu ảnh; tắt thì vẫn đếm. | N | Người đã quen không cần nhắc; cần mốc so sánh trước và sau. | `test/capture_flow_test.dart` |

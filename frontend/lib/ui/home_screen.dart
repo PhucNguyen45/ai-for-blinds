@@ -5,8 +5,11 @@ import 'package:camera/camera.dart' show CameraException;
 import 'package:flutter/material.dart';
 
 import '../app_services.dart';
+import '../capture/capture_coach.dart';
+import '../capture/live_guide.dart';
 import '../reader/reader_controller.dart';
 import '../services/capture_source.dart';
+import '../services/earcons.dart';
 import '../strings.dart';
 import 'ask_screen.dart';
 import 'explore.dart';
@@ -54,11 +57,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ti
   AppServices get _s => widget.services;
   ReaderController get _c => _s.controller;
 
+  late final CaptureCoach _coach = CaptureCoach(
+    aiming: () =>
+        mounted && (_stage == _Stage.camera || _stage == _Stage.error) && (ModalRoute.of(context)?.isCurrent ?? true),
+    mayInterrupt: () => !_c.talking && _c.status != ReaderStatus.sending,
+    onSignal: _onGuideSignal,
+  );
+
+  void _onGuideSignal(GuideSignal signal) {
+    final issue = signal.issue;
+    if (issue == null) {
+      // Khung hình đã ổn: chỉ một âm ngắn kèm rung nhẹ, không nói.
+      unawaited(_s.earcons.play(Earcon.focus));
+      unawaited(_s.haptics.focus());
+    } else {
+      unawaited(_c.announce(S.liveHint(issue)));
+    }
+  }
+
+  /// Theo dõi khung hình khi người dùng bật hướng dẫn chụp.
+  void _syncGuide() => _s.capture.watchFrames(_s.settings.captureGuideOn ? _coach.onFrame : null);
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _c.addListener(_syncScan);
+    _syncGuide();
     _s.capture.open();
     _listenVolumeKeys();
   }
@@ -68,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ti
     WidgetsBinding.instance.removeObserver(this);
     _c.removeListener(_syncScan);
     _volumeSub?.cancel();
+    _s.capture.watchFrames(null);
     _s.capture.close();
     _scan.dispose();
     _flash.dispose();
@@ -136,15 +162,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ti
       final bytes = await _s.capture.takePicture();
       if (bytes == null) return _c.announce(S.cameraNotReady);
       if (mounted && !MediaQuery.disableAnimationsOf(context)) _flash.forward(from: 0);
-      await _describe(bytes);
+      await _describe(bytes, fromCamera: true);
     } on CameraException {
       await _c.fail(S.cameraNotReady);
     }
   }
 
-  Future<void> _describe(Uint8List bytes) async {
+  Future<void> _describe(Uint8List bytes, {bool fromCamera = false}) async {
     if (mounted) setState(() => _showCamera = false);
-    await _c.describe(bytes);
+    await _c.describe(bytes, fromCamera: fromCamera);
   }
 
   Future<void> _stageActivate() async {
@@ -177,6 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ti
     if (!mounted) return null;
     final result = await Navigator.of(context).push<T>(MaterialPageRoute(builder: (_) => page));
     if (!mounted) return result;
+    _syncGuide(); // người hỗ trợ có thể vừa bật hoặc tắt hướng dẫn
     await _s.capture.open();
     _listenVolumeKeys();
     return result;

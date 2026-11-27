@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '../api/api_client.dart';
 import '../api/models.dart';
+import '../capture/frame_quality.dart';
 import '../services/earcons.dart';
 import '../services/speech.dart';
 import '../strings.dart';
@@ -26,7 +27,12 @@ class ReaderController extends ChangeNotifier {
     String Function()? pageType,
     this.waitingInterval = const Duration(seconds: 3),
     this.stillWorkingAfter = const Duration(seconds: 20),
-  }) : _pageType = pageType ?? (() => 'auto');
+    this.photoCheck,
+    bool Function()? guideOn,
+    void Function(String event)? onCaptureEvent,
+  }) : _pageType = pageType ?? (() => 'auto'),
+       _guideOn = guideOn ?? (() => true),
+       _onCaptureEvent = onCaptureEvent ?? ((_) {});
 
   /// Mã nội dung đang đọc, để màn hình biết tô vàng câu ở đâu.
   static const pageId = 'page';
@@ -39,6 +45,24 @@ class ReaderController extends ChangeNotifier {
   final EarconPlayer earcons;
   final Duration waitingInterval;
   final Duration stillWorkingAfter;
+
+  /// Kiểm ảnh vừa chụp ngay trên máy; null = không kiểm.
+  final Future<CaptureIssue?> Function(Uint8List image)? photoCheck;
+
+  /// Người dùng có bật hướng dẫn chụp không. Tắt thì chỉ đếm lỗi, không giữ ảnh.
+  final bool Function() _guideOn;
+
+  /// Đếm sự kiện chụp (chỉ tên sự kiện, không kèm ảnh): `shot`, `phone_<lỗi>`, `phone_blocked`,
+  /// `server_ok`, `server_unreadable`.
+  final void Function(String event) _onCaptureEvent;
+
+  /// Lần chụp ngay trước đã bị giữ lại: lần này gửi đi dù kết quả kiểm ra sao.
+  bool _heldLastShot = false;
+
+  int _talking = 0;
+
+  /// App đang phát một câu nói (để lời nhắc ngắm máy không chen ngang).
+  bool get talking => _talking > 0;
 
   ReaderStatus _status = ReaderStatus.idle;
   ReaderStatus get status => _status;
@@ -96,7 +120,7 @@ class ReaderController extends ChangeNotifier {
         await stopSpeaking();
         return false;
       case ReaderStatus.sending:
-        await speaker.speak(S.working);
+        await _say(S.working);
         return false;
       case ReaderStatus.idle:
       case ReaderStatus.error:
@@ -104,19 +128,30 @@ class ReaderController extends ChangeNotifier {
     }
   }
 
-  /// Gửi ảnh đã chụp và đọc kết quả.
-  Future<void> describe(Uint8List image) async {
+  /// Gửi ảnh đã chụp và đọc kết quả. Ảnh từ camera ([fromCamera]) được kiểm trên máy trước khi gửi.
+  Future<void> describe(Uint8List image, {bool fromCamera = false}) async {
     if (busy) return;
+    final previousImage = _lastImage;
     _lastImage = image;
-    _turns.clear();
     _stopReadingState();
-    await earcons.play(Earcon.shutter);
     _setStatus(ReaderStatus.sending, force: true);
+    await earcons.play(Earcon.shutter);
+
+    if (fromCamera) {
+      final issue = await _checkShot(image);
+      if (issue != null) {
+        _lastImage = previousImage;
+        await fail(S.retake(issue));
+        return;
+      }
+    }
+    _turns.clear();
     unawaited(_sayPlain(S.working));
 
     final result = await _waiting(() => api().describe(image, pageType: _pageType()));
     switch (result) {
       case ApiOk(:final value):
+        if (fromCamera) _onCaptureEvent(value.wholeUnreadable ? 'server_unreadable' : 'server_ok');
         _last = value;
         _pageText = _spokenFor(value);
         _pageSentences = splitSentences(_pageText);
@@ -125,6 +160,26 @@ class ReaderController extends ChangeNotifier {
       case ApiFail(:final message):
         await fail(message);
     }
+  }
+
+  /// Lỗi khiến ảnh bị giữ lại để chụp lại, hoặc `null` nếu nên gửi đi.
+  /// Không bao giờ giữ hai lần liên tiếp: bộ kiểm có thể sai (bảng đen, ảnh nền tối).
+  Future<CaptureIssue?> _checkShot(Uint8List image) async {
+    final check = photoCheck;
+    if (check == null) return null;
+    _onCaptureEvent('shot');
+    CaptureIssue? issue;
+    try {
+      issue = await check(image);
+    } catch (_) {
+      issue = null; // bộ kiểm hỏng thì không được cản việc đọc trang
+    }
+    if (issue != null) _onCaptureEvent('phone_${issue.name}');
+    final hold = issue != null && _guideOn() && !_heldLastShot;
+    _heldLastShot = hold;
+    if (!hold) return null;
+    _onCaptureEvent('phone_blocked');
+    return issue;
   }
 
   /// Câu đọc cho một kết quả mô tả:
@@ -174,14 +229,14 @@ class ReaderController extends ChangeNotifier {
     _sentenceIndex = intro == null ? 0 : -1;
     _setStatus(ReaderStatus.speaking, force: true);
     if (intro != null) {
-      await speaker.speak(intro);
+      await _say(intro);
       if (token != _speechToken) return;
     }
     for (var i = 0; i < sentences.length; i++) {
       if (token != _speechToken) return;
       _sentenceIndex = i;
       notifyListeners();
-      await speaker.speak(sentences[i]);
+      await _say(sentences[i]);
     }
     if (token != _speechToken) return;
     _sentenceIndex = -1;
@@ -214,13 +269,13 @@ class ReaderController extends ChangeNotifier {
   Future<void> warn(String message) async {
     _interrupt();
     await earcons.play(Earcon.error);
-    await speaker.speak(message);
+    await _say(message);
   }
 
   /// Nói một câu ngắn (tên nút, xác nhận). Đang đọc thì dừng đọc trước.
   Future<void> announce(String text) async {
     _interrupt();
-    await speaker.speak(text);
+    await _say(text);
   }
 
   Future<void> stopSpeaking() async {
@@ -262,7 +317,16 @@ class ReaderController extends ChangeNotifier {
     _sentenceIndex = -1;
   }
 
-  Future<void> _sayPlain(String text) => speaker.speak(text);
+  Future<void> _sayPlain(String text) => _say(text);
+
+  Future<void> _say(String text) async {
+    _talking++;
+    try {
+      await speaker.speak(text);
+    } finally {
+      _talking--;
+    }
+  }
 
   void _setStatus(ReaderStatus s, {bool force = false}) {
     if (_status == s && !force) return;

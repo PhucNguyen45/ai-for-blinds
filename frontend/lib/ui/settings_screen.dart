@@ -286,6 +286,26 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
                             },
                           ),
                         ),
+                        MergeSemantics(
+                          child: SwitchListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                            minTileHeight: AppTheme.minTouch,
+                            title: const Text(S.captureGuide, style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700)),
+                            subtitle: const Text(S.captureGuideSub, style: TextStyle(fontSize: 15, color: AppTheme.mute)),
+                            value: _s.captureGuideOn,
+                            onChanged: (v) async {
+                              await _s.setCaptureGuideOn(v);
+                              await _c.announce('${S.captureGuide} ${v ? 'bật' : 'tắt'}.');
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                          child: Text(
+                            S.captureStatsText(_s.captureStats),
+                            style: const TextStyle(fontSize: 15, color: AppTheme.mute),
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         _button(
                           S.openTtsSettings,

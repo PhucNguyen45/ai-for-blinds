@@ -2,7 +2,7 @@
 
 Người phụ trách: Toàn. Mỗi bản phát hành phải qua hết các mục. Cột **Cách kiểm** cho biết mục nào máy tự kiểm (`flutter test`) và mục nào phải kiểm tay trên điện thoại thật.
 
-Trạng thái ghi theo bản giao diện mới ngày 18/11/2026 (nhánh `toan/frontend`): 62 test đạt.
+Trạng thái các mục A1–A12 và B1–B11 ghi theo bản giao diện ngày 18/11/2026. Ngày 27/11/2026 `flutter test`: 124 đạt, 3 bỏ qua.
 
 ## A. Máy tự kiểm — chạy `flutter test`
 
@@ -36,6 +36,11 @@ Trạng thái ghi theo bản giao diện mới ngày 18/11/2026 (nhánh `toan/fr
 | B8 | Âm báo nghe rõ, phân biệt được 6 loại (tách, mở, chụp, chờ, xong, lỗi) | Nhờ một người nghe thử, không nhìn màn hình | Chưa kiểm |
 | B9 | Tốc độ đọc mặc định không quá chậm với người quen dùng trình đọc màn hình | Hỏi người dùng khiếm thị ở buổi thử nghiệm | Chưa kiểm |
 | B10 | Ảnh chụp trong nhà, ánh đèn thường, vẫn đọc được chữ SGK | Chụp 5 trang SGK, so mô tả với trang thật | Chưa kiểm |
+| B12 | Lời nhắc ngắm máy đúng lúc, không trễ đến mức vô ích, không nhắc dồn | Điện thoại thật: chụp trong chỗ tối, chỗ chói, cố ý rung tay | Chưa kiểm |
+| B13 | Lời nhắc ngắm máy không đọc chồng lên TalkBack | Bật TalkBack, đứng ở màn hình chụp trong chỗ tối | Chưa kiểm |
+| B14 | Âm "khung hình ổn" không lẫn với âm chạm một lần | Nhờ một người nghe, không nhìn màn hình | Chưa kiểm |
+| B15 | Camera chụp được bình thường khi bật hướng dẫn; xem trước không giật, máy không nóng bất thường sau 5 phút | Bật và tắt hướng dẫn, so sánh | Chưa kiểm |
+| B16 | Ngưỡng không chặn nhầm bảng đen, tivi, trang nền đen | Chụp mỗi loại 5 ảnh, xem số liệu trong "Cho người hỗ trợ" | Chưa kiểm |
 
 ## C. Quy tắc thiết kế (rà khi review code)
 

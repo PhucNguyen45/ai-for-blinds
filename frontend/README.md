@@ -17,7 +17,7 @@ flutter pub get
 flutter test
 ```
 
-66 test: trợ năng tự động (nhãn TalkBack, vùng chạm, tương phản) trên mọi màn hình; cách thao tác chạm nghe / chạm hai lần / rê ngón / nhường TalkBack; không tràn chữ khi phóng chữ 200% và màn hình 360×640; đọc phản hồi thật của backend (`test/fixtures/`) và 4 ví dụ của hợp đồng AI v0.1 (`test/fixtures/contract_v01/`).
+Ngày 27/11/2026: 124 test đạt, 3 bỏ qua (cần backend thật). Gồm trợ năng tự động (nhãn TalkBack, vùng chạm, tương phản) trên mọi màn hình; cách thao tác chạm nghe / chạm hai lần / rê ngón / nhường TalkBack; không tràn chữ khi phóng chữ 200% và màn hình 360×640; đọc phản hồi thật của backend (`test/fixtures/`) và 4 ví dụ của hợp đồng AI v0.1 (`test/fixtures/contract_v01/`).
 
 ## Kiểm môi trường và dựng APK cho điện thoại
 
@@ -48,8 +48,6 @@ APK cho điện thoại thật: `build\app\outputs\flutter-apk\app-arm64-v8a-rel
 
 Điện thoại phải có dữ liệu giọng tiếng Việt: Cài đặt → Trợ năng → Chuyển văn bản thành giọng nói → Google → tải Tiếng Việt. Thiếu giọng, app báo bằng tiếng Anh và hiện nút mở cài đặt giọng.
 
-Hướng dẫn bật gỡ lỗi USB, chạy không dây: `Desktop\NCKH\HUONG-DAN-BUILD-APP.md`.
-
 ## Thao tác
 
 **Chạm một lần để nghe, chạm hai lần để dùng** — trên mọi màn hình, không cần bật TalkBack.
@@ -67,6 +65,18 @@ Bố cục cố định: **Cài đặt** góc trên trái, **Trợ giúp** góc 
 
 Kịch bản đầy đủ: `docs/KICH_BAN_TUONG_TAC.md`. Yêu cầu giao diện: `docs/YEU_CAU_GIAO_DIEN.md`. Checklist trợ năng: `docs/CHECKLIST_TRO_NANG.md`.
 
+## Hướng dẫn chụp (thêm 27/11/2026)
+
+Ba lớp, hai lớp đầu chạy ngay trên máy, không cần mạng:
+
+1. **Đang ngắm** (màn hình chụp): vài khung xem trước mỗi giây được đo **tối, chói, mờ, rung**. Chỉ nhắc khi lỗi kéo dài 3 khung (khoảng 1,2 giây), mỗi lần một lỗi quan trọng nhất, cùng một lỗi cách nhau ít nhất 6 giây; không chen khi app đang nói. Khung hình ổn thì chỉ phát một âm ngắn kèm rung nhẹ.
+2. **Vừa chụp** (chỉ ảnh từ camera): ảnh hỏng rõ thì **chưa gửi**, app nói lý do và mời chụp lại. **Không bao giờ giữ hai lần liên tiếp**; bộ kiểm lỗi hoặc không chắc thì cho ảnh đi tiếp. Ảnh chọn từ thư viện máy không bị kiểm.
+3. **Máy chủ**: cổng chất lượng của module AI và mô hình, như trước.
+
+Tắt, bật ở Cài đặt → Cho người hỗ trợ → **Hướng dẫn chụp**. Khi tắt, app vẫn **đếm** lỗi để làm mốc so sánh. Số liệu chỉ là số đếm lưu trên máy (không lưu ảnh), hiện ngay dưới công tắc.
+
+**Trạng thái:** có test tự động; **chưa build APK và chưa chạy trên máy ảo hay điện thoại**. Phần nối camera (`services/capture_source.dart`, đổi khung xem trước sang YUV420 và tạm ngừng luồng khi chụp) **không có test tự động**. **Ngưỡng chưa hiệu chỉnh** trên khung hình điện thoại, nhất là ngưỡng rung; chưa đo độ giật và pin. So với cổng máy chủ trên 121 ảnh có trên máy (phần lớn tổng hợp và ảnh Wikimedia, không phải ảnh chụp điện thoại): cùng kết luận 118 ảnh; 2 ảnh nền đen rõ nét được cho qua trong khi **máy chủ vẫn chặn**, 1 ảnh ở sát ngưỡng chói.
+
 ## Cấu trúc
 
 ```
@@ -77,7 +87,12 @@ lib/
   api/                      gọi máy chủ (describe, ask, health), chế độ demo, kiểu dữ liệu
   reader/
     reader_controller.dart  luồng chụp → gửi → đọc từng câu → hỏi tiếp; không phụ thuộc giao diện
-  library/library_data.dart sách cho Thư viện (hiện là bản mẫu trong assets/library/)
+  capture/
+    frame_quality.dart      đo tối, chói, mờ, rung từ ảnh xám
+    photo_check.dart        kiểm ảnh vừa chụp trước khi gửi
+    live_guide.dart         quyết định khi nào nhắc (chống nhắc liên tục)
+    capture_coach.dart      nối khung xem trước với lời nhắc
+  library/library_data.dart sách cho Thư viện: máy chủ → bản đã lưu → sách mẫu trong assets/library/
   services/
     capture_source.dart     camera trong app + chọn ảnh
     speech.dart             giọng đọc (flutter_tts, vi-VN) + phụ đề câu đang nói
@@ -118,5 +133,7 @@ Tham khảo Seeing AI, Lookout (Google), Be My Eyes / Be My AI, Envision:
 
 ## Chưa làm
 
-- Thư viện thật (`/v1/library` của Nam) và đọc offline: hiện là sách mẫu.
+- Hướng dẫn chụp: canh khung (chữ chạm mép, 4 góc trang giấy), tự chụp; hiệu chỉnh ngưỡng trên điện thoại thật; thử cùng TalkBack và với người khiếm thị; đo tỉ lệ ảnh hỏng khi tắt và khi bật.
+- Luồng "mô tả ngắn rồi hỏi người dùng muốn gì" (xem Quy cách đầu ra ở `../ai/README.md`): app vẫn đọc toàn bộ mô tả như trước.
+
 - Khóa ký riêng cho bản phát hành.

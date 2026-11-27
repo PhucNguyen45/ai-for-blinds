@@ -2,11 +2,13 @@
 // nhãn TalkBack, vùng chạm, tương phản (bộ kiểm tra có sẵn của Flutter), cách thao tác
 // "chạm để nghe, chạm hai lần để dùng", và không tràn chữ khi phóng chữ hoặc màn hình nhỏ.
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sgbe/app_services.dart';
+import 'package:sgbe/capture/frame_quality.dart';
 import 'package:sgbe/library/library_data.dart';
 import 'package:sgbe/main.dart';
 import 'package:sgbe/reader/reader_controller.dart';
@@ -38,8 +40,10 @@ void main() {
     Size size = const Size(1080, 2340),
     double ratio = 3,
     LibrarySource library = const FakeLibrary(),
+    Map<String, Object> prefs = const {},
+    Future<CaptureIssue?> Function(Uint8List image)? photoCheck,
   }) async {
-    SharedPreferences.setMockInitialValues({'tutorial_done': true});
+    SharedPreferences.setMockInitialValues({'tutorial_done': true, ...prefs});
     settings = await SettingsStore.load();
     api = FakeApi();
     speaker = FakeSpeaker();
@@ -48,7 +52,14 @@ void main() {
     earcons = FakeEarcons();
     stt = FakeSpeechInput(ok: sttOk);
     final captioned = CaptionedSpeaker(speaker);
-    controller = ReaderController(api: () => api, speaker: captioned, earcons: earcons);
+    controller = ReaderController(
+      api: () => api,
+      speaker: captioned,
+      earcons: earcons,
+      photoCheck: photoCheck,
+      guideOn: () => settings.captureGuideOn,
+      onCaptureEvent: settings.countCapture,
+    );
     final services = AppServices(
       controller: controller,
       settings: settings,
@@ -413,6 +424,62 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(S.badgeCache), findsOneWidget);
       expect(speaker.spoken, contains('${S.libraryCount(2)} ${S.originCache} ${S.backAtBottom}'));
+    });
+  });
+
+  group('Hướng dẫn chụp', () {
+    testWidgets('đang ngắm mà tối kéo dài: nhắc một lần', (tester) async {
+      await pumpApp(tester);
+      speaker.spoken.clear();
+      capture.emitFlat(5, count: 6);
+      await tester.pump();
+      expect(speaker.spoken, [S.liveHint(CaptureIssue.dark)]);
+    });
+
+    testWidgets('khung hình ổn: chỉ phát âm ngắn, không nói', (tester) async {
+      await pumpApp(tester);
+      speaker.spoken.clear();
+      earcons.played.clear();
+      capture.emitSharp();
+      await tester.pump();
+      expect(speaker.spoken, isEmpty);
+      expect(earcons.played, [Earcon.focus]);
+    });
+
+    testWidgets('app đang nói thì không chen lời nhắc', (tester) async {
+      await pumpApp(tester);
+      speaker.hold = Completer<void>();
+      unawaited(controller.announce('Đang nói một câu dài.'));
+      await tester.pump();
+      speaker.spoken.clear();
+      capture.emitFlat(5, count: 6);
+      await tester.pump();
+      expect(speaker.spoken, isEmpty);
+      await speaker.stop();
+    });
+
+    testWidgets('tắt trong cài đặt: không theo dõi khung hình', (tester) async {
+      await pumpApp(tester, prefs: {'capture_guide_on': false});
+      expect(capture.frameListener, isNull);
+    });
+
+    testWidgets('đang xem kết quả: không nhắc', (tester) async {
+      await pumpApp(tester);
+      bridge.keys.add('down');
+      await tester.pumpAndSettle();
+      speaker.spoken.clear();
+      capture.emitFlat(5, count: 6);
+      await tester.pump();
+      expect(speaker.spoken, isEmpty);
+    });
+
+    testWidgets('chụp bằng camera ra ảnh hỏng: không gửi, đọc lời mời chụp lại', (tester) async {
+      await pumpApp(tester, photoCheck: (_) async => CaptureIssue.dark);
+      bridge.keys.add('down');
+      await tester.pumpAndSettle();
+      expect(api.describeCalls, 0);
+      expect(speaker.spoken.last, S.retake(CaptureIssue.dark));
+      expect(settings.captureStats, {'shot': 1, 'phone_dark': 1, 'phone_blocked': 1});
     });
   });
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,6 +42,27 @@ class SettingsStore extends ChangeNotifier implements LibraryCache {
   bool get soundOn => _prefs.getBool('sound_on') ?? true;
   bool get vibrateOn => _prefs.getBool('vibrate_on') ?? true;
 
+  /// Nhắc người dùng khi ngắm máy và giữ lại ảnh hỏng rõ.
+  bool get captureGuideOn => _prefs.getBool('capture_guide_on') ?? true;
+
+  /// Số đếm sự kiện chụp trên máy này (không lưu ảnh).
+  Map<String, int> get captureStats {
+    final raw = _prefs.getString('capture_stats');
+    if (raw == null) return const {};
+    try {
+      return {for (final e in (jsonDecode(raw) as Map<String, dynamic>).entries) e.key: (e.value as num).toInt()};
+    } catch (_) {
+      return const {};
+    }
+  }
+
+  /// Cộng một vào bộ đếm. Không báo đổi cài đặt.
+  Future<void> countCapture(String event) {
+    final stats = Map<String, int>.of(captureStats);
+    stats[event] = (stats[event] ?? 0) + 1;
+    return _prefs.setString('capture_stats', jsonEncode(stats));
+  }
+
   /// Đã nghe lời hướng dẫn lần đầu chưa.
   bool get tutorialDone => _prefs.getBool('tutorial_done') ?? false;
 
@@ -64,6 +87,7 @@ class SettingsStore extends ChangeNotifier implements LibraryCache {
   Future<void> setPageType(String v) => _set(() => _prefs.setString('page_type', v));
   Future<void> setSoundOn(bool v) => _set(() => _prefs.setBool('sound_on', v));
   Future<void> setVibrateOn(bool v) => _set(() => _prefs.setBool('vibrate_on', v));
+  Future<void> setCaptureGuideOn(bool v) => _set(() => _prefs.setBool('capture_guide_on', v));
   Future<void> setTutorialDone(bool v) => _set(() => _prefs.setBool('tutorial_done', v));
 
   /// Bản thư viện tải lần trước (JSON), để nghe khi mất mạng. Không báo đổi cài đặt.

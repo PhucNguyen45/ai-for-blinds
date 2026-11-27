@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sgbe/api/api_client.dart';
 import 'package:sgbe/api/models.dart';
+import 'package:sgbe/capture/frame_quality.dart';
 import 'package:sgbe/library/library_data.dart';
 import 'package:sgbe/services/capture_source.dart';
 import 'package:sgbe/services/earcons.dart';
@@ -61,7 +62,11 @@ class FakeApi implements SgbeApi {
   /// Khi đặt, `describe` chờ tới khi completer hoàn thành (giả lập máy chủ chậm).
   Completer<void>? gate;
 
-  static ApiResult<DescribeResult> ok({String description = 'Trang có một lược đồ.', bool unreadable = false}) => ApiOk(
+  static ApiResult<DescribeResult> ok({
+    String description = 'Trang có một lược đồ.',
+    bool unreadable = false,
+    String status = 'ok',
+  }) => ApiOk(
     DescribeResult(
       imageId: 'b9b1d4985e464bbb',
       description: description,
@@ -71,6 +76,7 @@ class FakeApi implements SgbeApi {
       promptVersion: 'v1',
       latencyMs: 10,
       cached: false,
+      status: status,
     ),
   );
 
@@ -124,6 +130,30 @@ class FakeCapture implements CaptureSource {
 
   final ValueNotifier<CameraState> _state;
   int pictures = 0;
+
+  /// Nơi nhận khung hình xem trước; null = app không theo dõi khung hình.
+  void Function(GrayImage frame)? frameListener;
+
+  @override
+  void watchFrames(void Function(GrayImage frame)? onFrame) => frameListener = onFrame;
+
+  /// Giả lập [count] khung hình cùng một mức sáng.
+  void emitFlat(int level, {int count = 3}) {
+    for (var i = 0; i < count; i++) {
+      frameListener?.call(GrayImage(Uint8List(64 * 48)..fillRange(0, 64 * 48, level), 64, 48));
+    }
+  }
+
+  /// Giả lập [count] khung rõ nét, đứng yên.
+  void emitSharp({int count = 3}) {
+    final px = Uint8List(64 * 48);
+    for (var i = 0; i < px.length; i++) {
+      px[i] = ((i % 64) ~/ 4).isEven ? 30 : 220;
+    }
+    for (var i = 0; i < count; i++) {
+      frameListener?.call(GrayImage(px, 64, 48));
+    }
+  }
 
   @override
   ValueListenable<CameraState> get state => _state;

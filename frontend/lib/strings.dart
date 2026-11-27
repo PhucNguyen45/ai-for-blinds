@@ -1,3 +1,5 @@
+import 'capture/frame_quality.dart';
+
 /// Mọi câu app nói ra và chữ hiển thị đều nằm ở đây.
 ///
 /// Người dùng không nhìn màn hình, nên câu nói quan trọng hơn chữ hiển thị.
@@ -78,6 +80,37 @@ class S {
   static const stateSending = 'Đang đọc trang…';
   static const stateAsking = 'Đang hỏi…';
   static const stateError = 'Có lỗi';
+
+  // Hướng dẫn chụp: lời nhắc khi đang ngắm (ngắn) và lời mời chụp lại sau khi chụp
+  static String liveHint(CaptureIssue issue) => switch (issue) {
+    CaptureIssue.dark => 'Hơi tối. Bạn đưa ra chỗ sáng hơn.',
+    CaptureIssue.glare => 'Bị chói. Bạn nghiêng máy một chút.',
+    CaptureIssue.blur => 'Ảnh đang mờ. Bạn đưa máy ra xa một chút.',
+    CaptureIssue.shake => 'Bạn giữ yên máy.',
+  };
+
+  static String retake(CaptureIssue issue) {
+    final reason = switch (issue) {
+      CaptureIssue.dark => 'Ảnh vừa chụp quá tối. Bạn bật đèn hoặc đưa ra chỗ sáng hơn',
+      CaptureIssue.glare => 'Ảnh vừa chụp bị chói. Bạn nghiêng máy hoặc tránh đèn rọi thẳng',
+      CaptureIssue.blur => 'Ảnh vừa chụp bị mờ. Bạn giữ chắc máy, đưa ra xa một chút',
+      CaptureIssue.shake => 'Máy bị rung lúc chụp. Bạn giữ yên máy',
+    };
+    return '$reason, rồi chụp lại. Nếu lần chụp tới vẫn vậy, mình sẽ cứ gửi đi đọc.';
+  }
+
+  static const captureGuide = 'Hướng dẫn chụp';
+  static const captureGuideSub = 'Nhắc khi ngắm máy, giữ lại ảnh hỏng rõ. Tắt thì chỉ đếm lỗi';
+  static const captureStatsEmpty = 'Chưa có số liệu chụp.';
+
+  static String captureStatsText(Map<String, int> s) {
+    final shots = s['shot'] ?? 0;
+    if (shots == 0) return captureStatsEmpty;
+    int n(String key) => s[key] ?? 0;
+    return 'Số liệu trên máy này: $shots lần chụp. Máy đánh giá hỏng: tối ${n('phone_dark')}, '
+        'chói ${n('phone_glare')}, mờ ${n('phone_blur')}; giữ lại ${n('phone_blocked')}. '
+        'Đã gửi: đọc được ${n('server_ok')}, máy chủ không đọc được ${n('server_unreadable')}.';
+  }
 
   // Hỏi
   static const askTitle = 'Hỏi về trang này';
