@@ -1,5 +1,7 @@
 # Rubric v1 — Đánh giá khả năng diễn giải hình ảnh của VLM
 
+> **Ghi chú 27/11/2026:** v1 chưa chấm việc tuân thủ [Quy cách đầu ra](../../README.md#quy-cách-đầu-ra-chốt-ngày-27112026) (không lộ đáp án bài tập, không nói điều không được hỏi). C3 có chấm phép tính và C4 chấm "giá trị học tập", cần xem lại. Thang điểm v1 giữ nguyên để không làm đổi nghĩa điểm đã chấm; thay đổi sẽ nằm ở phiên bản mới.
+
 ## 1. Mục đích
 
 Đánh giá chất lượng câu trả lời của VLM khi diễn giải

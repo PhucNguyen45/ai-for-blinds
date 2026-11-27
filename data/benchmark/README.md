@@ -10,6 +10,8 @@
 > Chưa phải benchmark đại diện cho học liệu thực tế. Đã có kết quả **thăm dò trên tập dev**
 > (xem `ai/evaluation/reports/`); tập test chưa chạy.
 
+> **27/11/2026:** câu hỏi loại `computation` và mệnh đề `inference` (tổng, chênh lệch, cạnh huyền, diện tích) cần đối chiếu với [Quy cách đầu ra](../../ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026): chênh lệch hai cột được phép khi không trùng bài tập trên trang (quy tắc 12), các phép tính khác tạm thời không được. Khi báo điểm, tách riêng hai nhóm này. Ground truth không bị sửa. Bộ này chưa đo việc tuân thủ "không giải bài tập".
+
 ## Thành phần
 
 | Nhóm | Số mẫu | Loại |

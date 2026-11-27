@@ -2,7 +2,14 @@
 
 Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ảnh ứng dụng mô hình ngôn ngữ thị giác (VLM), hỗ trợ học sinh khiếm thị học tập kiến thức trực quan.
 
-> **Nhánh `phuc` — cập nhật 2026-11-25.** Từ hôm nay nhánh này đã gồm bản ghép cả hệ thống (fast-forward từ `toan/tich-hop`, Toàn ghép): module AI (Phúc) + backend API v1 (Nam, từ `dev`) + app Flutter (Toàn, từ `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`; `ai/` không bị đổi. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Test backend chạy lại ngày 2026-11-26: 52 passed; backend chế độ `ai` đã chạy thật với Gemma 4 E4B qua LM Studio (số đo ở `docs/TICH_HOP.md`). Phần trạng thái AI bên dưới tính đến 2026-11-26: mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test chưa chạy.
+> **Nhánh `phuc` — cập nhật 2026-11-25.** Từ hôm nay nhánh này đã gồm bản ghép cả hệ thống (fast-forward từ `toan/tich-hop`, Toàn ghép): module AI (Phúc) + backend API v1 (Nam, từ `dev`) + app Flutter (Toàn, từ `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`; `ai/` không bị đổi. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Test backend chạy lại ngày 2026-11-26: 52 passed; backend chế độ `ai` đã chạy thật với Gemma 4 E4B qua LM Studio (số đo ở `docs/TICH_HOP.md`). Phần trạng thái AI bên dưới tính đến 2026-11-26: mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test của benchmark tổng hợp chưa chạy (VMMU test chạy một lần ngày 27/11).
+
+## Định hướng (cập nhật 2026-11-27)
+
+- **Người dùng:** học sinh khiếm thị lớp 1–12 và sinh viên khiếm thị. Hệ thống hỗ trợ học, **không giải bài tập, không đưa đáp án**, không thay giáo viên; VLM chỉ trả lời điều được hỏi. Chi tiết: [Quy cách đầu ra](ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026).
+- **Sản phẩm:** app di động, bài báo nghiên cứu, một VLM riêng của đề tài (định hướng họ Gemma).
+- **Kiến trúc:** hybrid client-server. Online dùng model teacher trên server hoặc cloud; mất mạng dùng model student. Server trả văn bản, app lo TTS.
+- **Phương pháp:** fine-tune hoặc distill, **ưu tiên distill** (yêu cầu của giảng viên); tách nghiên cứu model-level và system-level.
 
 ## Thành phần
 
@@ -27,7 +34,7 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 | Module AI (`describe_page`, `ask_page`) | Chạy được, có kiểm thử, không ném ngoại lệ | [`ai/README.md`](ai/README.md) |
 | Nhà cung cấp VLM | OpenRouter, Google AI Studio, LM Studio (cục bộ) | [`ai/README.md`](ai/README.md) |
 | Cổng chất lượng ảnh | Bắt tối/mờ trên ảnh tổng hợp; chưa hiệu chỉnh trên ảnh thật | [mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md) |
-| Hỏi đáp theo hình | Tính toán bằng mã; 68% → 90% trên dev (từ khóa thô, có thể lạc quan) | [mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md) |
+| Hỏi đáp theo hình | Tính toán bằng mã; 68% → 90% trên dev (từ khóa thô, có thể lạc quan). **Chưa khớp quy cách không giải bài tập** | [mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md) |
 | So sánh phương pháp / model (dev) | 4B cục bộ ngang gemini-3.1-flash-lite, hơn nemotron; B1 không giúp 4B | [so sánh](ai/evaluation/reports/so_sanh_phuong_phap_va_model_dev_20261117.md) |
 | Benchmark | 47 ảnh tổng hợp (dev 24 / test 23); 74 ảnh Wikimedia ứng viên chưa có ground truth | [`data/benchmark/`](data/benchmark/README.md) |
 | Dữ liệu ngoài (Hugging Face) | 7 bộ đã tải (~47 GB), phân 3 mục, có lớp phủ train/val/test chống rò rỉ; kiểm tra 26/11: các bộ đọc được và khớp khai báo; VizWiz có trên đĩa nhưng chưa có trong kiểm kê; cần xác minh giấy phép trước khi huấn luyện | [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md) |
@@ -114,7 +121,7 @@ Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc 
 1. Hiệu chỉnh cổng "không đọc được" trên trang SGK thật rồi đo lại.
 2. Thu thập và gán nhãn SGK lớp 4–5, biểu đồ/bản đồ thật (cần người gán nhãn, người rà soát thứ hai, văn bản cho phép của thầy).
 3. Chấm tay (rubric, hai người) và thiết kế chỉ số nhạy hơn; chạy tập test khi đóng băng cấu hình.
-4. Quyết định hướng fine-tune (QLoRA trên 8 GB VRAM chưa kiểm chứng).
+4. Theo [Quy cách đầu ra](ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026): sửa prompt, bộ sinh dữ liệu và cách đánh giá cho khớp; sau đó mới chọn teacher và cách distill (model student họ Gemma). Fine-tune trên RTX 2070 8 GB chưa kiểm chứng.
 5. ~~Đối chiếu hợp đồng AI v0.1 với API v1 và hợp nhất các nhánh~~: đã làm ở `toan/tich-hop`, nay nằm trên `phuc`, chờ cả nhóm duyệt ([`docs/TICH_HOP.md`](docs/TICH_HOP.md)).
 6. ~~Chạy test backend và CI sau khi ghép~~ (2026-11-26: backend 52 passed, CI chạy cả ba phần); thống nhất với Toàn, Nam việc dọn các nhánh thừa (`dev`, `nam`, `toan/frontend`, `toan/app-mvp`, `fix/e2e-vlm-stt-rag`).
 

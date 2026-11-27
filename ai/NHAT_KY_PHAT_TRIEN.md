@@ -1,7 +1,7 @@
 # Nhật ký phát triển phần AI (Mảng A)
 
 Mỗi ngày một mục: việc làm, số đo chính (kèm điều kiện), kết luận, việc còn lại. Chi tiết và bảng số liệu nằm ở `evaluation/reports/` (chỉ liên kết, không chép lại).
-Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test chưa chạy.
+Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của benchmark tổng hợp chưa chạy (VMMU test chạy một lần ngày 27/11).
 
 ## 2026-11-17
 
@@ -45,6 +45,34 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test chưa chạ
 - **Kiểm tra dữ liệu ngoài** (xem [báo cáo dữ liệu](evaluation/reports/du_lieu_ngoai_20261118.md), mục 7): các bộ đọc được; bộ VizWiz chưa có trong báo cáo cũ.
 - **Cổng và hỏi đáp (Gemma, dev):** `b0g_v1` báo đúng 6/6 lượt ảnh mờ, 0/60 báo nhầm trên ảnh đọc được (chỉ 2 ảnh mờ tổng hợp); hỏi đáp ảnh-only 42/59 (71%) so với Qwen 40/59 (68%), trong nhiễu ([báo cáo](evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md)).
 - **Việc còn lại:** điều tra đầy đủ lỗi quan hệ (chiều mũi tên) bằng người; chấm rubric hai người; trang SGK thật với Gemma (chưa có script tương ứng trong repo); hỏi đáp có mô tả; tập test.
+
+## 2026-11-27
+
+- **Làm:** hiệu chỉnh cổng chất lượng ảnh trên ảnh thật (VizWiz-VQA train, 10.400 ảnh tốt; SGK 6.774 trang quét); chỉ chặn ảnh gần như đen, nhòe nặng và cháy sáng; ảnh hơi tối/mờ chuyển sang cảnh báo. Ghép `toan/tich-hop` vào `phuc` (fast-forward, không xung đột). Cập nhật `ai/README.md` (cổng, cây thư mục, mục điểm yếu đã biết) và `ai/contract/README.md` (trạng thái `unreadable`, số test, timeout, `meta.provider`).
+- **Số đo** ([báo cáo](evaluation/reports/capture_gate_anh_that_20261127.md)): chặn nhầm ảnh tốt 15,1% → 1,3%; bắt ảnh tối 19,1% → 13,2%; bắt ảnh mờ 36,5% → 10,7%; 0 trang SGK bị chặn vì tối hoặc mờ. Đây là đánh đổi có chủ ý: ngưỡng mới bỏ sót nhiều ảnh xấu hơn, để VLM xử lý phần còn lại.
+- **Kiểm tra:** `uv run pytest -q` trong `ai/`: 188 test đạt (không gọi mạng).
+- **Chưa làm:** cổng vẫn chặn `glare` (có test), nhưng docstring và báo cáo chưa nêu, cần sửa cho khớp; chưa có ảnh bảng đen và màn hình điện thoại (khoảng 20 ảnh); chưa đo lại trang SGK với `b0g_v1` trên Gemma; các mục còn lại trong "Điểm yếu đã biết" của `ai/README.md`.
+
+- **Benchmark dữ liệu ngoài** (Gemma 4 E4B, LM Studio, reasoning tắt, `ask_about_image` mặc định `calc=True`, chỉ ảnh; script mới `evaluation/runner/run_vmmu_val.py`, `run_openvivqa_dev.py`, `reporting/watch_progress.py`; bản ghi chỉ ở máy):
+  - **Đính chính prompt:** bản ghi đầu nói đo bằng `ask_v1` là sai. Mọi ca gửi `ask_calc_v1` trước (trả JSON, phép tính do mã làm), chỉ quay về `ask_v1` khi JSON không dùng được. Đếm trong log LM Studio ngày 27/11: khoảng 573 request `ask_calc_v1`, 54 request `ask_v1` (số đếm gần đúng: 579 ca đáng ra có ít nhất 579 request đầu). Không biết từng ca đi đường nào. Thông số: temperature 0,2, max_tokens 400, reasoning_effort none; Q4_K_M, ctx 16384, parallel 1, flash attention; top_p, top_k, seed không gửi; mỗi ca chạy một lần.
+  - VMMU trắc nghiệm: val 17/133 (12,8%), test 21/138 (15,2%); không tách được đáp án 82 và 80 ca; trong số ca tách được đáp án: 17/51 và 21/58; lỗi vận hành 5 và 3 ca (chưa rõ nguyên nhân, bản ghi VMMU không lưu mã lỗi). **VMMU test đã dùng một lần.**
+  - OpenViVQA: file test không có đáp án nên đo trên 300 ảnh dev (mẫu cố định, mỗi ảnh một câu), 0 lỗi, khoảng 2,4 s mỗi ca. Chứa nguyên cụm đáp án 28/300 (9,3%), phủ từ trung bình 64,0%. **Không dùng 9,3% làm độ chính xác:** đáp án chuẩn thường là cả câu nhắc lại câu hỏi, model diễn đạt khác thì bị tính sai (34 ca có đủ mọi từ của đáp án mà vẫn bị tính sai). Trợ lý AI đọc 25 ca bị tính sai (không phải người chấm, không xem ảnh): khoảng 6 ca đúng rõ, thêm 3 ca đúng một phần.
+  - Giả thuyết chưa kiểm chứng: `ask_calc_v1` và `ask_v1` đều viết cho hỏi đáp trang sách (chỉ dựa vào ảnh, không thấy thì nói không thấy, đọc số bằng chữ, không ký hiệu), trái với yêu cầu ghi `{X}` của VMMU và có thể làm model không chịu giải đề; riêng `ask_calc_v1` còn yêu cầu không tự tính, câu trả lời có thể thành câu mẫu kèm số do mã tính, không có chữ cái đáp án.
+  - **Chấm lại** (trợ lý AI đọc từ câu trả lời đã lưu, không gọi model, không xem ảnh, người chấm thấy đáp án chuẩn; không phải chấm bởi người): OpenViVQA 300 ca: đúng 129 (43,0%), một phần 38 (12,7%), sai 133. VMMU, nhận thêm đáp án model nêu rõ bằng lời mà bộ tách bỏ sót: val 23/133 (17,3%), test 30/138 (21.7%). Điểm tự động giữ nguyên để so sánh; phán quyết lưu ở các file `records_*__cham_lai.jsonl`, `records_*__cuu_dap_an.jsonl` (chỉ ở máy).
+  - **VLM gốc so với qua hệ thống** (30 ca VMMU val đầu theo SHA-256; script `evaluation/runner/run_vmmu_raw.py`; gốc: không system prompt, temperature 0, max_tokens 4096, reasoning tắt, 1 lần): gốc 17/30; qua hệ thống (bản ghi cũ, đã chấm lại) 4/29, 1 ca lỗi. Cùng ca: chỉ gốc đúng 13, chỉ hệ thống đúng 1, cả hai đúng 3, cả hai sai 12, và 1 ca gốc đúng mà hệ thống lỗi. Gốc không ca nào bị cắt hay bỏ trống đáp án; 21/30 câu trả lời dài hơn 400 token; trung bình 27 s/ca (hệ thống 3,9 s). Nhiều thứ khác nhau cùng lúc (prompt, JSON và tính hộ, temperature, max_tokens) nên chưa tách được nguyên nhân. Gốc hay chọn bừa kèm lý do không có cơ sở khi không giải được (vd. "theo quy ước của nguồn đề bài").
+- **Baseline Qwen gốc** (`unsloth/Qwen3-VL-4B-Instruct-GGUF` Q4_K_M, mmproj F32, ctx 16384, parallel 1; cùng 30 ca và cùng thiết lập gốc): 15/30, Gemma gốc 17/30; chỉ Qwen đúng 7, chỉ Gemma đúng 9, cả hai đúng 8, cả hai sai 6: chưa phân định. Qwen 3 ca bị cắt ở 4096 token (không chốt đáp án); 18/30 ca chỉ trả `{X}` (đúng 6/18), 12 ca còn lại đúng 9/12 (hai nhóm khác loại câu hỏi, không suy ra nhân quả). Trung bình 15,3 s/ca, trung vị 6,9 s (Gemma 27,0 và 22,5). Không có chữ Hán/Kirin trong 30 câu trả lời. VRAM sau khi nạp: 7021/8192 MiB.
+- **Lỗi phát hiện:** `speech/tts_text.py::prepare_for_speech` đọc số điện thoại như số nguyên và mất số 0 đầu; chưa thấy `pipeline.py` hay backend gọi hàm này. Chưa sửa.
+- **Chưa làm (benchmark):** thử prompt riêng cho trắc nghiệm trên val; bộ chấm OpenViVQA tốt hơn (chấm tay mẫu hoặc người/mô hình làm giám khảo); xem nguyên nhân ca lỗi VMMU.
+
+- **Định hướng và quy cách đầu ra (sau khi Phúc và Toàn hỏi lại thầy):** không giải bài tập, chỉ trả lời điều được hỏi, bài giải mẫu được đọc, ảnh bài tập đọc đề trước; xem [`README.md`](README.md#quy-cách-đầu-ra-chốt-ngày-27112026). Hệ quả: các phép đo VMMU ở trên đo khả năng chọn đáp án, không phải chất lượng sản phẩm; so sánh gốc và qua hệ thống chỉ đúng cho việc chọn đáp án; Qwen chỉ để thử quy trình hoặc đối chứng. Đã cập nhật tài liệu; **chưa sửa** prompt, `calc`, bộ sinh dữ liệu, rubric.
+
+- **Chốt thêm:** được nói chênh lệch hai cột; ảnh không kèm câu hỏi chỉ nói ngắn phần nổi bật nhất hoặc đọc đề mục lớn; ảnh không đọc được thì báo và hướng dẫn chụp lại. Sau khi đọc đề: được giải nghĩa từ ngữ, khái niệm trong đề, không chỉ cách làm.
+
+- **Chốt thêm:** trang đánh dấu bài kiểm tra hoặc bài thi chỉ được mô tả theo hình ảnh có sẵn; chấm bài viết tay của người dùng nằm ngoài phạm vi hiện tại. Còn mở: cách xét phép tính theo đề bài, câu hỏi trùng bài tập trên trang, kiến thức ngoài ảnh ở trang thường.
+
+- **Chốt thêm:** câu hỏi cần kiến thức không có trong ảnh thì nói trang không ghi rồi dừng.
+
+- **Chốt thêm:** câu hỏi trùng bài tập trên trang thì chỉ đọc dữ kiện; không trùng hoặc không có bài tập thì được trả lời (kể cả chênh lệch hai cột). Phép tính khác tạm thời không làm (mặc định).
 
 ## Việc tiếp theo
 

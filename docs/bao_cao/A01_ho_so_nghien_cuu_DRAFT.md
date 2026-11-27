@@ -4,6 +4,8 @@
 > chưa được giảng viên duyệt. Mọi câu hỏi nghiên cứu ở mục 5 là **đề xuất (PROPOSED)**.
 > **Quy ước nguồn:** mỗi tài liệu ghi rõ *mức đã đọc*. Chỗ nào chỉ dựa trên tóm tắt/kết quả tìm kiếm thì ghi "cần đọc bản gốc trước khi trích dẫn".
 
+> **Ghi chú 27/11/2026:** định hướng đã được làm rõ thêm sau bản nháp này, xem [Quy cách đầu ra](../../ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026): người dùng là học sinh lớp 1–12 và sinh viên; không giải bài tập; model riêng hướng Gemma, ưu tiên distill; nghiên cứu tách model-level và system-level. Phần dưới **chưa** viết lại: câu hỏi nghiên cứu ở mục 5 chưa có distill, kiến trúc teacher/student và tiêu chí tuân thủ; cần Phúc chọn lại.
+
 ## 1. Bài toán
 
 Chuyển hình ảnh học liệu (biểu đồ, sơ đồ, hình học, bản đồ, bảng…) thành lời diễn giải **tiếng Việt** mà học sinh khiếm thị nghe được,

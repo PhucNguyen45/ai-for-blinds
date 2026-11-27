@@ -5,9 +5,10 @@ Backend (Nam) chỉ cần gọi `pipeline.py`. Hợp đồng đầu ra: `contrac
 
 ```
 pipeline.py            describe_page(), ask_page()  <- điểm vào cho backend
-capture/quality.py     cổng chất lượng ảnh (tối, mờ, cháy sáng) + câu hướng dẫn chụp lại
-vlm/                   gọi VLM: providers (OpenRouter/Google/LM Studio), client, describer (B0/B0e/B0g),
-                       b1 (hai bước), ask (hỏi đáp), common (phần dùng chung)
+capture/quality.py     cổng chất lượng ảnh (chặn ảnh tối/mờ nặng; cảnh báo ảnh hơi tối/mờ) + câu hướng dẫn chụp lại
+vlm/                   gọi VLM: providers (OpenRouter/Google/LM Studio), client (HTTP), describer (mô tả, nhận
+                       prompt_id b0/b0e/b0g), b1 (hai bước), ask (hỏi đáp), calc (tính biểu thức do model viết),
+                       common (phần dùng chung), list_models (liệt kê model của nhà cung cấp)
 speech/                chuẩn hóa văn bản cho TTS (số, đơn vị ra chữ); chưa có engine STT/TTS
 contract/              mô hình Pydantic, JSON Schema, ví dụ của DescriptionResult và AnswerResult
 prompts/               prompt có phiên bản (b0_v1, b0e_v1, b0g_v1, b1_*, ask_v1, ask_calc_v1)
@@ -17,6 +18,48 @@ external_data/         khảo sát, tải, kiểm tra trùng, phân mục và ph
 docs/textbook/         hướng dẫn nạp ảnh SGK
 tests/                 kiểm thử, không gọi mạng
 ```
+
+## Quy cách đầu ra (chốt ngày 27/11/2026)
+
+Nguồn duy nhất về hành vi của VLM; tài liệu khác dẫn tới mục này. Theo định hướng Phúc và Toàn trao đổi lại với giảng viên hướng dẫn (Phúc thuật lại).
+
+**Người dùng:** học sinh khiếm thị lớp 1–12 và sinh viên khiếm thị đại học, cao đẳng. Hệ thống **hỗ trợ học, không làm bài hộ**, không thay giáo viên.
+
+**Ảnh đầu vào:** trang sách, vở, bài giảng trên bảng đen hoặc tivi; công thức, sơ đồ, biểu đồ, bảng; vật thể, không gian. Kèm câu hỏi của người dùng, thành chuỗi nhiều lượt.
+
+| # | Quy tắc đã chốt |
+|---|---|
+| 1 | **Không giải bài tập, không đưa đáp án.** Ảnh trang sách: chỉ diễn giải. |
+| 2 | Người dùng không nhìn thấy nên **phải đọc cho họ nội dung trong ảnh**. Biểu đồ không đủ dữ liệu để đọc chính xác thì được nói ở **mức tương đối** (và nói rõ là tương đối). |
+| 3 | Ảnh bài tập: **đọc đề trước**. Nếu người dùng hỏi tiếp thì xử lý **tùy câu hỏi**, vẫn theo quy tắc 1. |
+| 4 | **Bài giải mẫu in sẵn** trong ảnh: được đọc thoải mái. |
+| 5 | VLM **chỉ trả lời điều được hỏi**; không được yêu cầu thì không nói thêm (không tự thêm nội dung, gợi ý hay suy diễn). |
+| 6 | Hỏi **chênh lệch giữa hai cột** của biểu đồ: được nói thẳng kết quả. |
+| 7 | Ảnh gửi **không kèm câu hỏi**: chỉ nói ngắn gọn **phần nổi bật nhất** trong ảnh, hoặc đọc **các đề mục lớn**. |
+| 8 | Ảnh **không đọc được**: tự báo là không đọc được và hướng dẫn chụp lại. |
+| 9 | Sau khi đọc đề: được đọc lại đề, dữ kiện trên trang và **giải nghĩa từ ngữ, khái niệm trong đề**; **không** chỉ cách làm, không gợi ý hướng giải, không đưa kết quả. |
+| 10 | Trang có **đánh dấu là bài kiểm tra hoặc bài thi**: chỉ **mô tả theo hình ảnh có sẵn trong trang**, không nói gì khác. Quy tắc này thắng mọi quy tắc cho phép ở trên (giải nghĩa từ, chênh lệch hai cột). |
+| 11 | Câu hỏi cần **kiến thức không có trong ảnh**: nói là trang không ghi, rồi **dừng**. Ngoại lệ duy nhất: giải nghĩa từ ngữ, khái niệm trong đề (quy tắc 9). |
+| 12 | App xét **cả phần chữ lẫn phần hình** trên trang. Điều được hỏi **trùng yêu cầu của bài tập** trên trang: **chỉ đọc dữ kiện**, không tính, không so sánh hộ (thắng quy tắc 6). **Không trùng**, hoặc trang **không có bài tập**: được trả lời để hiểu hình, kể cả nói chênh lệch hai cột. |
+
+**Mặc định tạm thời** (đề xuất của trợ lý, Phúc có thể nới sau): phép tính khác ngoài chênh lệch hai cột (tổng, trung bình, diện tích, chu vi, cạnh huyền) **không làm**. Quy tắc mới do Phúc bổ sung dần.
+
+**Giới hạn đã biết của quy tắc 12:** nếu ảnh không chứa phần đề, app không biết đó là bài tập; câu hỏi diễn đạt khác đề có thể không được nhận ra là trùng. Cần đo riêng.
+
+**Ngoài phạm vi hiện tại:** chấm bài làm viết tay của chính người dùng. Theo Phúc, người khiếm thị không viết chữ như người sáng mắt, và sách dành riêng cho người khiếm thị rất ít.
+
+**Mã hiện tại chưa khớp** (chưa sửa):
+
+| Chỗ | Lệch |
+|---|---|
+| `prompts/ask_v1.txt`, `ask_calc_v1.txt` | Không có quy tắc cấm giải bài. Cả hai cho tính **mọi** câu cần tính, kể cả khi là bài tập; mã tính qua `vlm/calc.py` (mặc định `calc=True`). Chênh lệch hai cột thì được phép (quy tắc 6) |
+| `pipeline.describe_page` | Ảnh không kèm câu hỏi hiện được mô tả đầy đủ cả trang, trái quy tắc 7 |
+| `prompts/b0g_v1.txt` | Mô tả bốn mục gồm cả "ý nghĩa" dù không được hỏi; không có quy tắc cho ảnh bài tập |
+| `finetune/` | Sinh câu hỏi tính toán kèm đáp án và câu gợi ý cuối lời mô tả (xem README của thư mục) |
+
+**Kiến trúc và hướng model:** hybrid client-server. Online: model teacher trên server tự host (dự kiến A100) hoặc nhà cung cấp cloud. Mất mạng hoặc mạng chập chờn: model student của đề tài. Server trả văn bản, client lo TTS. Model riêng của đề tài định hướng **họ Gemma**; thầy cho phép fine-tune hoặc distill, **ưu tiên distill**. Laptop dùng cho nghiên cứu, benchmark. Nghiên cứu tách hai cấp: **model-level** (prompt, fine-tune, PEFT, distill, quantization) và **system-level** (OCR, RAG, tiền xử lý, phát hiện đối tượng, định tuyến, kiểm tra); đo được riêng đóng góp từng phần.
+
+**Hệ quả cho đánh giá:** điểm đáp án VMMU đo khả năng giải đề, **không phải** chất lượng sản phẩm. Cần thêm phép đo **tuân thủ** (gặp ảnh bài tập: đọc đề đúng và không lộ đáp án), đo bịa, đọc đúng số, tên riêng, dấu.
 
 ## Chạy
 
@@ -32,13 +75,39 @@ from pipeline import describe_page, ask_page
 result = describe_page("trang.jpg", provider="lmstudio")      # DescriptionResult
 if result.status == "unreadable":
     ...                                                       # result.summary_vi là lời hướng dẫn chụp lại
-answer = ask_page("trang.jpg", "Cột nào cao nhất?")            # AnswerResult; câu tính toán do mã tính (vlm/calc.py)
+answer = ask_page("trang.jpg", "Cột nào cao nhất?")            # AnswerResult; câu tính toán hiện do mã tính (chưa khớp quy cách, xem trên)
 # Câu hỏi về vị trí/hướng: nên chỉ truyền ảnh; truyền description=... làm kết quả tệ hơn (đo trên dev)
 ```
 
 Lỗi vận hành (mạng, HTTP, cấu hình, ảnh hỏng) trả `status="error"` kèm `error`, không ném ngoại lệ.
 
 Model có chế độ suy nghĩ (Gemma 4): đặt biến môi trường `LMSTUDIO_REASONING_EFFORT=none` để tắt, nếu không model dùng hết `max_tokens` để nghĩ và trả `empty_response`. Không đặt thì payload không đổi (Qwen). Đo ngày 2026-11-26: ở `max_tokens` 2000, bật và tắt reasoning ngang nhau trên dev; ở 600 thì bật không dùng được (xem [báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md)).
+
+## Cổng chất lượng ảnh (`capture/quality.py`)
+
+Hiệu chỉnh ngày 27/11/2026 trên ảnh thật ([báo cáo](evaluation/reports/capture_gate_anh_that_20261127.md)):
+
+- **Chặn** (trả `status="unreadable"` ngay, không gọi VLM): ảnh gần như đen (`dark`), mờ nặng (`blur`), hoặc cháy sáng toàn ảnh (`glare`: sáng trung bình > 235 và gần như không có tương phản; chủ ý, có test `test_pipeline.py`). Lý do nằm trong `uncertainties` dạng `capture_gate:<lý do>`.
+- **Cảnh báo** (`warnings`, vẫn gọi VLM): ảnh hơi tối hoặc hơi mờ.
+- Lỗi phụ thuộc nội dung (chói che một phần, hình bị cắt mất mép) không đo được bằng thống kê ảnh; prompt `b0g_v1` xử lý.
+
+> Lưu ý: docstring của `capture/quality.py` và báo cáo 27/11 chỉ nêu tối và mờ nặng là mức chặn, nhưng code vẫn chặn `glare`. Trên SGK, glare chặn 12 trang gần như trắng (trang lót sau bìa), không ảnh hưởng trang nội dung. Cần sửa docstring và báo cáo cho khớp với code.
+
+## Điểm yếu đã biết (kiểm tra ngày 27/11/2026)
+
+| Điểm yếu | Trạng thái | Bằng chứng |
+|---|---|---|
+| Cổng chặn nhầm ảnh tốt | Đã cải thiện: 15,1% → 1,3% trên VizWiz tốt | `evaluation/reports/capture_gate_anh_that_20261127.md` |
+| Báo nhầm "không đọc được" trên trang SGK (5/32, b0g_v1) | Chưa cải thiện. Nguyên nhân là VLM, không phải cổng; số đo gốc là Qwen 4B, chưa đo lại với Gemma | `system_modules_4b_20261118.md` |
+| Ảnh bảng đen và màn hình điện thoại | Chưa có ảnh kiểm tra (cần khoảng 20 ảnh) | báo cáo cổng 27/11, mục 4 |
+| Hỏi đáp có mô tả làm câu về vị trí tệ đi | Chưa cải thiện; README vẫn khuyên chỉ truyền ảnh | `system_modules_4b_20261118.md` |
+| Bộ lọc `chat_vi` chưa đo thật | Đã nối vào đường gọi của describer, ask và b1, có test; chưa đo hiệu quả trên đầu ra thật | `vlm/common.py`, `tests/test_contract_and_describer.py` |
+| Lặp câu trong đầu ra mô hình nhỏ | Đã xử lý ở backend (`repetition.py`), không nằm trong `ai/` | `docs/TICH_HOP.md` |
+| Gemma bật suy nghĩ làm `empty_response` | Đã xử lý: `LMSTUDIO_REASONING_EFFORT=none` | `evaluation/reports/reasoning_gemma4_dev_20261126.md` |
+| Tập test chưa chạy | Benchmark tổng hợp: chưa chạy. VMMU test: đã chạy một lần ngày 27/11 (21/138, `calc=True`) | `NHAT_KY_PHAT_TRIEN.md` |
+| Chấm tay bằng hai người | Chưa cải thiện; hiện chỉ có chấm 4 ca bởi trợ lý | `cham_rubric_gemma_sample_20261126.md` |
+| Hợp đồng đầu ra còn nháp v0.1 | Chưa cải thiện; ánh xạ API v1 đã ghi trong `docs/TICH_HOP.md` | `contract/README.md` |
+| Giấy phép GPL/NC khi huấn luyện | Chưa cải thiện; cần hỏi thầy | nhật ký 23/11 |
 
 ## Các trạng thái cần hệ thống xử lý
 
@@ -54,9 +123,9 @@ Mọi lệnh chạy từ thư mục `ai/` (`uv run python ...`). Dữ liệu ben
 
 | Thư mục | Vai trò |
 |---|---|
-| `generators/` | sinh và kiểm tra benchmark tổng hợp, nạp ảnh SGK (`ingest_textbook.py`), tải ảnh Wikimedia (`fetch_commons_candidates.py`) |
-| `runner/` | `run_b1_dev.py` (`--method b0e|b0g|b1` trên tập dev; `--reps`, `--max-tokens` mặc định 600), `survey_lmstudio.py` (khảo sát model LM Studio theo độ phóng ảnh/prompt), `run_qa_dev.py` (hỏi đáp trên câu hỏi dev; mặc định model Qwen, truyền `--model` để chạy model khác) |
-| `reporting/` | `proposition_check.py` (chuẩn hóa dấu "8 phẩy 5" và nhãn "Thứ Hai" ↔ "Thứ 2" từ 26/11; vẫn chỉ đếm số và tên, không chấm quan hệ), `repeat_stats.py`, `survey_report.py`, `qa_score.py`, `capture_gate_eval.py`, `archive_runs.py`, bộ chấm rubric (`create_scorecards`, `validate_score`, `finalize_score`, `summarize_scores`) |
+| `generators/` | sinh và kiểm tra benchmark tổng hợp (`generate_benchmark_v02.py`, `validate_benchmark.py`, `generate_chart*.py`), nạp ảnh SGK (`ingest_textbook.py`), tải ảnh Wikimedia (`fetch_commons_candidates.py`) |
+| `runner/` | `run_b1_dev.py` (`--method b0e|b0g|b1` trên tập dev; `--reps`, `--max-tokens` mặc định 600), `survey_lmstudio.py` (khảo sát model LM Studio theo độ phóng ảnh/prompt), `run_qa_dev.py` (hỏi đáp trên câu hỏi dev; mặc định model Qwen, truyền `--model` để chạy model khác), `run_vmmu_val.py` (trắc nghiệm VMMU, `--split val|test`, cần `uv run --with pyarrow`), `run_openvivqa_dev.py` (hỏi đáp mở, mẫu dev), `run_vmmu_raw.py` (VMMU gọi thẳng model). Các runner VMMU đo khả năng chọn đáp án đề thi, không phải chất lượng sản phẩm |
+| `reporting/` | `proposition_check.py` (chuẩn hóa dấu "8 phẩy 5" và nhãn "Thứ Hai" ↔ "Thứ 2" từ 26/11; vẫn chỉ đếm số và tên, không chấm quan hệ), `repeat_stats.py`, `survey_report.py`, `qa_score.py`, `capture_gate_eval.py`, `archive_runs.py`, `visgkcap_stats.py` (thống kê ViSGKCap, cần `pyarrow`), `watch_progress.py` (xem tiến độ benchmark đang chạy), bộ chấm rubric (`create_scorecards`, `validate_score`, `finalize_score`, `summarize_scores`) |
 | `reports/` | báo cáo Markdown |
 | `rubrics/` | `rubric_v1.md` (C1–C6, chấm tay) |
 | `legacy_b0/` | quy trình B0 theo phiên (2026-10) và script thử OpenRouter gốc; chỉ để tái hiện số liệu cũ |

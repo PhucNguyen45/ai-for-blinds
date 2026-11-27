@@ -3,6 +3,14 @@
 > **Trạng thái:** bộ sinh dữ liệu đã có và được kiểm thử; **chưa huấn luyện** model nào. Dữ liệu sinh ra **chỉ ở máy**
 > (`data/train/`, bị `.gitignore`); thứ đưa ra demo là model đã fine-tune, không phải dữ liệu.
 
+> **Cảnh báo (27/11/2026): bộ sinh chưa khớp [Quy cách đầu ra](../README.md#quy-cách-đầu-ra-chốt-ngày-27112026). Chưa dùng đầu ra hiện tại để huấn luyện.**
+> - Sinh cặp hỏi đáp loại `computation` kèm đáp án tính sẵn. Chênh lệch hai cột được phép (quy tắc 6); tổng, cạnh huyền, diện tích, chu vi tạm thời **không được** (mặc định). Câu hỏi chênh lệch trùng bài tập trên trang cũng không được tính (quy tắc 12).
+> - Lời mô tả mục tiêu dài, mô tả cả hình; khi không có câu hỏi chỉ được nói ngắn phần nổi bật nhất hoặc đề mục lớn (quy tắc 7).
+> - Lời mô tả mục tiêu nêu cả giá trị suy ra (ví dụ cạnh huyền không ghi trên hình) và kết thúc bằng câu gợi ý, trái quy tắc "chỉ trả lời điều được hỏi".
+> - Chưa có mẫu ảnh bài tập (đọc đề, không đưa đáp án), bài giải mẫu in sẵn, hội thoại nhiều lượt.
+>
+> Hướng của đề tài: model riêng thuộc **họ Gemma**, **ưu tiên distill** (fine-tune vẫn được phép). Đầu ra của teacher cũng phải theo quy cách và được người kiểm một phần; xem điều khoản của model teacher. Không dùng đáp án VMMU hay bộ đề thi để dạy hành vi. Qwen3-VL 4B chỉ dùng để thử quy trình hoặc đối chứng.
+
 ## Có gì
 
 | Thành phần | Mô tả |
