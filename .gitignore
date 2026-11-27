@@ -57,7 +57,7 @@ Thumbs.db
 # Mẫu tổng hợp tái tạo được từ mã (ai/evaluation/generators). Chỉ README mô tả dữ liệu được theo dõi.
 /data/benchmark/*
 !/data/benchmark/README.md
-/ai/evaluation/records*/
+/ai/evaluation/records*
 
 # Trọng số model (fine-tune/adapter): không đưa vào git; phát hành riêng khi ship demo
 *.gguf
