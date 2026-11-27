@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[2] / "data" / "external"
 # Nguồn duy nhất cho việc xếp bộ dữ liệu vào mục (thư mục thật trong data/external/). Tên thư mục = repo_id đổi "/" thành "__".
 GROUPS = {
     "1_hoc_tap": ["ViSGKCap", "D-Truong__ViEduVQA", "anvo25__vmmu"],
-    "2_cuoc_song": ["uitnlp__OpenViVQA-dataset", "Ouyangxuelili__vlsp2023-vqa-dataset", "huyhuy123__ViOCRVQA", "5CD-AI__Viet-Table-Markdown"],
+    "2_cuoc_song": ["uitnlp__OpenViVQA-dataset", "Ouyangxuelili__vlsp2023-vqa-dataset", "huyhuy123__ViOCRVQA", "5CD-AI__Viet-Table-Markdown", "VizWiz-VQA"],
     "3_hon_hop": ["VLAI-AIVN__ViInfographicVQA"],
 }
 DELAY = 1.0
