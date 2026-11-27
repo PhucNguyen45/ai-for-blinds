@@ -41,6 +41,17 @@ def test_gate_accepts_sharp_page_and_rejects_dark_blur_overexposed(tmp_path):
     assert check_image(page(tmp_path, "w.png", "white")).issues == ("glare",)
 
 
+def test_dark_background_but_readable_is_warned_not_blocked():
+    """Nền tối, chữ sáng (bìa sách, màn hình số): độ sáng trung bình ~52 từng bị chặn là "tối"."""
+    im = Image.new("RGB", (900, 600), (20, 30, 60))
+    d = ImageDraw.Draw(im)
+    for y in range(40, 560, 24):
+        d.rectangle((40, y, 860, y + 2), fill="white")
+    r = check_image(im)
+    assert r.metrics["mean"] < 60 and r.metrics["p95"] >= 200
+    assert r.ok and r.issues == () and r.warnings == ("dark",)
+
+
 @pytest.mark.parametrize("kind,issue", [("dark", "dark"), ("blur", "blur")])
 def test_bad_capture_is_blocked_before_calling_vlm(tmp_path, kind, issue):
     calls = []
