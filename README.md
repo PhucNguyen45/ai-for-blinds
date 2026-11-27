@@ -7,7 +7,7 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 ## Thành phần
 
 - `ai/`: VLM, prompt, cổng chất lượng ảnh, hỏi đáp, hợp đồng đầu ra, đánh giá, chuẩn bị TTS: xem [`ai/README.md`](ai/README.md). Lịch sử theo ngày: [`ai/NHAT_KY_PHAT_TRIEN.md`](ai/NHAT_KY_PHAT_TRIEN.md).
-- `data/`: **chỉ ở máy tác giả, không có trong repo** (xem [Dữ liệu](#dữ-liệu)).
+- `data/`: phần lớn **chỉ ở máy tác giả** (xem [Dữ liệu](#dữ-liệu)); repo chỉ theo dõi `data/library/` và README của `data/benchmark/`.
 - `backend/`: FastAPI, hợp đồng [`docs/API_v1.md`](docs/API_v1.md) (Nam). Chế độ `mock` / `openai` / `ai`.
 - `frontend/`: app Flutter cho học sinh khiếm thị (Toàn): xem [`frontend/README.md`](frontend/README.md).
 - `data/library/`: kho sách đã số hóa phục vụ `/v1/library` (có trong repo). `prompts/`, `scripts/`: của backend.
@@ -63,13 +63,41 @@ Chỉ thêm `--execute` khi muốn gọi mô hình thật. Mặc định chỉ c
 
 Chỉ nằm ở máy tác giả (`.gitignore`): để **fine-tune**, để giữ **tập test riêng tư** và vì SGK có bản quyền. Khi ship demo, thứ đưa ra là **model đã fine-tune** (trọng số phát hành riêng, không commit).
 
-| Thư mục | Nội dung |
-|---|---|
-| `data/benchmark/` | bộ **đánh giá** của nhóm (ảnh tổng hợp; tái tạo được từ mã), ảnh ứng viên Wikimedia |
-| `data/train/v1/` | bộ **huấn luyện** tổng hợp, chủ đề tách khỏi benchmark |
-| `data/external/` | dữ liệu ngoài: `1_hoc_tap/` (SGK), `2_cuoc_song/`, `3_hon_hop/` (infographic), kèm `_index/`, `_reports/`, `_sft/` |
+| Thư mục | Nội dung | Tài liệu mô tả |
+|---|---|---|
+| `data/benchmark/` | bộ **đánh giá** của nhóm (ảnh tổng hợp; tái tạo được từ mã), ảnh ứng viên Wikimedia | [README](data/benchmark/README.md); [ứng viên](data/benchmark/candidates/README.md) |
+| `data/train/v1/` | bộ **huấn luyện** tổng hợp, chủ đề tách khỏi benchmark | [README fine-tune](ai/finetune/README.md) |
+| `data/external/` | dữ liệu ngoài: `1_hoc_tap/` (SGK), `2_cuoc_song/`, `3_hon_hop/` (infographic), kèm `_index/`, `_reports/`, `_sft/` | [phân loại](data/external/_reports/phan_loai.md); [tổng hợp chia tập](data/external/_reports/splits_overlay_summary.md); [báo cáo kiểm kê](ai/evaluation/reports/du_lieu_ngoai_20261118.md); từng bộ bên dưới |
+| `data/library/` | kho sách đã số hóa cho `/v1/library` (có trong repo) | [TICH_HOP, mục Thư viện](docs/TICH_HOP.md#thư-viện) |
+
+Từng bộ trong `data/external/` (mỗi bộ có README riêng):
+
+- `1_hoc_tap/`: [D-Truong__ViEduVQA](data/external/1_hoc_tap/D-Truong__ViEduVQA/README.md), [anvo25__vmmu](data/external/1_hoc_tap/anvo25__vmmu/README.md)
+- `2_cuoc_song/`: [5CD-AI__Viet-Table-Markdown](data/external/2_cuoc_song/5CD-AI__Viet-Table-Markdown/README.md), [Ouyangxuelili__vlsp2023-vqa-dataset](data/external/2_cuoc_song/Ouyangxuelili__vlsp2023-vqa-dataset/README.md), [huyhuy123__ViOCRVQA](data/external/2_cuoc_song/huyhuy123__ViOCRVQA/README.md), [uitnlp__OpenViVQA-dataset](data/external/2_cuoc_song/uitnlp__OpenViVQA-dataset/README.md)
+- `3_hon_hop/`: [VLAI-AIVN__ViInfographicVQA](data/external/3_hon_hop/VLAI-AIVN__ViInfographicVQA/README.md)
 
 SGK và học liệu có bản quyền **không** đưa lên repo công khai; không commit khóa API, `.env` hay trọng số model. Lịch sử git cũ vẫn chứa bản sao dữ liệu tổng hợp và ảnh ứng viên (tái tạo được hoặc đã công khai).
+
+## Tài liệu theo thư mục
+
+Bản đồ tài liệu: mỗi thư mục gốc, nơi có md mô tả và các báo cáo chính.
+
+| Thư mục | Tài liệu |
+|---|---|
+| `ai/` | [README](ai/README.md) (bảng các thư mục con), [nhật ký phát triển](ai/NHAT_KY_PHAT_TRIEN.md) |
+| `ai/contract/` | [README hợp đồng v0.1](ai/contract/README.md) |
+| `ai/finetune/` | [README](ai/finetune/README.md) |
+| `ai/docs/textbook/` | [hướng dẫn nạp ảnh SGK](ai/docs/textbook/HUONG_DAN.md) |
+| `ai/evaluation/rubrics/` | [rubric v1](ai/evaluation/rubrics/rubric_v1.md) |
+| `ai/evaluation/reports/` | [so sánh phương pháp/model](ai/evaluation/reports/so_sanh_phuong_phap_va_model_dev_20261117.md); [khảo sát Qwen3-VL Q4](ai/evaluation/reports/survey_qwen3vl_q4_20261117.md); [mô-đun hệ thống](ai/evaluation/reports/system_modules_4b_20261118.md); [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md); [reasoning Gemma 4](ai/evaluation/reports/reasoning_gemma4_dev_20261126.md); [hỏi đáp Gemma + b0g](ai/evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md); [mẫu chấm rubric](ai/evaluation/reports/cham_rubric_gemma_sample_20261126.md) |
+| `backend/` | [API v1](docs/API_v1.md) (hợp đồng); chưa có README riêng cho mã backend |
+| `data/` | xem mục [Dữ liệu](#dữ-liệu) |
+| `docs/` | [TICH_HOP](docs/TICH_HOP.md) (ghép hệ thống); [API v1](docs/API_v1.md); [bản nháp hồ sơ nghiên cứu A01](docs/bao_cao/A01_ho_so_nghien_cuu_DRAFT.md) |
+| `frontend/` | [README](frontend/README.md); [checklist trợ năng](frontend/docs/CHECKLIST_TRO_NANG.md); [kịch bản tương tác](frontend/docs/KICH_BAN_TUONG_TAC.md); [yêu cầu giao diện](frontend/docs/YEU_CAU_GIAO_DIEN.md) |
+| `prompts/v1/` | các prompt backend đọc (`backend/app/prompts.py`); chưa có README |
+| `scripts/`, `.github/` | chưa có md; `scripts/digitize_book.py` có mô tả trong docstring, `.github/workflows/ci.yml` có comment đầu file |
+
+## Nhánh
 
 ## Nhánh
 
