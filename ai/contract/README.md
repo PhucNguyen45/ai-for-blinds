@@ -50,7 +50,7 @@ Ràng buộc nhất quán được kiểm bằng Pydantic (vd `error` chỉ đi 
   (kém hơn trên 4B, xem nhật ký 17/11).
 - `status="unreadable"` có hai nguồn: cổng chất lượng ảnh (chặn ảnh tối/mờ nặng/cháy sáng, không gọi VLM) và
   prompt `b0g_v1` tự báo khi không đọc được. Độ chính xác của nguồn thứ hai chưa đo được trên trang SGK thật:
-  đo trên 32 trang, 5 trang sạch bị báo nhầm (xem `ai/evaluation/reports/system_modules_4b_20261118.md`, số đo với Qwen 4B).
+  đo trên 32 trang, 5 trang sạch bị báo nhầm (xem `ai/evaluation/reports/danh_gia_model.md`, mục 3.4, số đo với Qwen 4B).
 
 ## Điểm cần thống nhất với Nam/Toàn
 

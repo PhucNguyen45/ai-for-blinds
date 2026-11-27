@@ -2,7 +2,7 @@
 
 Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ảnh ứng dụng mô hình ngôn ngữ thị giác (VLM), hỗ trợ học sinh khiếm thị học tập kiến thức trực quan.
 
-> **Nhánh `phuc` — cập nhật 2026-11-25.** Từ hôm nay nhánh này đã gồm bản ghép cả hệ thống (fast-forward từ `toan/tich-hop`, Toàn ghép): module AI (Phúc) + backend API v1 (Nam, từ `dev`) + app Flutter (Toàn, từ `toan/frontend`). Backend có chế độ `VLM_MODE=ai` gọi thẳng `ai/pipeline.py`; `ai/` không bị đổi. Cách ghép, đối chiếu hợp đồng, cách chạy: **[`docs/TICH_HOP.md`](docs/TICH_HOP.md)**. Test backend chạy lại ngày 2026-11-26: 52 passed; backend chế độ `ai` đã chạy thật với Gemma 4 E4B qua LM Studio (số đo ở `docs/TICH_HOP.md`). Phần trạng thái AI bên dưới tính đến 2026-11-26: mọi kết quả là **thăm dò** trên ảnh tổng hợp, chưa phải kết luận khoa học; tập test của benchmark tổng hợp chưa chạy (VMMU test chạy một lần ngày 27/11).
+> **Nhánh `phuc`, cập nhật 2026-11-27.** Gồm cả hệ thống: module AI (Phúc), backend API v1 (Nam), app Flutter (Toàn); cách ghép và cách chạy ở [`docs/TICH_HOP.md`](docs/TICH_HOP.md). Mọi kết quả đo là **thăm dò**, chưa phải kết luận khoa học. Tập test của benchmark tổng hợp chưa chạy (VMMU test chạy một lần ngày 27/11).
 
 ## Định hướng (cập nhật 2026-11-27)
 
@@ -16,15 +16,17 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 - `ai/`: VLM, prompt, cổng chất lượng ảnh, hỏi đáp, hợp đồng đầu ra, đánh giá, chuẩn bị TTS: xem [`ai/README.md`](ai/README.md). Lịch sử theo ngày: [`ai/NHAT_KY_PHAT_TRIEN.md`](ai/NHAT_KY_PHAT_TRIEN.md).
 - `data/`: phần lớn **chỉ ở máy tác giả** (xem [Dữ liệu](#dữ-liệu)); repo chỉ theo dõi `data/library/` và README của `data/benchmark/`.
 - `backend/`: FastAPI, hợp đồng [`docs/API_v1.md`](docs/API_v1.md) (Nam). Chế độ `mock` / `openai` / `ai`.
-- `frontend/`: app Flutter cho học sinh khiếm thị (Toàn): xem [`frontend/README.md`](frontend/README.md).
+- `frontend/`: app Flutter cho học sinh khiếm thị (Toàn): xem [`frontend/README.md`](frontend/README.md). Ngày 27/11 thêm hướng dẫn chụp trên máy (nhắc khi đang ngắm, kiểm ảnh vừa chụp); test tự động đạt, **chưa chạy trên điện thoại**.
 - `data/library/`: kho sách đã số hóa phục vụ `/v1/library` (có trong repo). `prompts/`, `scripts/`: của backend.
 - `docs/bao_cao/`: tài liệu nộp của Mảng A. `docs/TICH_HOP.md`: tài liệu ghép hệ thống.
 
 ## Điều cần biết ngay
 
-- **Cổng "ảnh không đọc được" chưa dùng được trên ảnh thật:** `b0g_v1` đúng trên ảnh tổng hợp (4/4 ảnh mờ, 0/40 báo nhầm) nhưng **báo nhầm 5/32 trang SGK thật sạch** → [báo cáo mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md), mục 6.
-- **Model nền: đang chuyển từ Qwen3-VL-4B sang Gemma 4 E4B** (Q4, chạy cục bộ qua LM Studio, miễn phí; cần gửi `reasoning_effort=none`, xem `LMSTUDIO_REASONING_EFFORT` ở `ai/README.md`). Trên dev, Gemma phủ ngang Qwen (~85%) nhưng chậm hơn (11–14 s so với 7–9 s mỗi mô tả); chưa đo `b0g_v1` và hỏi đáp cho Gemma. Ngày 2026-11-26, Gemma với reasoning tắt đạt 121,3/141 (86%) ở cả 600 và 2000 token; reasoning bật ở 600 token không trả nội dung (0/141), ở 2000 token đạt 120,0/141 (85%), ngang reasoning tắt trong dao động → [báo cáo](ai/evaluation/reports/reasoning_gemma4_dev_20261126.md). Cùng ngày, Gemma với `b0g_v1` báo đúng 6/6 ảnh mờ và không báo nhầm trên 60 lượt ảnh đọc được (chỉ 2 ảnh mờ tổng hợp); hỏi đáp ảnh-only 71% so với Qwen 68% → [báo cáo](ai/evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md). Chưa kiểm tra trên trang SGK thật. Bộ chấm đã sửa cùng ngày (dấu "phẩy", nhãn "Thứ Hai"); bản đầu của báo cáo đó kết luận sai và đã đính chính. Bản 8B của Qwen không nạp đủ lên GPU 8 GB nên bị loại → [khảo sát Qwen](ai/evaluation/reports/survey_qwen3vl_q4_20261117.md).
-- **Chưa fine-tune** (hướng huấn luyện cho Gemma chưa chọn). Chưa có chấm bằng người, chưa có người khiếm thị đánh giá, chưa có SGK lớp 4–5 hay biểu đồ/bản đồ SGK thật.
+- **Mã chưa khớp [Quy cách đầu ra](ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026):** prompt hiện tại chưa cấm giải bài tập, hỏi đáp còn tính hộ, ảnh không kèm câu hỏi vẫn được mô tả cả trang.
+- **Báo "không đọc được" trên trang SGK thật còn sai:** `b0g_v1` báo nhầm 5/32 trang sạch (đo với Qwen3-VL 4B, chưa đo lại với Gemma) → [đánh giá model](ai/evaluation/reports/danh_gia_model.md), mục 3.4.
+- **Cổng chất lượng của máy chủ còn chặn nhầm hình nền đen rõ nét** (xem [`ai/README.md`](ai/README.md)).
+- **Model:** hướng của đề tài là họ Gemma. Trên benchmark dev tổng hợp, phần **mô tả** của Gemma 4 E4B và Qwen3-VL 4B ngang nhau trong dao động; phần **hỏi đáp có tính hộ** Gemma 42/59, Qwen 51–53/59 (đính chính 27/11: kết luận "ngang nhau" trước đây so lệch điều kiện) → [đánh giá model](ai/evaluation/reports/danh_gia_model.md), mục 4 và 5.
+- **Chưa fine-tune hay distill.** Chưa có chấm bằng người, chưa có người khiếm thị đánh giá; chưa có bộ đánh giá đã gán nhãn trên SGK thật.
 
 ## Trạng thái phần AI
 
@@ -33,14 +35,14 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 | Hợp đồng đầu ra | Nháp v0.1; đã đối chiếu với API v1 trong `backend/app/ai_bridge.py` (Toàn ghép), **chờ cả nhóm duyệt** | [`ai/contract/`](ai/contract/README.md) |
 | Module AI (`describe_page`, `ask_page`) | Chạy được, có kiểm thử, không ném ngoại lệ | [`ai/README.md`](ai/README.md) |
 | Nhà cung cấp VLM | OpenRouter, Google AI Studio, LM Studio (cục bộ) | [`ai/README.md`](ai/README.md) |
-| Cổng chất lượng ảnh | Bắt tối/mờ trên ảnh tổng hợp; chưa hiệu chỉnh trên ảnh thật | [mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md) |
-| Hỏi đáp theo hình | Tính toán bằng mã; 68% → 90% trên dev (từ khóa thô, có thể lạc quan). **Chưa khớp quy cách không giải bài tập** | [mô-đun](ai/evaluation/reports/system_modules_4b_20261118.md) |
-| So sánh phương pháp / model (dev) | 4B cục bộ ngang gemini-3.1-flash-lite, hơn nemotron; B1 không giúp 4B | [so sánh](ai/evaluation/reports/so_sanh_phuong_phap_va_model_dev_20261117.md) |
+| Cổng chất lượng ảnh | Đã hiệu chỉnh trên ảnh thật 27/11 (chặn nhầm ảnh tốt VizWiz 15,1% → 1,3%, đổi lại bắt ít ảnh xấu hơn) | [báo cáo cổng](ai/evaluation/reports/capture_gate_anh_that_20261127.md) |
+| Hỏi đáp theo hình | Tính toán bằng mã; 68% → 90% trên dev (từ khóa thô, có thể lạc quan). **Chưa khớp quy cách không giải bài tập** | [đánh giá model, mục 3](ai/evaluation/reports/danh_gia_model.md) |
+| So sánh phương pháp / model (dev) | 4B cục bộ ngang gemini-3.1-flash-lite, hơn nemotron; B1 không giúp 4B | [đánh giá model, mục 1](ai/evaluation/reports/danh_gia_model.md) |
 | Benchmark | 47 ảnh tổng hợp (dev 24 / test 23); 74 ảnh Wikimedia ứng viên chưa có ground truth | [`data/benchmark/`](data/benchmark/README.md) |
-| Dữ liệu ngoài (Hugging Face) | 7 bộ đã tải (~47 GB), phân 3 mục, có lớp phủ train/val/test chống rò rỉ; kiểm tra 26/11: các bộ đọc được và khớp khai báo; VizWiz có trên đĩa nhưng chưa có trong kiểm kê; cần xác minh giấy phép trước khi huấn luyện | [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md) |
+| Dữ liệu ngoài (Hugging Face) | 8 bộ trong lớp phủ (~55 GB) và VizWiz chưa vào bảng kiểm kê; phân 3 mục, có lớp phủ train/val/test chống rò rỉ; cần xác minh giấy phép trước khi huấn luyện | [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md) |
 | Tập huấn luyện tổng hợp / fine-tune | Bộ sinh đã có; **chưa huấn luyện** | [`ai/finetune/`](ai/finetune/README.md) |
 | Chuẩn hóa văn bản TTS | Có; **chưa có engine STT/TTS** (để phần mềm quyết định) | [`ai/README.md`](ai/README.md) |
-| Đánh giá bằng người (rubric), người khiếm thị | Chưa có người chấm. Ngày 26/11, AI chấm sơ bộ 4 ca lỗi × 2 điều kiện (không thay người chấm) | [`rubric_v1.md`](ai/evaluation/rubrics/rubric_v1.md); [mẫu](ai/evaluation/reports/cham_rubric_gemma_sample_20261126.md) |
+| Đánh giá bằng người (rubric), người khiếm thị | Chưa có người chấm. Ngày 26/11, AI chấm sơ bộ 4 ca lỗi × 2 điều kiện (không thay người chấm) | [`rubric_v1.md`](ai/evaluation/rubrics/rubric_v1.md); [mẫu, mục 6](ai/evaluation/reports/danh_gia_model.md) |
 
 ## Chạy cả hệ thống
 
@@ -68,20 +70,14 @@ Chỉ thêm `--execute` khi muốn gọi mô hình thật. Mặc định chỉ c
 
 ## Dữ liệu
 
-Chỉ nằm ở máy tác giả (`.gitignore`): để **fine-tune**, để giữ **tập test riêng tư** và vì SGK có bản quyền. Khi ship demo, thứ đưa ra là **model đã fine-tune** (trọng số phát hành riêng, không commit).
+Chỉ nằm ở máy tác giả (`.gitignore`): để **fine-tune**, để giữ **tập test riêng tư** và vì SGK có bản quyền. Khi ship demo, thứ đưa ra là **model của đề tài** (trọng số phát hành riêng, không commit).
 
 | Thư mục | Nội dung | Tài liệu mô tả |
 |---|---|---|
-| `data/benchmark/` | bộ **đánh giá** của nhóm (ảnh tổng hợp; tái tạo được từ mã), ảnh ứng viên Wikimedia | [README](data/benchmark/README.md); [ứng viên](data/benchmark/candidates/README.md) |
+| `data/benchmark/` | bộ **đánh giá** của nhóm (ảnh tổng hợp; tái tạo được từ mã), ảnh ứng viên Wikimedia | [README](data/benchmark/README.md) |
 | `data/train/v1/` | bộ **huấn luyện** tổng hợp, chủ đề tách khỏi benchmark | [README fine-tune](ai/finetune/README.md) |
-| `data/external/` | dữ liệu ngoài: `1_hoc_tap/` (SGK), `2_cuoc_song/`, `3_hon_hop/` (infographic), kèm `_index/`, `_reports/`, `_sft/` | [phân loại](data/external/_reports/phan_loai.md); [tổng hợp chia tập](data/external/_reports/splits_overlay_summary.md); [báo cáo kiểm kê](ai/evaluation/reports/du_lieu_ngoai_20261118.md); từng bộ bên dưới |
+| `data/external/` | dữ liệu ngoài: `1_hoc_tap/`, `2_cuoc_song/`, `3_hon_hop/` (infographic), kèm `_index/`, `_reports/`, `_sft/`; mỗi bộ có README riêng ở máy | [báo cáo kiểm kê](ai/evaluation/reports/du_lieu_ngoai_20261118.md) |
 | `data/library/` | kho sách đã số hóa cho `/v1/library` (có trong repo) | [TICH_HOP, mục Thư viện](docs/TICH_HOP.md#thư-viện) |
-
-Từng bộ trong `data/external/` (mỗi bộ có README riêng):
-
-- `1_hoc_tap/`: [D-Truong__ViEduVQA](data/external/1_hoc_tap/D-Truong__ViEduVQA/README.md), [anvo25__vmmu](data/external/1_hoc_tap/anvo25__vmmu/README.md)
-- `2_cuoc_song/`: [5CD-AI__Viet-Table-Markdown](data/external/2_cuoc_song/5CD-AI__Viet-Table-Markdown/README.md), [Ouyangxuelili__vlsp2023-vqa-dataset](data/external/2_cuoc_song/Ouyangxuelili__vlsp2023-vqa-dataset/README.md), [huyhuy123__ViOCRVQA](data/external/2_cuoc_song/huyhuy123__ViOCRVQA/README.md), [uitnlp__OpenViVQA-dataset](data/external/2_cuoc_song/uitnlp__OpenViVQA-dataset/README.md)
-- `3_hon_hop/`: [VLAI-AIVN__ViInfographicVQA](data/external/3_hon_hop/VLAI-AIVN__ViInfographicVQA/README.md)
 
 SGK và học liệu có bản quyền **không** đưa lên repo công khai; không commit khóa API, `.env` hay trọng số model. Lịch sử git cũ vẫn chứa bản sao dữ liệu tổng hợp và ảnh ứng viên (tái tạo được hoặc đã công khai).
 
@@ -96,7 +92,7 @@ Bản đồ tài liệu: mỗi thư mục gốc, nơi có md mô tả và các b
 | `ai/finetune/` | [README](ai/finetune/README.md) |
 | `ai/docs/textbook/` | [hướng dẫn nạp ảnh SGK](ai/docs/textbook/HUONG_DAN.md) |
 | `ai/evaluation/rubrics/` | [rubric v1](ai/evaluation/rubrics/rubric_v1.md) |
-| `ai/evaluation/reports/` | [so sánh phương pháp/model](ai/evaluation/reports/so_sanh_phuong_phap_va_model_dev_20261117.md); [khảo sát Qwen3-VL Q4](ai/evaluation/reports/survey_qwen3vl_q4_20261117.md); [mô-đun hệ thống](ai/evaluation/reports/system_modules_4b_20261118.md); [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md); [reasoning Gemma 4](ai/evaluation/reports/reasoning_gemma4_dev_20261126.md); [hỏi đáp Gemma + b0g](ai/evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md); [mẫu chấm rubric](ai/evaluation/reports/cham_rubric_gemma_sample_20261126.md) |
+| `ai/evaluation/reports/` | [đánh giá model và mô-đun](ai/evaluation/reports/danh_gia_model.md); [cổng ảnh trên ảnh thật](ai/evaluation/reports/capture_gate_anh_that_20261127.md); [dữ liệu ngoài](ai/evaluation/reports/du_lieu_ngoai_20261118.md) |
 | `backend/` | [API v1](docs/API_v1.md) (hợp đồng); chưa có README riêng cho mã backend |
 | `data/` | xem mục [Dữ liệu](#dữ-liệu) |
 | `docs/` | [TICH_HOP](docs/TICH_HOP.md) (ghép hệ thống); [API v1](docs/API_v1.md); [bản nháp hồ sơ nghiên cứu A01](docs/bao_cao/A01_ho_so_nghien_cuu_DRAFT.md) |
@@ -109,21 +105,20 @@ Bản đồ tài liệu: mỗi thư mục gốc, nơi có md mô tả và các b
 | Nhánh | Nội dung |
 |---|---|
 | `main` | Bản cũ (2026-05, SgBe Vision); nhánh mặc định, chưa cập nhật |
-| `phuc` | Module AI (Phúc) **+ bản ghép backend/app** (trùng `toan/tich-hop` từ 2026-11-25) |
+| `phuc` | Module AI (Phúc) **+ bản ghép backend/app**; chứa toàn bộ `toan/tich-hop` tính đến 2026-11-27 |
 | `dev`, `nam` | Backend FastAPI `/v1/*`, `docs/API_v1.md` (Nam): hợp đồng API v1 hiện hành |
 | `toan/tich-hop` | **Nhánh duy nhất của Toàn**: bản ghép `phuc` + `dev` + app Flutter `frontend/` + các sửa của Toàn (cổng chất lượng 27/11) |
 | `fix/e2e-vlm-stt-rag` | Bản chạy thông cũ (2026-08), có thể lỗi thời |
 
-Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh trên; bản ghép dùng `--allow-unrelated-histories` (2026-11-25), chờ cả nhóm duyệt; `dev`, `nam` đã nằm trọn trong `phuc`, chờ chủ nhánh quyết định dọn. Ngày 2026-11-27 Toàn gộp mọi nhánh `toan/*` về `toan/tich-hop` và xóa `toan/frontend`, `toan/app-mvp` (app MVP cũ ở thư mục `app/`, khôi phục được từ commit `4a9bbae`), `toan/sua-cong-va-hoi-dap`. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
+Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh cũ; bản ghép dùng `--allow-unrelated-histories` (2026-11-25), chờ cả nhóm duyệt. Ngày 2026-11-27 Toàn gộp mọi nhánh `toan/*` về `toan/tich-hop`. `dev`, `nam` đã nằm trọn trong `phuc`; chủ nhánh quyết định có xóa `dev`, `nam`, `fix/e2e-vlm-stt-rag` không. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
 
 ## Việc tiếp theo
 
-1. Hiệu chỉnh cổng "không đọc được" trên trang SGK thật rồi đo lại.
-2. Thu thập và gán nhãn SGK lớp 4–5, biểu đồ/bản đồ thật (cần người gán nhãn, người rà soát thứ hai, văn bản cho phép của thầy).
-3. Chấm tay (rubric, hai người) và thiết kế chỉ số nhạy hơn; chạy tập test khi đóng băng cấu hình.
-4. Theo [Quy cách đầu ra](ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026): sửa prompt, bộ sinh dữ liệu và cách đánh giá cho khớp; sau đó mới chọn teacher và cách distill (model student họ Gemma). Fine-tune trên RTX 2070 8 GB chưa kiểm chứng.
-5. ~~Đối chiếu hợp đồng AI v0.1 với API v1 và hợp nhất các nhánh~~: đã làm ở `toan/tich-hop`, nay nằm trên `phuc`, chờ cả nhóm duyệt ([`docs/TICH_HOP.md`](docs/TICH_HOP.md)).
-6. ~~Chạy test backend và CI sau khi ghép~~ (2026-11-26: backend 52 passed, CI chạy cả ba phần); thống nhất với Toàn, Nam việc dọn các nhánh thừa (`dev`, `nam`, `toan/frontend`, `toan/app-mvp`, `fix/e2e-vlm-stt-rag`).
+1. Theo [Quy cách đầu ra](ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026): làm bộ kiểm tra tuân thủ, rồi sửa prompt, cách dùng `calc`, mô tả ngắn khi không có câu hỏi.
+2. Hướng dẫn chụp: build và thử trên điện thoại thật, hiệu chỉnh ngưỡng, đo tỉ lệ ảnh hỏng khi tắt và bật ([`frontend/README.md`](frontend/README.md)).
+3. Sửa cổng máy chủ chặn nhầm hình nền đen; đo lại báo "không đọc được" trên trang SGK thật.
+4. Thu thập và gán nhãn SGK thật, gồm bảng đen và màn hình (cần người gán nhãn, người rà soát thứ hai, văn bản cho phép của thầy); chấm tay hai người.
+5. Sau đó chọn teacher và cách distill (model student họ Gemma); huấn luyện trên Kaggle, Colab hoặc máy chủ học viện.
 
 ---
 *Cập nhật README: (1) chỉ sửa dòng trạng thái đã đổi; (2) đổi ngày ở đầu; (3) thêm mục vào `ai/NHAT_KY_PHAT_TRIEN.md`.*

@@ -137,8 +137,8 @@ Nạp: `lms load gemma-4-e4b-it --identifier google/gemma-4-e4b --gpu max --cont
 Trên app (máy ảo, "Đọc ảnh có sẵn"): ảnh → máy chủ → lời mô tả đọc từng câu, nhãn loại trang đúng ("Biểu đồ").
 
 Lỗi bỏ sót mũi tên trùng với phát hiện của Phúc cùng ngày: lỗi lớn nhất của Gemma là quan hệ, chiều mũi tên, và
-chỉ số từ khóa không bắt được ([chấm rubric mẫu](../ai/evaluation/reports/cham_rubric_gemma_sample_20261126.md), ca
-`cycle_03`). Reasoning để tắt theo [báo cáo reasoning](../ai/evaluation/reports/reasoning_gemma4_dev_20261126.md).
+chỉ số từ khóa không bắt được ([chấm rubric mẫu, mục 6](../ai/evaluation/reports/danh_gia_model.md), ca
+`cycle_03`). Reasoning để tắt theo [đánh giá model, mục 4](../ai/evaluation/reports/danh_gia_model.md).
 
 Hai lỗi tìm ra khi chạy thật:
 
@@ -156,6 +156,8 @@ Hai lỗi tìm ra khi chạy thật:
   trung bình 24,9 < `dark_mean` 60, nhưng std 61,2 và độ nét Laplacian 1.467,8 rất cao; sơ đồ vòng đời phần mềm suýt bị
   chặn (độ sáng 64,3). Hình vũ trụ, ban đêm trong SGK hay có nền đen. Đề xuất: quy tắc "tối" xét cả độ tương phản như quy
   tắc "cháy sáng" (ví dụ tối khi độ sáng thấp VÀ std thấp).
+  (Cập nhật 27/11, Phúc: chạy lại trên ảnh đang có, cổng máy chủ **vẫn chặn** hình này vì trung bình 24,9 < ngưỡng chặn mới
+  `dark_mean` 30. App đã có hai lớp kiểm trên máy xét thêm tương phản nên cho qua, nhưng máy chủ vẫn chặn; chưa sửa máy chủ.)
 - Hỏi bằng giọng nói: chỉ kiểm được trên điện thoại thật (STT của emulator không có micro/mạng).
 - Phúc: hai test của `ai/` hỏng trên Windows do môi trường (thiếu font DejaVu; đọc file không chỉ định
   `encoding="utf-8"`), chạy được với `-X utf8`; trên CI (Ubuntu) cài `fonts-dejavu-core`.

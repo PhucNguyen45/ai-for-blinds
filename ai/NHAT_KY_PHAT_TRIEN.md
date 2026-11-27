@@ -7,13 +7,13 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của bench
 
 - **Làm:** benchmark v0.2.0 (47 ảnh tổng hợp, 8 loại hình, dev 24 / test 23, ground truth theo mệnh đề); hợp đồng đầu ra v0.1 (nháp); module `describe_image`; phương pháp B0, B0e (đối chứng), B1 (hai bước);
   nhà cung cấp OpenRouter / Google / LM Studio; công cụ nạp SGK; bộ sinh tập huấn luyện tổng hợp; dữ liệu chỉ giữ ở máy (repo công khai).
-- **Số đo** ([so sánh phương pháp và model](evaluation/reports/so_sanh_phuong_phap_va_model_dev_20261117.md)): nemotron B0 70% / B0e 75% / B1 82%; `qwen3-vl-4b` cục bộ B0e 123/141, ngang `gemini-3.1-flash-lite`, hơn nemotron (106); B1 không giúp 4B (92/141, lan truyền lỗi).
+- **Số đo** ([so sánh phương pháp và model](evaluation/reports/danh_gia_model.md)): nemotron B0 70% / B0e 75% / B1 82%; `qwen3-vl-4b` cục bộ B0e 123/141, ngang `gemini-3.1-flash-lite`, hơn nemotron (106); B1 không giúp 4B (92/141, lan truyền lỗi).
 - **Kết luận:** `qwen3-vl-4b` là ứng viên baseline (cục bộ, miễn phí, ~6 s mỗi ảnh); chưa kết luận B1 hơn B0.
 
 ## 2026-11-18
 
-- **Khảo sát model** ([báo cáo](evaluation/reports/survey_qwen3vl_q4_20261117.md)): 4B Q4 phủ 83,3% / 86,2% / 87,2% ở x0,5 / x1 / x1,5 (chênh x1–x1,5 trong dao động), bản đồ chỉ 16,7%. **8B Q4 loại**: không nạp đủ lên GPU 8 GB (30–34/36 lớp), 20–230 s mỗi mô tả, chưa thấy hơn 4B. Giữ 4B Q4, parallel 1, ctx 16384.
-- **Mô-đun hệ thống** ([báo cáo](evaluation/reports/system_modules_4b_20261118.md)): cổng ảnh `capture/quality.py` (tối 33/33, mờ 21/21, 0/1045 báo nhầm trên ảnh tổng hợp); prompt `b0g_v1` báo đúng 4/4 ảnh mờ (trước 0/4);
+- **Khảo sát model** ([báo cáo](evaluation/reports/danh_gia_model.md)): 4B Q4 phủ 83,3% / 86,2% / 87,2% ở x0,5 / x1 / x1,5 (chênh x1–x1,5 trong dao động), bản đồ chỉ 16,7%. **8B Q4 loại**: không nạp đủ lên GPU 8 GB (30–34/36 lớp), 20–230 s mỗi mô tả, chưa thấy hơn 4B. Giữ 4B Q4, parallel 1, ctx 16384.
+- **Mô-đun hệ thống** ([báo cáo](evaluation/reports/danh_gia_model.md)): cổng ảnh `capture/quality.py` (tối 33/33, mờ 21/21, 0/1045 báo nhầm trên ảnh tổng hợp); prompt `b0g_v1` báo đúng 4/4 ảnh mờ (trước 0/4);
   hỏi đáp `vlm/ask.py` tăng 68% → 90% (dev) nhờ để mã tính toán (`vlm/calc.py`, tính toán 8/15 → 15/15); bộ lọc ký tự ngoài tiếng Việt (`chat_vi`) chưa được kích hoạt thật; kèm lời mô tả cũ làm câu hỏi về hướng tệ hơn (4/16 so với 12–13/16). Rủi ro quá khớp dev.
 - **Trang SGK thật (ViSGKCap, 32 trang test):** `b0g_v1` **báo nhầm "không đọc được" 5/32 trang sạch** (15,6%); 3/32 bị cắt cụt; ~15 s mỗi trang. Chú thích ViSGKCap chép đúng chữ nhưng có lỗi mô tả cảnh; ảnh có hình mờ `hoc10.vn` (nguồn bên thứ ba). Cần hiệu chỉnh cổng "không đọc được" trên ảnh thật.
 - **Dọn nhánh:** tách `describer.py` thành `common.py`/`describer.py`/`b1.py`, đổi `openrouter_client.py` → `client.py`, đưa quy trình B0 cũ vào `evaluation/legacy_b0/`; `docs/` chỉ giữ tài liệu của phần AI (phần còn lại chuyển ra `ai-for-blinds_docs_khac/`).
@@ -39,11 +39,11 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của bench
 ## 2026-11-26
 
 - **Làm:** thêm `--max-tokens` vào `evaluation/runner/run_b1_dev.py` (mặc định 600) và `--method b0g` (cổng "không đọc được"); chạy Gemma 4 E4B dev, B0e, 3 lần lặp, reasoning tắt/bật, ở 600 và 2000 token; sửa `proposition_check.py` (dấu "phẩy" và nhãn "Thứ Hai" ↔ "Thứ 2"); chấm rubric mẫu 4 ca lỗi; kiểm tra các bộ dữ liệu ngoài.
-- **Số đo** ([báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md), bộ chấm đã sửa): tắt 121,3/141 (86,1%) ở cả 600 và 2000 token; bật 0/141 ở 600 token (`empty_response`), 120,0/141 (85,1%) ở 2000 token.
+- **Số đo** ([báo cáo](evaluation/reports/danh_gia_model.md), bộ chấm đã sửa): tắt 121,3/141 (86,1%) ở cả 600 và 2000 token; bật 0/141 ở 600 token (`empty_response`), 120,0/141 (85,1%) ở 2000 token.
 - **Kết luận:** reasoning bật và tắt ngang nhau ở 2000 token (chênh 1,3 điểm, trong dao động), reasoning bật tốn ~4 lần token đầu ra. Giữ reasoning tắt. Kết luận "tắt tốt hơn rõ rệt" của bản đầu là sai do lỗi bộ chấm, đã đính chính trong báo cáo.
-- **Chấm rubric mẫu** ([báo cáo](evaluation/reports/cham_rubric_gemma_sample_20261126.md)): 4 ca lỗi × 2 điều kiện; do trợ lý AI chấm, không phải người, chưa đối chiếu ảnh gốc.
+- **Chấm rubric mẫu** ([báo cáo](evaluation/reports/danh_gia_model.md)): 4 ca lỗi × 2 điều kiện; do trợ lý AI chấm, không phải người, chưa đối chiếu ảnh gốc.
 - **Kiểm tra dữ liệu ngoài** (xem [báo cáo dữ liệu](evaluation/reports/du_lieu_ngoai_20261118.md), mục 7): các bộ đọc được; bộ VizWiz chưa có trong báo cáo cũ.
-- **Cổng và hỏi đáp (Gemma, dev):** `b0g_v1` báo đúng 6/6 lượt ảnh mờ, 0/60 báo nhầm trên ảnh đọc được (chỉ 2 ảnh mờ tổng hợp); hỏi đáp ảnh-only 42/59 (71%) so với Qwen 40/59 (68%), trong nhiễu ([báo cáo](evaluation/reports/gemma4_b0g_hoi_dap_dev_20261126.md)).
+- **Cổng và hỏi đáp (Gemma, dev):** `b0g_v1` báo đúng 6/6 lượt ảnh mờ, 0/60 báo nhầm trên ảnh đọc được (chỉ 2 ảnh mờ tổng hợp); hỏi đáp ảnh-only 42/59 (71%) so với Qwen 40/59 (68%), trong nhiễu ([báo cáo](evaluation/reports/danh_gia_model.md)).
 - **Việc còn lại:** điều tra đầy đủ lỗi quan hệ (chiều mũi tên) bằng người; chấm rubric hai người; trang SGK thật với Gemma (chưa có script tương ứng trong repo); hỏi đáp có mô tả; tập test.
 
 ## 2026-11-27
@@ -74,6 +74,13 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của bench
 
 - **Chốt thêm:** câu hỏi trùng bài tập trên trang thì chỉ đọc dữ kiện; không trùng hoặc không có bài tập thì được trả lời (kể cả chênh lệch hai cột). Phép tính khác tạm thời không làm (mặc định).
 
+- **Luồng và format trả lời:** chốt luồng mô tả ngắn → app hỏi câu cố định → hỏi đáp; format A (xem `ai/README.md`).
+- **Hướng dẫn chụp trên app** (Nam đề nghị; phần app của Toàn): đo tối, chói, mờ, rung trên khung xem trước và trên ảnh vừa chụp (`frontend/lib/capture/`), không dùng thư viện ngoài mới; có công tắc và số đếm trên máy. `flutter test` 124 đạt, 3 bỏ qua (trước 84 đạt), `flutter analyze` sạch, Flutter 3.44.1 như CI. So với cổng máy chủ trên 121 ảnh trên máy: cùng kết luận 118. **Chưa build APK, chưa chạy trên thiết bị, ngưỡng chưa hiệu chỉnh, phần nối camera không có test.** Canh khung và tự chụp chưa làm.
+- **Xác nhận lỗi:** cổng máy chủ vẫn chặn nhầm hình nền đen rõ nét (chưa sửa).
+
+- **Gộp báo cáo:** sáu báo cáo đánh giá model gộp thành [`danh_gia_model.md`](evaluation/reports/danh_gia_model.md); giữ riêng báo cáo dữ liệu ngoài và cổng ảnh. Link ở các mục cũ trỏ sang báo cáo gộp.
+- **Đính chính mục 26/11:** câu "hỏi đáp ảnh-only Gemma 42/59 so với Qwen 40/59, trong nhiễu" **so lệch điều kiện**: lượt Gemma có mã tính hộ (`ask_calc_v1`), 40/59 của Qwen là lượt không tính hộ. Qwen có tính hộ: 51/59 và 53/59.
+
 ## Việc tiếp theo
 
-Hiệu chỉnh cổng "không đọc được" trên trang SGK thật rồi đo lại; chấm tay (hai người) các câu hỏi đáp "sai" và 37 ca trùng cần xem tay; chọn hướng thu thập SGK lớp 4–5 và biểu đồ/bản đồ thật; quyết định hướng fine-tune; thống nhất API v1 với hợp đồng v0.1 (Phúc, Nam, Toàn).
+Xem mục "Việc tiếp theo" của `README.md` gốc (một danh sách duy nhất).

@@ -1,7 +1,7 @@
 # Module AI (`ai/`)
 
 Phần AI của hệ thống: ảnh trang sách đã chụp → kiểm tra chất lượng ảnh → mô tả bằng VLM → hỏi đáp → chuẩn bị đọc ra giọng nói.
-Backend (Nam) chỉ cần gọi `pipeline.py`. Hợp đồng đầu ra: `contract/` (bản nháp v0.1, chưa thống nhất với API v1).
+Backend (Nam) chỉ cần gọi `pipeline.py`. Hợp đồng đầu ra: `contract/` (bản nháp v0.1; backend đã ánh xạ sang API v1, xem `docs/TICH_HOP.md`, chờ cả nhóm duyệt).
 
 ```
 pipeline.py            describe_page(), ask_page()  <- điểm vào cho backend
@@ -42,6 +42,10 @@ Nguồn duy nhất về hành vi của VLM; tài liệu khác dẫn tới mục 
 | 11 | Câu hỏi cần **kiến thức không có trong ảnh**: nói là trang không ghi, rồi **dừng**. Ngoại lệ duy nhất: giải nghĩa từ ngữ, khái niệm trong đề (quy tắc 9). |
 | 12 | App xét **cả phần chữ lẫn phần hình** trên trang. Điều được hỏi **trùng yêu cầu của bài tập** trên trang: **chỉ đọc dữ kiện**, không tính, không so sánh hộ (thắng quy tắc 6). **Không trùng**, hoặc trang **không có bài tập**: được trả lời để hiểu hình, kể cả nói chênh lệch hai cột. |
 
+**Luồng sử dụng (Phúc chốt 27/11):** chụp ảnh → không đọc được thì báo và hướng dẫn chụp lại → VLM **mô tả ngắn** → app hỏi một câu cố định ("Bạn muốn hỏi gì về ảnh này?", VLM không tự đặt câu hỏi) → người dùng hỏi → VLM trả lời → hỏi tiếp trên cùng ảnh hoặc chụp ảnh mới. App chưa theo phần mô tả ngắn và câu mời.
+
+**Format trả lời (phương án A):** chỉ trả lời đúng câu được hỏi, **câu đầu tiên là câu trả lời**, văn nói, không ký hiệu định dạng. Chỉ thêm lời khi cần cho đúng hoặc để người dùng biết giới hạn (ước lượng tương đối, trang không ghi, chỗ không đọc rõ, câu trùng bài tập). Câu mẫu cho các tình huống này là đề xuất, chưa chốt câu chữ. Người dùng yêu cầu đọc nguyên văn hoặc cả trang thì được trả lời dài.
+
 **Mặc định tạm thời** (đề xuất của trợ lý, Phúc có thể nới sau): phép tính khác ngoài chênh lệch hai cột (tổng, trung bình, diện tích, chu vi, cạnh huyền) **không làm**. Quy tắc mới do Phúc bổ sung dần.
 
 **Giới hạn đã biết của quy tắc 12:** nếu ảnh không chứa phần đề, app không biết đó là bài tập; câu hỏi diễn đạt khác đề có thể không được nhận ra là trùng. Cần đo riêng.
@@ -81,9 +85,11 @@ answer = ask_page("trang.jpg", "Cột nào cao nhất?")            # AnswerResu
 
 Lỗi vận hành (mạng, HTTP, cấu hình, ảnh hỏng) trả `status="error"` kèm `error`, không ném ngoại lệ.
 
-Model có chế độ suy nghĩ (Gemma 4): đặt biến môi trường `LMSTUDIO_REASONING_EFFORT=none` để tắt, nếu không model dùng hết `max_tokens` để nghĩ và trả `empty_response`. Không đặt thì payload không đổi (Qwen). Đo ngày 2026-11-26: ở `max_tokens` 2000, bật và tắt reasoning ngang nhau trên dev; ở 600 thì bật không dùng được (xem [báo cáo](evaluation/reports/reasoning_gemma4_dev_20261126.md)).
+Model có chế độ suy nghĩ (Gemma 4): đặt biến môi trường `LMSTUDIO_REASONING_EFFORT=none` để tắt, nếu không model dùng hết `max_tokens` để nghĩ và trả `empty_response`. Không đặt thì payload không đổi (Qwen). Đo ngày 2026-11-26: ở `max_tokens` 2000, bật và tắt reasoning ngang nhau trên dev; ở 600 thì bật không dùng được (xem [đánh giá model](evaluation/reports/danh_gia_model.md), mục 4).
 
 ## Cổng chất lượng ảnh (`capture/quality.py`)
+
+Điện thoại có thêm hai lớp kiểm trước cổng này (đang ngắm và vừa chụp), xem [`frontend/README.md`](../frontend/README.md#hướng-dẫn-chụp-thêm-27112026). Cổng ở đây vẫn là lớp kiểm cuối.
 
 Hiệu chỉnh ngày 27/11/2026 trên ảnh thật ([báo cáo](evaluation/reports/capture_gate_anh_that_20261127.md)):
 
@@ -98,14 +104,15 @@ Hiệu chỉnh ngày 27/11/2026 trên ảnh thật ([báo cáo](evaluation/repor
 | Điểm yếu | Trạng thái | Bằng chứng |
 |---|---|---|
 | Cổng chặn nhầm ảnh tốt | Đã cải thiện: 15,1% → 1,3% trên VizWiz tốt | `evaluation/reports/capture_gate_anh_that_20261127.md` |
-| Báo nhầm "không đọc được" trên trang SGK (5/32, b0g_v1) | Chưa cải thiện. Nguyên nhân là VLM, không phải cổng; số đo gốc là Qwen 4B, chưa đo lại với Gemma | `system_modules_4b_20261118.md` |
+| Cổng chặn nhầm hình nền đen rõ nét | **Còn.** Chạy lại 27/11: hình "Vòng đời Mặt Trời" (trung bình 24,9, độ lệch chuẩn 61,2, Laplace 1467,8) và một ảnh tương tự vẫn bị chặn là `dark`. Bộ kiểm trên điện thoại xét thêm tương phản nên cho qua; cổng máy chủ chưa sửa | `docs/TICH_HOP.md`, `frontend/README.md` |
+| Báo nhầm "không đọc được" trên trang SGK (5/32, b0g_v1) | Chưa cải thiện. Nguyên nhân là VLM, không phải cổng; số đo gốc là Qwen 4B, chưa đo lại với Gemma | `danh_gia_model.md`, mục 3 |
 | Ảnh bảng đen và màn hình điện thoại | Chưa có ảnh kiểm tra (cần khoảng 20 ảnh) | báo cáo cổng 27/11, mục 4 |
-| Hỏi đáp có mô tả làm câu về vị trí tệ đi | Chưa cải thiện; README vẫn khuyên chỉ truyền ảnh | `system_modules_4b_20261118.md` |
+| Hỏi đáp có mô tả làm câu về vị trí tệ đi | Chưa cải thiện; README vẫn khuyên chỉ truyền ảnh | `danh_gia_model.md`, mục 3 |
 | Bộ lọc `chat_vi` chưa đo thật | Đã nối vào đường gọi của describer, ask và b1, có test; chưa đo hiệu quả trên đầu ra thật | `vlm/common.py`, `tests/test_contract_and_describer.py` |
 | Lặp câu trong đầu ra mô hình nhỏ | Đã xử lý ở backend (`repetition.py`), không nằm trong `ai/` | `docs/TICH_HOP.md` |
-| Gemma bật suy nghĩ làm `empty_response` | Đã xử lý: `LMSTUDIO_REASONING_EFFORT=none` | `evaluation/reports/reasoning_gemma4_dev_20261126.md` |
+| Gemma bật suy nghĩ làm `empty_response` | Đã xử lý: `LMSTUDIO_REASONING_EFFORT=none` | `evaluation/reports/danh_gia_model.md`, mục 4 |
 | Tập test chưa chạy | Benchmark tổng hợp: chưa chạy. VMMU test: đã chạy một lần ngày 27/11 (21/138, `calc=True`) | `NHAT_KY_PHAT_TRIEN.md` |
-| Chấm tay bằng hai người | Chưa cải thiện; hiện chỉ có chấm 4 ca bởi trợ lý | `cham_rubric_gemma_sample_20261126.md` |
+| Chấm tay bằng hai người | Chưa cải thiện; hiện chỉ có chấm 4 ca bởi trợ lý | `danh_gia_model.md`, mục 6 |
 | Hợp đồng đầu ra còn nháp v0.1 | Chưa cải thiện; ánh xạ API v1 đã ghi trong `docs/TICH_HOP.md` | `contract/README.md` |
 | Giấy phép GPL/NC khi huấn luyện | Chưa cải thiện; cần hỏi thầy | nhật ký 23/11 |
 
@@ -131,4 +138,4 @@ Mọi lệnh chạy từ thư mục `ai/` (`uv run python ...`). Dữ liệu ben
 | `legacy_b0/` | quy trình B0 theo phiên (2026-10) và script thử OpenRouter gốc; chỉ để tái hiện số liệu cũ |
 | `records_*/`, `runs/`, `sessions/`, `scores/` | bản ghi đầu ra từng lần chạy, **không** có trong git |
 
-Quy ước: chỉ số phủ mệnh đề là từ khóa thô, chạm trần và không đo độ bịa; không dùng làm điểm rubric. Tập test chưa chạy (giữ đóng băng); không sửa ground truth sau khi xem đầu ra model.
+Quy ước: chỉ số phủ mệnh đề là từ khóa thô, chạm trần và không đo độ bịa; không dùng làm điểm rubric. Tập test của benchmark tổng hợp chưa chạy (giữ đóng băng); không sửa ground truth sau khi xem đầu ra model.

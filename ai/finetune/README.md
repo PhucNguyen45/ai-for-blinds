@@ -63,7 +63,7 @@ chưa được thầy/nhóm xác nhận; đặt `--issue-rate 0` nếu muốn b�
 - **Câu văn sinh từ mẫu** (vài biến thể mỗi loại): mô hình có thể học thuộc khuôn câu; cần kiểm tra mức đa dạng đầu ra.
 - **Chưa có** trang chữ (nhóm `text`), chữ viết tay, bảng đen, ảnh chụp thật, bản đồ thật, hình khoa học thật.
 - Lời diễn giải ngắn nên bỏ bớt chi tiết với bảng lớn: chi tiết nằm ở cặp hỏi đáp.
-- Chưa kiểm chứng QLoRA trên RTX 2070 8 GB (có thể sát giới hạn VRAM) cho model nền; model nền đang chuyển từ Qwen3-VL-4B sang Gemma 4 E4B (7,5B, nặng hơn), chưa chọn cách huấn luyện.
+- Chưa huấn luyện. Tài liệu Unsloth nêu Gemma 4 E4B cần 10 GB VRAM để huấn luyện, hơn mức 8 GB của RTX 2070; Phúc nghiêng về huấn luyện trên Kaggle hoặc Colab (chưa thử).
 - Nếu sau này đưa SGK vào huấn luyện: kiểm tra mức **ghi nhớ/nhả lại nội dung có bản quyền** trước khi phát hành model.
 
 ## Việc tiếp theo
