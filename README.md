@@ -99,19 +99,15 @@ Bản đồ tài liệu: mỗi thư mục gốc, nơi có md mô tả và các b
 
 ## Nhánh
 
-## Nhánh
-
 | Nhánh | Nội dung |
 |---|---|
 | `main` | Bản cũ (2026-05, SgBe Vision); nhánh mặc định, chưa cập nhật |
 | `phuc` | Module AI (Phúc) **+ bản ghép backend/app** (trùng `toan/tich-hop` từ 2026-11-25) |
 | `dev`, `nam` | Backend FastAPI `/v1/*`, `docs/API_v1.md` (Nam): hợp đồng API v1 hiện hành |
-| `toan/frontend` | App Flutter giao diện mới (Toàn) |
-| `toan/tich-hop` | Bản ghép `phuc` + `dev` + `toan/frontend` (Toàn); `phuc` đã fast-forward tới đây |
-| `toan/app-mvp` | App Flutter MVP cũ (đã thay bằng `toan/frontend`) |
+| `toan/tich-hop` | **Nhánh duy nhất của Toàn**: bản ghép `phuc` + `dev` + app Flutter `frontend/` + các sửa của Toàn (cổng chất lượng 27/11) |
 | `fix/e2e-vlm-stt-rag` | Bản chạy thông cũ (2026-08), có thể lỗi thời |
 
-Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh trên; bản ghép dùng `--allow-unrelated-histories` (2026-11-25), chờ cả nhóm duyệt; `dev`, `nam`, `toan/frontend` đã nằm trọn trong `phuc`, chờ chủ nhánh quyết định dọn. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
+Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc với các nhánh trên; bản ghép dùng `--allow-unrelated-histories` (2026-11-25), chờ cả nhóm duyệt; `dev`, `nam` đã nằm trọn trong `phuc`, chờ chủ nhánh quyết định dọn. Ngày 2026-11-27 Toàn gộp mọi nhánh `toan/*` về `toan/tich-hop` và xóa `toan/frontend`, `toan/app-mvp` (app MVP cũ ở thư mục `app/`, khôi phục được từ commit `4a9bbae`), `toan/sua-cong-va-hoi-dap`. Mọi thay đổi hợp đồng cần cả nhóm duyệt.
 
 ## Việc tiếp theo
 
