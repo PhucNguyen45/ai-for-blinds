@@ -63,9 +63,23 @@ chưa được thầy/nhóm xác nhận; đặt `--issue-rate 0` nếu muốn b�
 - **Câu văn sinh từ mẫu** (vài biến thể mỗi loại): mô hình có thể học thuộc khuôn câu; cần kiểm tra mức đa dạng đầu ra.
 - **Chưa có** trang chữ (nhóm `text`), chữ viết tay, bảng đen, ảnh chụp thật, bản đồ thật, hình khoa học thật.
 - Lời diễn giải ngắn nên bỏ bớt chi tiết với bảng lớn: chi tiết nằm ở cặp hỏi đáp.
-- Chưa huấn luyện. Tài liệu Unsloth nêu Gemma 4 E4B cần 10 GB VRAM để huấn luyện, hơn mức 8 GB của RTX 2070; Phúc nghiêng về huấn luyện trên Kaggle hoặc Colab (chưa thử).
+- Chưa huấn luyện. Tài liệu Unsloth nêu Gemma 4 E4B cần 10 GB VRAM để huấn luyện, hơn mức 8 GB của RTX 2070; Phúc nghiêng về huấn luyện trên Kaggle hoặc Colab (chưa thử). Claude đọc file trên Hugging Face ngày 27/11: bản `unsloth/gemma-4-E4B-it-unsloth-bnb-4bit` có trọng số khoảng 10,2 GiB (các bảng embedding, phần thị giác, âm thanh và một số lớp không nén), trong khi VRAM trống của RTX 2070 khoảng 7,7 GiB; bản 4-bit của Qwen3-VL 4B là 4,30 GB. Unsloth Studio không huấn luyện từ file GGUF. Chưa chạy thử huấn luyện.
 - Nếu sau này đưa SGK vào huấn luyện: kiểm tra mức **ghi nhớ/nhả lại nội dung có bản quyền** trước khi phát hành model.
 
 ## Việc tiếp theo
 
 Xem mục "Việc tiếp theo" của `README.md` gốc (một danh sách duy nhất).
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 28/11/2026 | Phúc yêu cầu, Claude ghi | ghi số đo dung lượng bản 4-bit của Gemma và Qwen | (chưa commit) |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 23/11/2026 | Phúc (AI hỗ trợ) | feat(vlm): optional LMSTUDIO_REASONING_EFFORT for Gemma 4; docs: base model moving to Gemma 4 E4B | `28fae5e` |
+| 19/11/2026 | Phúc (AI hỗ trợ) | docs: consolidate markdown (26 -> 13) and refresh README | `1a934b3` |
+| 18/11/2026 | Phúc (AI hỗ trợ) | feat(ai): capture quality gate, unreadable prompt, QA with code-computed arithmetic, TTS text prep; split vlm modules | `a878419` |
+| 17/11/2026 | Phúc | feat(ai): synthetic training-set generator for VLM fine-tuning; update README | `9c38b09` |

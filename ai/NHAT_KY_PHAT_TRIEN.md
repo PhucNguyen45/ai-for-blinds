@@ -1,6 +1,6 @@
 # Nhật ký phát triển phần AI (Mảng A)
 
-Mỗi ngày một mục: việc làm, số đo chính (kèm điều kiện), kết luận, việc còn lại. Chi tiết và bảng số liệu nằm ở `evaluation/reports/` (chỉ liên kết, không chép lại).
+Mỗi ngày một mục: **ai làm gì**, số đo chính (kèm điều kiện), kết luận, việc còn lại. Các mục trước 27/11 là việc của Phúc (có trợ lý AI hỗ trợ), trừ chỗ ghi tên người khác. Người: **Phúc** (module AI), **Toàn** (app, ghép hệ thống), **Nam** (backend), **Claude** (trợ lý AI, làm theo yêu cầu). Chi tiết và bảng số liệu nằm ở `evaluation/reports/` (chỉ liên kết, không chép lại).
 Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của benchmark tổng hợp chưa chạy (VMMU test chạy một lần ngày 27/11).
 
 ## 2026-11-17
@@ -48,10 +48,35 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của bench
 
 ## 2026-11-27
 
-- **Làm:** hiệu chỉnh cổng chất lượng ảnh trên ảnh thật (VizWiz-VQA train, 10.400 ảnh tốt; SGK 6.774 trang quét); chỉ chặn ảnh gần như đen, nhòe nặng và cháy sáng; ảnh hơi tối/mờ chuyển sang cảnh báo. Ghép `toan/tich-hop` vào `phuc` (fast-forward, không xung đột). Cập nhật `ai/README.md` (cổng, cây thư mục, mục điểm yếu đã biết) và `ai/contract/README.md` (trạng thái `unreadable`, số test, timeout, `meta.provider`).
+> Mục này được sắp lại theo người làm ngày 28/11. **Đính chính:** bản trước ghi việc hiệu chỉnh cổng chất lượng mà không nêu người làm, dễ hiểu là việc của Phúc; đó là việc của **Toàn** (commit `ea1ac99`).
+
+### Toàn (theo lịch sử git, có trợ lý AI hỗ trợ)
+
+- **Hiệu chỉnh cổng chất lượng ảnh** trên ảnh thật (VizWiz-VQA train, 10.400 ảnh tốt; SGK 6.774 trang quét): chỉ chặn ảnh gần như đen, nhòe nặng và cháy sáng; ảnh hơi tối hoặc mờ chuyển sang cảnh báo (`ea1ac99`). Script đo ở máy Toàn.
 - **Số đo** ([báo cáo](evaluation/reports/capture_gate_anh_that_20261127.md)): chặn nhầm ảnh tốt 15,1% → 1,3%; bắt ảnh tối 19,1% → 13,2%; bắt ảnh mờ 36,5% → 10,7%; 0 trang SGK bị chặn vì tối hoặc mờ. Đây là đánh đổi có chủ ý: ngưỡng mới bỏ sót nhiều ảnh xấu hơn, để VLM xử lý phần còn lại.
-- **Kiểm tra:** `uv run pytest -q` trong `ai/`: 188 test đạt (không gọi mạng).
-- **Chưa làm:** cổng vẫn chặn `glare` (có test), nhưng docstring và báo cáo chưa nêu, cần sửa cho khớp; chưa có ảnh bảng đen và màn hình điện thoại (khoảng 20 ảnh); chưa đo lại trang SGK với `b0g_v1` trên Gemma; các mục còn lại trong "Điểm yếu đã biết" của `ai/README.md`.
+- **Gộp** các nhánh `toan/*` về `toan/tich-hop` (`c20848d`); nhánh này gồm cả các sửa backend ngày 25–26/11 (chặn lời mô tả lặp, đoán loại trang).
+
+### Phúc: quyết định và trao đổi (Claude ghi lại theo lời Phúc)
+
+- Cùng Toàn hỏi lại giảng viên hướng dẫn và cung cấp tài liệu định hướng. Nam đề nghị phân tích nhanh trên máy để hướng dẫn chụp.
+- **Định hướng và quy cách đầu ra (sau khi Phúc và Toàn hỏi lại thầy):** không giải bài tập, chỉ trả lời điều được hỏi, bài giải mẫu được đọc, ảnh bài tập đọc đề trước; xem [`README.md`](README.md#quy-cách-đầu-ra-chốt-ngày-27112026). Hệ quả: các phép đo VMMU ở trên đo khả năng chọn đáp án, không phải chất lượng sản phẩm; so sánh gốc và qua hệ thống chỉ đúng cho việc chọn đáp án; Qwen chỉ để thử quy trình hoặc đối chứng. Đã cập nhật tài liệu; **chưa sửa** prompt, `calc`, bộ sinh dữ liệu, rubric.
+- **Chốt thêm:** được nói chênh lệch hai cột; ảnh không kèm câu hỏi chỉ nói ngắn phần nổi bật nhất hoặc đọc đề mục lớn; ảnh không đọc được thì báo và hướng dẫn chụp lại. Sau khi đọc đề: được giải nghĩa từ ngữ, khái niệm trong đề, không chỉ cách làm.
+- **Chốt thêm:** trang đánh dấu bài kiểm tra hoặc bài thi chỉ được mô tả theo hình ảnh có sẵn; chấm bài viết tay của người dùng nằm ngoài phạm vi hiện tại. Còn mở: cách xét phép tính theo đề bài, câu hỏi trùng bài tập trên trang, kiến thức ngoài ảnh ở trang thường.
+- **Chốt thêm:** câu hỏi cần kiến thức không có trong ảnh thì nói trang không ghi rồi dừng.
+- **Chốt thêm:** câu hỏi trùng bài tập trên trang thì chỉ đọc dữ kiện; không trùng hoặc không có bài tập thì được trả lời (kể cả chênh lệch hai cột). Phép tính khác tạm thời không làm (mặc định).
+- **Luồng và format trả lời:** chốt luồng mô tả ngắn → app hỏi câu cố định → hỏi đáp; format A (xem `ai/README.md`).
+- Chọn **không dùng router đoán loại ảnh** ở bản đầu (theo luồng trên); nghiêng về huấn luyện trên **Kaggle hoặc Colab**.
+
+### Phúc: thao tác trên máy
+
+- Cài lại hai model bản **Unsloth** trong LM Studio (`gemma-4-e4b-it` và `qwen3-vl-4b-instruct`, đều Q4_K_M kèm `mmproj` F32), thay bản Gemma của `lmstudio-community` (tên cũ `google/gemma-4-e4b`). **Hệ quả:** điểm đo bằng bản cũ không so trực tiếp với bản mới; cần đo lại baseline.
+- Tự chạy các lệnh commit và push lên `origin/phuc` (hệ thống quyền không cho trợ lý chạy): `2c4b449`, `a0cdcd9`, `17c38f6`, `442be9d`. CI của `442be9d` đạt cả ba job (ai, backend, frontend).
+
+### Claude (trợ lý AI), làm theo yêu cầu của Phúc
+
+- Fast-forward `phuc` lên `toan/tich-hop` sau khi Phúc đồng ý; `uv run pytest -q` trong `ai/`: 188 test đạt.
+- Cập nhật `ai/README.md` (cổng, cây thư mục, điểm yếu đã biết) và `ai/contract/README.md` (trạng thái `unreadable`, số test, timeout, `meta.provider`).
+- **Còn lại về cổng ảnh:** cổng vẫn chặn `glare` (có test) nhưng docstring và báo cáo chưa nêu; chưa có ảnh bảng đen và màn hình điện thoại (khoảng 20 ảnh); chưa đo lại trang SGK với `b0g_v1` trên Gemma.
 
 - **Benchmark dữ liệu ngoài** (Gemma 4 E4B, LM Studio, reasoning tắt, `ask_about_image` mặc định `calc=True`, chỉ ảnh; script mới `evaluation/runner/run_vmmu_val.py`, `run_openvivqa_dev.py`, `reporting/watch_progress.py`; bản ghi chỉ ở máy):
   - **Đính chính prompt:** bản ghi đầu nói đo bằng `ask_v1` là sai. Mọi ca gửi `ask_calc_v1` trước (trả JSON, phép tính do mã làm), chỉ quay về `ask_v1` khi JSON không dùng được. Đếm trong log LM Studio ngày 27/11: khoảng 573 request `ask_calc_v1`, 54 request `ask_v1` (số đếm gần đúng: 579 ca đáng ra có ít nhất 579 request đầu). Không biết từng ca đi đường nào. Thông số: temperature 0,2, max_tokens 400, reasoning_effort none; Q4_K_M, ctx 16384, parallel 1, flash attention; top_p, top_k, seed không gửi; mỗi ca chạy một lần.
@@ -64,23 +89,33 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của bench
 - **Lỗi phát hiện:** `speech/tts_text.py::prepare_for_speech` đọc số điện thoại như số nguyên và mất số 0 đầu; chưa thấy `pipeline.py` hay backend gọi hàm này. Chưa sửa.
 - **Chưa làm (benchmark):** thử prompt riêng cho trắc nghiệm trên val; bộ chấm OpenViVQA tốt hơn (chấm tay mẫu hoặc người/mô hình làm giám khảo); xem nguyên nhân ca lỗi VMMU.
 
-- **Định hướng và quy cách đầu ra (sau khi Phúc và Toàn hỏi lại thầy):** không giải bài tập, chỉ trả lời điều được hỏi, bài giải mẫu được đọc, ảnh bài tập đọc đề trước; xem [`README.md`](README.md#quy-cách-đầu-ra-chốt-ngày-27112026). Hệ quả: các phép đo VMMU ở trên đo khả năng chọn đáp án, không phải chất lượng sản phẩm; so sánh gốc và qua hệ thống chỉ đúng cho việc chọn đáp án; Qwen chỉ để thử quy trình hoặc đối chứng. Đã cập nhật tài liệu; **chưa sửa** prompt, `calc`, bộ sinh dữ liệu, rubric.
-
-- **Chốt thêm:** được nói chênh lệch hai cột; ảnh không kèm câu hỏi chỉ nói ngắn phần nổi bật nhất hoặc đọc đề mục lớn; ảnh không đọc được thì báo và hướng dẫn chụp lại. Sau khi đọc đề: được giải nghĩa từ ngữ, khái niệm trong đề, không chỉ cách làm.
-
-- **Chốt thêm:** trang đánh dấu bài kiểm tra hoặc bài thi chỉ được mô tả theo hình ảnh có sẵn; chấm bài viết tay của người dùng nằm ngoài phạm vi hiện tại. Còn mở: cách xét phép tính theo đề bài, câu hỏi trùng bài tập trên trang, kiến thức ngoài ảnh ở trang thường.
-
-- **Chốt thêm:** câu hỏi cần kiến thức không có trong ảnh thì nói trang không ghi rồi dừng.
-
-- **Chốt thêm:** câu hỏi trùng bài tập trên trang thì chỉ đọc dữ kiện; không trùng hoặc không có bài tập thì được trả lời (kể cả chênh lệch hai cột). Phép tính khác tạm thời không làm (mặc định).
-
-- **Luồng và format trả lời:** chốt luồng mô tả ngắn → app hỏi câu cố định → hỏi đáp; format A (xem `ai/README.md`).
+- **Thử bản Unsloth** `gemma-4-e4b-it` (Phúc nạp; ctx 16384, parallel 1, flash attention): đọc được ảnh, chép đúng tiêu đề và đủ giá trị hai biểu đồ cột dev; VRAM khoảng 5,0–5,2 GiB. Trong file GGUF 4,96 GB, bảng embedding theo lớp (PLE) chiếm 1,94 GB; `mmproj` 1,91 GB gồm âm thanh 1,24 GB và thị giác 0,68 GB. Phần nào nằm ngoài GPU chưa xác nhận. **Qwen bản Unsloth chưa thử đọc ảnh riêng** (mới chạy baseline 30 ca ở trên).
+- **Phát hiện về câu hỏi:** "cột Thứ 2" bị hiểu là **cột thứ hai** (trả giá trị của ngày Thứ Ba). Hỏi bằng giọng nói thì hai nghĩa nghe giống hệt nhau; cần đưa vào bộ kiểm tra tuân thủ.
+- **Khảo sát cho fine-tune** (đọc tài liệu và file trên Hugging Face, chưa chạy thử): Unsloth Studio không huấn luyện từ GGUF; bản `unsloth/gemma-4-E4B-it-unsloth-bnb-4bit` có trọng số 10.954.367.300 byte (khoảng 10,2 GiB), lớn hơn VRAM trống của RTX 2070 (khoảng 7,7 GiB); bản 4-bit của Qwen3-VL 4B là 4,30 GB. Xem `finetune/README.md`.
+- **Khảo sát công cụ hướng dẫn chụp** (đọc trang giới thiệu, chưa cài thử): ML Kit Document Scanner không cho giao diện riêng hay phản hồi từng khung; `doclens`, `flutter_better_scanner` có 4 góc theo khung nhưng còn mới, ít người dùng (`doclens` dùng camera riêng); `DocAligner` không ghi giấy phép trọng số; bộ tìm 4 góc giấy không hợp bảng đen, tivi, vật thể. Vì vậy lớp đầu tự đo, không thêm thư viện; canh khung để sau (ML Kit Text Recognition là ứng viên).
 - **Hướng dẫn chụp trên app** (Nam đề nghị; phần app của Toàn): đo tối, chói, mờ, rung trên khung xem trước và trên ảnh vừa chụp (`frontend/lib/capture/`), không dùng thư viện ngoài mới; có công tắc và số đếm trên máy. `flutter test` 124 đạt, 3 bỏ qua (trước 84 đạt), `flutter analyze` sạch, Flutter 3.44.1 như CI. So với cổng máy chủ trên 121 ảnh trên máy: cùng kết luận 118. **Chưa build APK, chưa chạy trên thiết bị, ngưỡng chưa hiệu chỉnh, phần nối camera không có test.** Canh khung và tự chụp chưa làm.
+- Cài Flutter 3.44.1 vào `~/sdk/flutter` (WSL) để chạy test; không có Android SDK nên không build APK.
 - **Xác nhận lỗi:** cổng máy chủ vẫn chặn nhầm hình nền đen rõ nét (chưa sửa).
-
 - **Gộp báo cáo:** sáu báo cáo đánh giá model gộp thành [`danh_gia_model.md`](evaluation/reports/danh_gia_model.md); giữ riêng báo cáo dữ liệu ngoài và cổng ảnh. Link ở các mục cũ trỏ sang báo cáo gộp.
 - **Đính chính mục 26/11:** câu "hỏi đáp ảnh-only Gemma 42/59 so với Qwen 40/59, trong nhiễu" **so lệch điều kiện**: lượt Gemma có mã tính hộ (`ask_calc_v1`), 40/59 của Qwen là lượt không tính hộ. Qwen có tính hộ: 51/59 và 53/59.
 
 ## Việc tiếp theo
 
 Xem mục "Việc tiếp theo" của `README.md` gốc (một danh sách duy nhất).
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 28/11/2026 | Phúc yêu cầu, Claude ghi | sắp mục 27/11 theo người làm, đính chính người hiệu chỉnh cổng ảnh, bổ sung việc còn thiếu | (chưa commit) |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 26/11/2026 | Phúc (AI hỗ trợ) | fix(ai): sửa bộ chấm và kết quả Gemma trên dev; thêm b0g và báo cáo | `8ad80a9` |
+| 26/11/2026 | Phúc | docs(ai): thử reasoning bật/tắt của Gemma 4 E4B trên dev | `bbf8715` |
+| 23/11/2026 | Phúc (AI hỗ trợ) | docs: log 2026-11-23 (Gemma switch, VMMU); trim 8B detail tables from Qwen survey | `0296f26` |
+| 19/11/2026 | Phúc (AI hỗ trợ) | revert: drop fine-tune prep (ft_describe_v1 prompt, spoken export format) | `92b30d1` |
+| 19/11/2026 | Phúc (AI hỗ trợ) | docs: consolidate markdown (26 -> 13) and refresh README | `1a934b3` |
+| 19/11/2026 | Phúc | chores: rearangement! | `db8f757` |
+| 18/11/2026 | Phúc (AI hỗ trợ) | feat(ai): capture quality gate, unreadable prompt, QA with code-computed arithmetic, TTS text prep; split vlm modules | `a878419` |

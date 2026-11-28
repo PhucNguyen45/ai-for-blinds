@@ -162,3 +162,16 @@ Hai lỗi tìm ra khi chạy thật:
 - Phúc: hai test của `ai/` hỏng trên Windows do môi trường (thiếu font DejaVu; đọc file không chỉ định
   `encoding="utf-8"`), chạy được với `-X utf8`; trên CI (Ubuntu) cài `fonts-dejavu-core`.
 - Nam: duyệt mã lỗi mới `AI_NOT_CONFIGURED` và trường `title` của trang thư viện.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
+| 26/11/2026 | Toàn (AI hỗ trợ) | Ghép nhánh phuc (26/11): báo cáo Gemma 4 E4B, sửa bộ chấm | `c112f7b` |
+| 26/11/2026 | Phúc (AI hỗ trợ) | fix(ai): sửa bộ chấm và kết quả Gemma trên dev; thêm b0g và báo cáo | `8ad80a9` |
+| 26/11/2026 | Toàn (AI hỗ trợ) | fix(backend): đoán loại trang từ lời mô tả khi module AI trả unknown | `0fc0cf3` |
+| 25/11/2026 | Toàn (AI hỗ trợ) | feat(backend): chặn lời mô tả bị lặp trước khi app đọc to | `b03aa69` |
+| 25/11/2026 | Toàn (AI hỗ trợ) | docs, ci: tài liệu tích hợp và CI cho cả ba phần | `18ff1c9` |

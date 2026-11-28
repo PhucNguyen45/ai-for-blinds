@@ -139,3 +139,14 @@ Mọi lỗi đều báo bằng giọng nói kèm âm **lỗi** và rung ba nhị
 | Máy chủ trả dữ liệu không đúng hợp đồng | "Máy chủ trả về dữ liệu lạ. Bạn thử lại sau nhé." |
 
 Sau lỗi: bấm nút âm lượng là chụp lại ngay; hoặc chạm hai lần thẻ lỗi để về camera.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | feat(app): hướng dẫn chụp trên máy (nhắc khi đang ngắm, kiểm ảnh vừa chụp); cập nhật tài liệu app | `17c38f6` |
+| 19/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): hỏi bằng giọng nói (nhận giọng nói có sẵn của Android) | `c897839` |
+| 18/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): giao diện mới cho học sinh khiếm thị, chuẩn bị đưa lên điện thoại | `947fe22` |
+| 17/11/2026 | Đào Việt Toàn (AI hỗ trợ) | feat(frontend): đưa app Flutter vào frontend/, đọc hợp đồng AI v0.1 | `d2d80a7` |

@@ -66,3 +66,16 @@ Ràng buộc nhất quán được kiểm bằng Pydantic (vd `error` chỉ đi 
 uv run pytest -q                                   # toàn bộ module ai, không gọi API thật (kiểm contract: test_contract_and_describer.py)
 uv run python -m contract.export_contract   # xuất lại schema + ví dụ
 ```
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 18/11/2026 | Phúc (AI hỗ trợ) | feat(ai): capture quality gate, unreadable prompt, QA with code-computed arithmetic, TTS text prep; split vlm modules | `a878419` |
+| 17/11/2026 | Phúc | feat(ai): switchable VLM provider, markdown cleanup, list_models | `d6aa515` |
+| 17/11/2026 | Phúc | feat(ai): add B1 two-stage extraction, B0e control and dev comparison | `d38faa3` |
+| 17/11/2026 | Phúc | feat(ai): add output contract v0.1 and describe_image module with tests | `5e066fe` |

@@ -202,3 +202,11 @@ Reasoning tắt. `run_b1_dev.py --method b0g --reps 3`; `run_qa_dev.py --tag gem
 
 - Công cụ (chạy trong `ai/`): `evaluation/runner/run_b1_dev.py`, `run_qa_dev.py`, `survey_lmstudio.py`; `evaluation/reporting/proposition_check.py`, `repeat_stats.py`, `survey_report.py`, `qa_score.py`, `capture_gate_eval.py`. Bản ghi ở `evaluation/records*` chỉ có ở máy tác giả. Bảng chi tiết của 8B sinh lại được bằng `survey_report.py evaluation/records_survey__baseline_8b_q4_ctx16k_p1`.
 - Còn lại: chấm tay hai người; hiệu chỉnh và đo lại "không đọc được" trên trang SGK thật (cả Gemma); so lại hỏi đáp Gemma và Qwen **cùng phiên bản mã, cùng ngày, nhiều lần lặp**; chỉ số cho lỗi bịa và chiều quan hệ; tập test chỉ chạy khi đã đóng băng cấu hình.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |

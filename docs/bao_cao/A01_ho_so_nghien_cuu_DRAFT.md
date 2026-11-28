@@ -95,3 +95,14 @@ Báo cáo Mảng A dùng khung A–D và nói tới "mức C". Phần tôi đọ
 6. Dang, V. T. et al. (2025). VMMU: A Vietnamese Multitask Multimodal Understanding and Reasoning Benchmark. https://arxiv.org/abs/2508.13680 — *chưa đọc bản gốc*
 
 **Việc cần làm trước khi dùng trong báo cáo chính thức:** đọc bản gốc (PDF/HTML đầy đủ) của 4–6 và các mục chưa đọc của 1–2; kiểm tra lại các con số p-value, tỷ lệ phần trăm; tìm thêm tài liệu về lỗi quan hệ thị giác của VLM và ASSETS 2024.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 19/11/2026 | Phúc (AI hỗ trợ) | docs: consolidate markdown (26 -> 13) and refresh README | `1a934b3` |
+| 17/11/2026 | Phúc (AI hỗ trợ) | docs: reorganize docs/ into bao_cao, tham_khao, quy_dinh_nckh, ghi_chu_du_an | `47aaa02` |

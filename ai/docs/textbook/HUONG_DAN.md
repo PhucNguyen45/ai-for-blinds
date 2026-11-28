@@ -169,3 +169,11 @@ uv run python evaluation/runner/run_b1_dev.py --method b0e --provider lmstudio -
 | `--promote` bỏ qua mẫu | Đọc lý do in ra: chưa verified, thiếu critical, thiếu câu hỏi |
 | Dev/test lệch (một tập rỗng) | Thêm sách khác; cùng sách luôn cùng tập |
 | Sửa ground truth sau khi đã chạy mô hình | Không nên (làm lệch phép đo). Nếu bắt buộc, ghi lý do và tăng phiên bản benchmark |
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 17/11/2026 | Phúc | chore: keep dataset local-only; untrack benchmark and records; add docs; update README status | `2749343` |

@@ -69,3 +69,14 @@ uv run python evaluation/generators/validate_benchmark.py       # kiểm hash, s
 ## Việc tiếp theo
 
 Xem mục "Việc tiếp theo" của `README.md` gốc (một danh sách duy nhất); riêng benchmark: người thứ hai rà soát ground truth của ≥ 20% mẫu.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 19/11/2026 | Phúc (AI hỗ trợ) | docs: consolidate markdown (26 -> 13) and refresh README | `1a934b3` |
+| 17/11/2026 | Phúc | chore: keep dataset local-only; untrack benchmark and records; add docs; update README status | `2749343` |
+| 17/11/2026 | Phúc | feat(data): add benchmark v0.2.0, Commons candidates and B0 dev-run records | `3d3deab` |

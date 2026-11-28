@@ -137,3 +137,15 @@ Tham khảo Seeing AI, Lookout (Google), Be My Eyes / Be My AI, Envision:
 - Luồng "mô tả ngắn rồi hỏi người dùng muốn gì" (xem Quy cách đầu ra ở `../ai/README.md`): app vẫn đọc toàn bộ mô tả như trước.
 
 - Khóa ký riêng cho bản phát hành.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | feat(app): hướng dẫn chụp trên máy (nhắc khi đang ngắm, kiểm ảnh vừa chụp); cập nhật tài liệu app | `17c38f6` |
+| 25/11/2026 | Toàn (AI hỗ trợ) | feat(app): thư viện từ máy chủ, khớp nghĩa hợp đồng v0.1 | `6073a14` |
+| 19/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): hỏi bằng giọng nói (nhận giọng nói có sẵn của Android) | `c897839` |
+| 18/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): giao diện mới cho học sinh khiếm thị, chuẩn bị đưa lên điện thoại | `947fe22` |
+| 17/11/2026 | Đào Việt Toàn (AI hỗ trợ) | feat(frontend): đưa app Flutter vào frontend/, đọc hợp đồng AI v0.1 | `d2d80a7` |

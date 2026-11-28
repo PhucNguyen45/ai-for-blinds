@@ -139,3 +139,17 @@ Mọi lệnh chạy từ thư mục `ai/` (`uv run python ...`). Dữ liệu ben
 | `records_*/`, `runs/`, `sessions/`, `scores/` | bản ghi đầu ra từng lần chạy, **không** có trong git |
 
 Quy ước: chỉ số phủ mệnh đề là từ khóa thô, chạm trần và không đo độ bịa; không dùng làm điểm rubric. Tập test của benchmark tổng hợp chưa chạy (giữ đóng băng); không sửa ground truth sau khi xem đầu ra model.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 26/11/2026 | Phúc (AI hỗ trợ) | fix(ai): sửa bộ chấm và kết quả Gemma trên dev; thêm b0g và báo cáo | `8ad80a9` |
+| 23/11/2026 | Phúc (AI hỗ trợ) | feat(vlm): optional LMSTUDIO_REASONING_EFFORT for Gemma 4; docs: base model moving to Gemma 4 E4B | `28fae5e` |
+| 19/11/2026 | Phúc (AI hỗ trợ) | revert: drop fine-tune prep (ft_describe_v1 prompt, spoken export format) | `92b30d1` |
+| 19/11/2026 | Phúc (AI hỗ trợ) | docs: consolidate markdown (26 -> 13) and refresh README | `1a934b3` |
+| 18/11/2026 | Phúc (AI hỗ trợ) | feat(ai): capture quality gate, unreadable prompt, QA with code-computed arithmetic, TTS text prep; split vlm modules | `a878419` |

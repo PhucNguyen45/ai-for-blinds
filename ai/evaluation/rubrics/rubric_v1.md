@@ -82,3 +82,12 @@ không đại diện cho độ chính xác tổng quát của mô hình.
 Rubric hiện tại chưa thay thế đánh giá thực tế với
 học sinh khiếm thị, đặc biệt đối với khả năng tiếp thu
 kiến thức và trải nghiệm nghe bằng TTS.
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 24/10/2026 | Phúc | feat(ai): add benchmark v0.1 and evaluation pipeline | `d7556d0` |

@@ -51,3 +51,13 @@ Trạng thái các mục A1–A12 và B1–B11 ghi theo bản giao diện ngày 
 - [x] Từ chỉ vị trí ("góc trên bên trái") chỉ dùng trong lời hướng dẫn, vì vị trí các nút cố định; câu báo trạng thái không dùng
 - [x] Chữ trạng thái không đặt `liveRegion`, vì app đã tự đọc bằng TTS (tránh hai giọng chồng nhau)
 - [x] Mọi câu nói tập trung ở `lib/strings.dart`
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | feat(app): hướng dẫn chụp trên máy (nhắc khi đang ngắm, kiểm ảnh vừa chụp); cập nhật tài liệu app | `17c38f6` |
+| 18/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): giao diện mới cho học sinh khiếm thị, chuẩn bị đưa lên điện thoại | `947fe22` |
+| 17/11/2026 | Đào Việt Toàn (AI hỗ trợ) | feat(frontend): đưa app Flutter vào frontend/, đọc hợp đồng AI v0.1 | `d2d80a7` |

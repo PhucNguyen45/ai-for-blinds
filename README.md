@@ -122,3 +122,22 @@ Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc 
 
 ---
 *Cập nhật README: (1) chỉ sửa dòng trạng thái đã đổi; (2) đổi ngày ở đầu; (3) thêm mục vào `ai/NHAT_KY_PHAT_TRIEN.md`.*
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
+| 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
+| 27/11/2026 | Toàn (AI hỗ trợ) | docs: gộp nhánh toan/* về toan/tich-hop, cập nhật bảng nhánh | `c20848d` |
+| 27/11/2026 | Toàn | Merge remote-tracking branch 'origin/phuc' into toan/tich-hop | `43f44b6` |
+| 27/11/2026 | Phúc | docs: README gốc gom link tới tài liệu từng thư mục và từng bộ dữ liệu | `cf5b9fd` |
+| 26/11/2026 | Toàn (AI hỗ trợ) | Ghép nhánh phuc (26/11): báo cáo Gemma 4 E4B, sửa bộ chấm | `c112f7b` |
+| 26/11/2026 | Phúc (AI hỗ trợ) | fix(ai): sửa bộ chấm và kết quả Gemma trên dev; thêm b0g và báo cáo | `8ad80a9` |
+| 26/11/2026 | Phúc | docs(ai): thử reasoning bật/tắt của Gemma 4 E4B trên dev | `bbf8715` |
+| 25/11/2026 | Phúc | docs: README phản ánh bản ghép hệ thống trên phuc | `a5056fb` |
+| 25/11/2026 | Toàn (AI hỗ trợ) | docs, ci: tài liệu tích hợp và CI cho cả ba phần | `18ff1c9` |
+
+Còn 15 lần sửa cũ hơn: `git log -- README.md`.

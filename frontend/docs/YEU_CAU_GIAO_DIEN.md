@@ -74,3 +74,15 @@ Mức ưu tiên: **B** = bắt buộc cho Cổng 1 (13/12/2026), **N** = nên c�
 | UI-52 | App phải kiểm ảnh vừa chụp ngay trên máy; ảnh hỏng rõ thì chưa gửi và đọc cách chụp lại. | N | Biết ảnh hỏng ngay, không đợi máy chủ; bớt lượt gọi mô hình. | `test/capture_flow_test.dart` |
 | UI-53 | App không được khóa việc chụp: không giữ hai ảnh liên tiếp; không kiểm được thì gửi đi. | B (khi có UI-52) | Bộ kiểm có thể sai (bảng đen, ảnh nền tối). | `test/capture_flow_test.dart` |
 | UI-54 | Hướng dẫn chụp phải tắt được; số liệu chụp chỉ là số đếm trên máy, không lưu ảnh; tắt thì vẫn đếm. | N | Người đã quen không cần nhắc; cần mốc so sánh trước và sau. | `test/capture_flow_test.dart` |
+
+## Lịch sử cập nhật
+
+Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi trợ lý AI trong lời nhắn; commit cũ không ghi thì không suy ra là không dùng.
+
+| Ngày | Người | Việc | Commit |
+|---|---|---|---|
+| 27/11/2026 | Phúc (AI hỗ trợ) | feat(app): hướng dẫn chụp trên máy (nhắc khi đang ngắm, kiểm ảnh vừa chụp); cập nhật tài liệu app | `17c38f6` |
+| 25/11/2026 | Toàn (AI hỗ trợ) | feat(app): thư viện từ máy chủ, khớp nghĩa hợp đồng v0.1 | `6073a14` |
+| 19/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): hỏi bằng giọng nói (nhận giọng nói có sẵn của Android) | `c897839` |
+| 18/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): giao diện mới cho học sinh khiếm thị, chuẩn bị đưa lên điện thoại | `947fe22` |
+| 17/11/2026 | Đào Việt Toàn (AI hỗ trợ) | feat(frontend): đưa app Flutter vào frontend/, đọc hợp đồng AI v0.1 | `d2d80a7` |
