@@ -104,20 +104,11 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của bench
 ### Phúc: quyết định
 
 - Phần nhận diện ảnh trên app phải **dùng công cụ có sẵn, nhiều người dùng, uy tín**.
-- App giao diện (LM Studio, Unsloth Desktop, Docker Desktop) ở Windows; runtime và công cụ lập trình chỉ cài trong **WSL**, gom gọn một chỗ. Docker Desktop chưa bật tích hợp WSL. Chưa chuyển LM Studio vào WSL.
 
 ### Claude (trợ lý AI), làm theo yêu cầu của Phúc
 
 - Trả lời câu hỏi: hướng dẫn chụp hiện **tự viết**, chưa dùng công cụ nhận diện ảnh có sẵn nào; chưa chạy trên điện thoại.
-- Cài trong WSL, kiểm mã băm: Eclipse Temurin JDK 17.0.21.1, Android command-line tools (Flutter 3.44.1 đã cài 27/11). Gom SDK và cache vào `~/sdk/`; biến môi trường ở `~/sdk/env.sh`, `~/.bashrc` thêm một dòng; xóa hai thư mục tải tạm. Sau khi chuyển cache: `flutter analyze` sạch, `flutter test` 124 đạt, 3 bỏ qua.
-- **Chưa làm:** cài gói Android SDK (cần chấp nhận giấy phép của Google), build APK, thay phần tự viết bằng công cụ có sẵn.
-- Rà cấu hình WSL (chỉ đọc): Ubuntu 26.04, 12 luồng, WSL được cấp 15 GB RAM, mạng NAT, không có `.wslconfig`; 48/64 mục `PATH` là của Windows (giữ nguyên).
-- Dọn `PATH` theo yêu cầu: sửa `~/.bashrc`, `~/.profile` (bản gốc ở `~/.shell-backup-20261128/`). Shell tương tác: 64 → 60 mục, hết trùng; cùng tập thư mục, các lệnh kiểm tra trỏ như cũ; chỉ `~/.local/bin` lùi sau bốn thư mục `~/sdk`. Shell đăng nhập không tương tác còn 2 mục Windows trùng.
-
-### Phúc: thao tác trên máy (ngày 28/11)
-
-- Bật tích hợp WSL của Docker Desktop: trong WSL chạy được `docker` (client và server 29.9.3).
-- Đổi múi giờ WSL từ UTC sang `Asia/Ho_Chi_Minh` (khớp Windows) và cập nhật các gói apt (còn 0 gói chờ, không cần khởi động lại). **Lưu ý khi đối chiếu:** commit tạo trong WSL trước thời điểm này ghi giờ `+0000`; commit làm từ 0 đến 7 giờ sáng giờ Việt Nam hiện ngày hôm trước (vd. `17c38f6`, `442be9d` ghi 27/11 18:08 UTC, tức 28/11 01:08).
+- Chuẩn bị công cụ build app trong WSL (Flutter, JDK 17, Android command-line tools); **chưa cài gói Android SDK** (cần chấp nhận giấy phép của Google), **chưa build APK**, chưa thay phần tự viết bằng công cụ có sẵn.
 
 ## Việc tiếp theo
 
