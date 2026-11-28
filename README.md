@@ -24,7 +24,6 @@ Nghiên cứu, phát triển hệ thống nhận dạng, diễn giải hình ả
 
 - **Mã chưa khớp [Quy cách đầu ra](ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026):** prompt hiện tại chưa cấm giải bài tập, hỏi đáp còn tính hộ, ảnh không kèm câu hỏi vẫn được mô tả cả trang.
 - **Báo "không đọc được" trên trang SGK thật còn sai:** `b0g_v1` báo nhầm 5/32 trang sạch (đo với Qwen3-VL 4B, chưa đo lại với Gemma) → [đánh giá model](ai/evaluation/reports/danh_gia_model.md), mục 3.4.
-- **Cổng chất lượng của máy chủ còn chặn nhầm hình nền đen rõ nét** (xem [`ai/README.md`](ai/README.md)).
 - **Model:** hướng của đề tài là họ Gemma. Trên benchmark dev tổng hợp, phần **mô tả** của Gemma 4 E4B và Qwen3-VL 4B ngang nhau trong dao động; phần **hỏi đáp có tính hộ** Gemma 42/59, Qwen 51–53/59 (đính chính 27/11: kết luận "ngang nhau" trước đây so lệch điều kiện) → [đánh giá model](ai/evaluation/reports/danh_gia_model.md), mục 4 và 5.
 - **Chưa fine-tune hay distill.** Chưa có chấm bằng người, chưa có người khiếm thị đánh giá; chưa có bộ đánh giá đã gán nhãn trên SGK thật.
 
@@ -116,7 +115,7 @@ Nhánh `phuc` được **xây lại từ đầu** (2026-10-23) nên khác gốc 
 
 1. Theo [Quy cách đầu ra](ai/README.md#quy-cách-đầu-ra-chốt-ngày-27112026): làm bộ kiểm tra tuân thủ, rồi sửa prompt, cách dùng `calc`, mô tả ngắn khi không có câu hỏi.
 2. Hướng dẫn chụp: build và thử trên điện thoại thật, hiệu chỉnh ngưỡng, đo tỉ lệ ảnh hỏng khi tắt và bật ([`frontend/README.md`](frontend/README.md)).
-3. Sửa cổng máy chủ chặn nhầm hình nền đen; đo lại báo "không đọc được" trên trang SGK thật.
+3. Đo lại báo "không đọc được" trên trang SGK thật.
 4. Thu thập và gán nhãn SGK thật, gồm bảng đen và màn hình (cần người gán nhãn, người rà soát thứ hai, văn bản cho phép của thầy); chấm tay hai người.
 5. Sau đó chọn teacher và cách distill (model student họ Gemma); huấn luyện trên Kaggle, Colab hoặc máy chủ học viện.
 
@@ -129,6 +128,7 @@ Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi t
 
 | Ngày | Người | Việc | Commit |
 |---|---|---|---|
+| 28/11/2026 | Phúc yêu cầu, Claude làm | sửa cổng ảnh chặn nhầm hình nền đen, đo lại trên VizWiz | chưa commit |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
 | 27/11/2026 | Toàn (AI hỗ trợ) | docs: gộp nhánh toan/* về toan/tich-hop, cập nhật bảng nhánh | `c20848d` |

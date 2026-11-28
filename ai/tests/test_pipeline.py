@@ -52,6 +52,26 @@ def test_dark_background_but_readable_is_warned_not_blocked():
     assert r.ok and r.issues == () and r.warnings == ("dark",)
 
 
+def test_very_dark_background_with_sharp_bright_detail_is_not_blocked():
+    """Hình vũ trụ, ban đêm trong SGK: trung bình dưới 30 nhưng nét sáng rõ (vd "Vòng đời Mặt Trời": 24,9)."""
+    im = Image.new("RGB", (900, 600), "black")
+    d = ImageDraw.Draw(im)
+    for y in range(40, 560, 40):
+        d.rectangle((40, y, 860, y + 3), fill="white")
+    r = check_image(im)
+    assert r.metrics["mean"] < 30 and r.metrics["std"] >= 20 and r.metrics["p95"] >= 40
+    assert r.ok and r.warnings == ("dark",)
+
+
+def test_very_dark_flat_image_is_still_blocked():
+    """Trung bình dưới 30 và gần như không tương phản thì vẫn là ảnh tối, dù vài mức sáng vượt phân vị 95."""
+    im = Image.new("RGB", (900, 600), (12, 12, 12))
+    ImageDraw.Draw(im).rectangle((0, 0, 899, 59), fill=(60, 60, 60))
+    r = check_image(im)
+    assert r.metrics["mean"] < 30 and r.metrics["std"] < 20 and r.metrics["p95"] >= 40
+    assert r.issues == ("dark",)
+
+
 @pytest.mark.parametrize("kind,issue", [("dark", "dark"), ("blur", "blur")])
 def test_bad_capture_is_blocked_before_calling_vlm(tmp_path, kind, issue):
     calls = []

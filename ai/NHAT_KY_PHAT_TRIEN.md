@@ -104,11 +104,14 @@ Mọi số đo là thăm dò, chỉ số từ khóa thô; tập test của bench
 ### Phúc: quyết định
 
 - Phần nhận diện ảnh trên app phải **dùng công cụ có sẵn, nhiều người dùng, uy tín**.
+- Chia việc cho app: bên Phúc **chỉ viết code** (chạy được `flutter analyze` và `flutter test`); **build và chạy trên thiết bị giao Toàn**, vì Toàn có đủ môi trường. Không cài tiếp gói Android SDK ở máy Phúc.
 
 ### Claude (trợ lý AI), làm theo yêu cầu của Phúc
 
 - Trả lời câu hỏi: hướng dẫn chụp hiện **tự viết**, chưa dùng công cụ nhận diện ảnh có sẵn nào; chưa chạy trên điện thoại.
 - Chuẩn bị công cụ build app trong WSL (Flutter, JDK 17, Android command-line tools); **chưa cài gói Android SDK** (cần chấp nhận giấy phép của Google), **chưa build APK**, chưa thay phần tự viết bằng công cụ có sẵn.
+- **Sửa cổng ảnh chặn nhầm hình nền đen** (`capture/quality.py`; Toàn hiệu chỉnh ngưỡng trước đó ở `ea1ac99`): độ sáng trung bình < 30 chỉ chặn khi độ lệch chuẩn < 20. Thêm 2 test (1 test hỏng trước khi sửa), `pytest` 190 đạt; sửa docstring cho nêu cả `glare`.
+- **Đo lại luật "tối"** trên 20.523 ảnh VizWiz-VQA train (chỉ thống kê ảnh, không gọi model): bị chặn 354 → 286; ảnh gán "trả lời được" 123 → 76 (0,82% → 0,51%); ảnh cả 10 người trả lời được 31 → 14; thả thêm 68 ảnh (47 trả lời được), không chặn thêm. Script đo là script tạm, không đưa vào repo.
 
 ## Việc tiếp theo
 
@@ -120,6 +123,7 @@ Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi t
 
 | Ngày | Người | Việc | Commit |
 |---|---|---|---|
+| 28/11/2026 | Phúc yêu cầu, Claude làm | sửa cổng ảnh chặn nhầm hình nền đen, đo lại trên VizWiz | chưa commit |
 | 28/11/2026 | Phúc yêu cầu, Claude ghi | sắp mục 27/11 theo người làm, đính chính người hiệu chỉnh cổng ảnh, bổ sung việc còn thiếu | `8897986` |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |

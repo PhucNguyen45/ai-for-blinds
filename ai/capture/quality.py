@@ -8,11 +8,13 @@ Phạm vi: bắt được các lỗi VẬT LÝ đo bằng thống kê ảnh (t�
 VLM đảm nhiệm (xem README ở thư mục này).
 
 Hai mức (hiệu chỉnh lại 27/11/2026 trên ẢNH THẬT, xem `ai/evaluation/reports/capture_gate_anh_that_20261127.md`):
-- CHẶN (`issues`, `ok=False`): chỉ ảnh gần như đen hoặc nhòe nặng. Trên 10.400 ảnh VizWiz chất lượng tốt, mức chặn
+- CHẶN (`issues`, `ok=False`): ảnh gần như đen, nhòe nặng, hoặc cháy sáng toàn ảnh (`glare`). Trên 10.400 ảnh VizWiz chất lượng tốt, mức chặn
   này chặn nhầm 1,3% (ngưỡng cũ chỉnh trên ảnh tổng hợp chặn nhầm 15,1%: ảnh điện thoại hơi nhòe, màn hình/vật
   có nền tối nhưng vẫn đọc được). 0 trang SGK quét bị chặn vì tối hay mờ.
 - CẢNH BÁO (`warnings`, vẫn `ok=True`): ảnh hơi tối hoặc hơi mờ theo ngưỡng cũ. Không chặn, để VLM tự quyết đọc được
   phần nào hay hướng dẫn chụp lại (prompt mô tả đã có bước kiểm tra ảnh).
+Từ 28/11/2026, mức chặn "tối" xét cả độ tương phản: trung bình thấp chỉ bị chặn khi ảnh cũng gần như phẳng (`dark_std`),
+để hình nền đen có nét sáng rõ (vũ trụ, ban đêm trong SGK) không bị chặn nhầm. Bộ kiểm trên điện thoại dùng cùng luật.
 Các ngưỡng nằm trong `Thresholds` để chỉnh mà không sửa logic.
 """
 
@@ -46,8 +48,9 @@ CAPTURE_GUIDANCE = {
 
 @dataclass(frozen=True)
 class Thresholds:
-    # Mức CHẶN: ảnh gần như đen hoặc nhòe nặng.
-    dark_mean: float = 30.0       # độ sáng trung bình (0-255) dưới mức này là quá tối
+    # Mức CHẶN: ảnh gần như đen hoặc nhòe nặng (cháy sáng: xem overexposed_* bên dưới).
+    dark_mean: float = 30.0       # độ sáng trung bình (0-255) dưới mức này VÀ gần như không tương phản là quá tối
+    dark_std: float = 20.0        # độ lệch chuẩn dưới mức này là gần như không tương phản
     dark_p95: float = 40.0        # ...hoặc cả vùng sáng nhất (phân vị 95, thường là màu giấy) vẫn tối hơn mức này
     blur_laplacian: float = 10.0  # phương sai bộ lọc Laplace (ảnh đã thu về cạnh dài 640) dưới mức này là mờ nặng
     # Mức CẢNH BÁO (không chặn): ngưỡng cũ chỉnh trên ảnh tổng hợp.
@@ -115,7 +118,7 @@ def check_image(source, thresholds: Thresholds = Thresholds()) -> CaptureReport:
             return check_image(im.copy(), thresholds)
     m = measure(source, thresholds.analysis_size)
     issues, warnings = [], []
-    if m["mean"] < thresholds.dark_mean or m["p95"] < thresholds.dark_p95:
+    if m["p95"] < thresholds.dark_p95 or (m["mean"] < thresholds.dark_mean and m["std"] < thresholds.dark_std):
         issues.append("dark")
     elif m["laplacian_var"] < thresholds.blur_laplacian:
         issues.append("blur")

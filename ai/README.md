@@ -93,18 +93,18 @@ Model có chế độ suy nghĩ (Gemma 4): đặt biến môi trường `LMSTUDI
 
 Hiệu chỉnh ngày 27/11/2026 trên ảnh thật ([báo cáo](evaluation/reports/capture_gate_anh_that_20261127.md)):
 
-- **Chặn** (trả `status="unreadable"` ngay, không gọi VLM): ảnh gần như đen (`dark`), mờ nặng (`blur`), hoặc cháy sáng toàn ảnh (`glare`: sáng trung bình > 235 và gần như không có tương phản; chủ ý, có test `test_pipeline.py`). Lý do nằm trong `uncertainties` dạng `capture_gate:<lý do>`.
+- **Chặn** (trả `status="unreadable"` ngay, không gọi VLM): ảnh gần như đen (`dark`: gần như không có điểm sáng, hoặc rất tối **và** gần như không tương phản), mờ nặng (`blur`), hoặc cháy sáng toàn ảnh (`glare`: sáng trung bình > 235 và gần như không có tương phản; chủ ý, có test `test_pipeline.py`). Lý do nằm trong `uncertainties` dạng `capture_gate:<lý do>`.
 - **Cảnh báo** (`warnings`, vẫn gọi VLM): ảnh hơi tối hoặc hơi mờ.
 - Lỗi phụ thuộc nội dung (chói che một phần, hình bị cắt mất mép) không đo được bằng thống kê ảnh; prompt `b0g_v1` xử lý.
 
-> Lưu ý: docstring của `capture/quality.py` và báo cáo 27/11 chỉ nêu tối và mờ nặng là mức chặn, nhưng code vẫn chặn `glare`. Trên SGK, glare chặn 12 trang gần như trắng (trang lót sau bìa), không ảnh hưởng trang nội dung. Cần sửa docstring và báo cáo cho khớp với code.
+> Lưu ý: báo cáo 27/11 chỉ nêu tối và mờ nặng là mức chặn, nhưng code vẫn chặn `glare` (docstring đã sửa 28/11; báo cáo giữ nguyên). Trên SGK, glare chặn 12 trang gần như trắng (trang lót sau bìa), không ảnh hưởng trang nội dung.
 
 ## Điểm yếu đã biết (kiểm tra ngày 27/11/2026)
 
 | Điểm yếu | Trạng thái | Bằng chứng |
 |---|---|---|
 | Cổng chặn nhầm ảnh tốt | Đã cải thiện: 15,1% → 1,3% trên VizWiz tốt | `evaluation/reports/capture_gate_anh_that_20261127.md` |
-| Cổng chặn nhầm hình nền đen rõ nét | **Còn.** Chạy lại 27/11: hình "Vòng đời Mặt Trời" (trung bình 24,9, độ lệch chuẩn 61,2, Laplace 1467,8) và một ảnh tương tự vẫn bị chặn là `dark`. Bộ kiểm trên điện thoại xét thêm tương phản nên cho qua; cổng máy chủ chưa sửa | `docs/TICH_HOP.md`, `frontend/README.md` |
+| Cổng chặn nhầm hình nền đen rõ nét | **Đã sửa 28/11:** trung bình thấp chỉ chặn khi độ lệch chuẩn < 20 (cùng luật với bộ kiểm trên điện thoại). Đo lại trên 20.523 ảnh VizWiz train: chặn "tối" 354 → 286; trong ảnh gán "trả lời được" 0,82% → 0,51%; thả thêm 68 ảnh (47 trả lời được, 21 không), không chặn thêm ảnh nào. Chưa đo trên ảnh bảng đen, tivi thật | `tests/test_pipeline.py` |
 | Báo nhầm "không đọc được" trên trang SGK (5/32, b0g_v1) | Chưa cải thiện. Nguyên nhân là VLM, không phải cổng; số đo gốc là Qwen 4B, chưa đo lại với Gemma | `danh_gia_model.md`, mục 3 |
 | Ảnh bảng đen và màn hình điện thoại | Chưa có ảnh kiểm tra (cần khoảng 20 ảnh) | báo cáo cổng 27/11, mục 4 |
 | Hỏi đáp có mô tả làm câu về vị trí tệ đi | Chưa cải thiện; README vẫn khuyên chỉ truyền ảnh | `danh_gia_model.md`, mục 3 |
@@ -146,6 +146,7 @@ Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi t
 
 | Ngày | Người | Việc | Commit |
 |---|---|---|---|
+| 28/11/2026 | Phúc yêu cầu, Claude làm | sửa cổng ảnh chặn nhầm hình nền đen, đo lại trên VizWiz | chưa commit |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
 | 26/11/2026 | Phúc (AI hỗ trợ) | fix(ai): sửa bộ chấm và kết quả Gemma trên dev; thêm b0g và báo cáo | `8ad80a9` |

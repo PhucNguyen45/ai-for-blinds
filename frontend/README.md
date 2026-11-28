@@ -75,7 +75,7 @@ Ba lớp, hai lớp đầu chạy ngay trên máy, không cần mạng:
 
 Tắt, bật ở Cài đặt → Cho người hỗ trợ → **Hướng dẫn chụp**. Khi tắt, app vẫn **đếm** lỗi để làm mốc so sánh. Số liệu chỉ là số đếm lưu trên máy (không lưu ảnh), hiện ngay dưới công tắc.
 
-**Trạng thái:** có test tự động; **chưa build APK và chưa chạy trên máy ảo hay điện thoại**. Phần nối camera (`services/capture_source.dart`, đổi khung xem trước sang YUV420 và tạm ngừng luồng khi chụp) **không có test tự động**. **Ngưỡng chưa hiệu chỉnh** trên khung hình điện thoại, nhất là ngưỡng rung; chưa đo độ giật và pin. So với cổng máy chủ trên 121 ảnh có trên máy (phần lớn tổng hợp và ảnh Wikimedia, không phải ảnh chụp điện thoại): cùng kết luận 118 ảnh; 2 ảnh nền đen rõ nét được cho qua trong khi **máy chủ vẫn chặn**, 1 ảnh ở sát ngưỡng chói.
+**Trạng thái:** có test tự động; **chưa build APK và chưa chạy trên máy ảo hay điện thoại**. Phần nối camera (`services/capture_source.dart`, đổi khung xem trước sang YUV420 và tạm ngừng luồng khi chụp) **không có test tự động**. **Ngưỡng chưa hiệu chỉnh** trên khung hình điện thoại, nhất là ngưỡng rung; chưa đo độ giật và pin. So với cổng máy chủ trên 121 ảnh có trên máy (phần lớn tổng hợp và ảnh Wikimedia, không phải ảnh chụp điện thoại): cùng kết luận 118 ảnh; 2 ảnh nền đen rõ nét được cho qua trong khi **máy chủ lúc đó vẫn chặn** (máy chủ đã sửa 28/11, chạy lại hai ảnh này thì qua; chưa chạy lại cả 121 ảnh), 1 ảnh ở sát ngưỡng chói.
 
 ## Cấu trúc
 
@@ -144,6 +144,7 @@ Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi t
 
 | Ngày | Người | Việc | Commit |
 |---|---|---|---|
+| 28/11/2026 | Phúc yêu cầu, Claude làm | cập nhật sau khi sửa cổng máy chủ chặn nhầm hình nền đen | chưa commit |
 | 27/11/2026 | Phúc (AI hỗ trợ) | feat(app): hướng dẫn chụp trên máy (nhắc khi đang ngắm, kiểm ảnh vừa chụp); cập nhật tài liệu app | `17c38f6` |
 | 25/11/2026 | Toàn (AI hỗ trợ) | feat(app): thư viện từ máy chủ, khớp nghĩa hợp đồng v0.1 | `6073a14` |
 | 19/11/2026 | Toàn (AI hỗ trợ) | feat(frontend): hỏi bằng giọng nói (nhận giọng nói có sẵn của Android) | `c897839` |

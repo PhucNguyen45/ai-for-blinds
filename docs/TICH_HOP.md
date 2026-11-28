@@ -158,6 +158,8 @@ Hai lỗi tìm ra khi chạy thật:
   tắc "cháy sáng" (ví dụ tối khi độ sáng thấp VÀ std thấp).
   (Cập nhật 27/11, Phúc: chạy lại trên ảnh đang có, cổng máy chủ **vẫn chặn** hình này vì trung bình 24,9 < ngưỡng chặn mới
   `dark_mean` 30. App đã có hai lớp kiểm trên máy xét thêm tương phản nên cho qua, nhưng máy chủ vẫn chặn; chưa sửa máy chủ.)
+  (**Đã sửa 28/11**, Claude làm theo yêu cầu của Phúc: trung bình < 30 chỉ chặn khi std < 20; hình này nay qua cổng,
+  kèm cảnh báo tối.)
 - Hỏi bằng giọng nói: chỉ kiểm được trên điện thoại thật (STT của emulator không có micro/mạng).
 - Phúc: hai test của `ai/` hỏng trên Windows do môi trường (thiếu font DejaVu; đọc file không chỉ định
   `encoding="utf-8"`), chạy được với `-X utf8`; trên CI (Ubuntu) cài `fonts-dejavu-core`.
@@ -169,6 +171,7 @@ Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi t
 
 | Ngày | Người | Việc | Commit |
 |---|---|---|---|
+| 28/11/2026 | Phúc yêu cầu, Claude làm | cập nhật sau khi sửa cổng máy chủ chặn nhầm hình nền đen | chưa commit |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
 | 26/11/2026 | Toàn (AI hỗ trợ) | Ghép nhánh phuc (26/11): báo cáo Gemma 4 E4B, sửa bộ chấm | `c112f7b` |
 | 26/11/2026 | Phúc (AI hỗ trợ) | fix(ai): sửa bộ chấm và kết quả Gemma trên dev; thêm b0g và báo cáo | `8ad80a9` |
