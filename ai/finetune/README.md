@@ -76,7 +76,7 @@ Ai sửa file này, theo lịch sử git. "(AI hỗ trợ)" là commit có ghi t
 
 | Ngày | Người | Việc | Commit |
 |---|---|---|---|
-| 28/11/2026 | Phúc yêu cầu, Claude ghi | ghi số đo dung lượng bản 4-bit của Gemma và Qwen | (chưa commit) |
+| 28/11/2026 | Phúc yêu cầu, Claude ghi | ghi số đo dung lượng bản 4-bit của Gemma và Qwen | `8897986` |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: gộp 6 báo cáo đánh giá model thành 1, dọn nội dung cũ và link hỏng, ghi luồng sử dụng | `442be9d` |
 | 27/11/2026 | Phúc (AI hỗ trợ) | docs: định hướng mới, 12 quy tắc đầu ra của VLM, nhật ký 27/11 (chưa sửa prompt, calc, bộ sinh dữ liệu) | `a0cdcd9` |
 | 23/11/2026 | Phúc (AI hỗ trợ) | feat(vlm): optional LMSTUDIO_REASONING_EFFORT for Gemma 4; docs: base model moving to Gemma 4 E4B | `28fae5e` |
